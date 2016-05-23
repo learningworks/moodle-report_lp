@@ -22,11 +22,31 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+require_once(__DIR__ . '/../../config.php');
+//require_once(__DIR__ . '/locallib.php');
 
-$plugin->version   = 2016041905;
-$plugin->requires  = 2014051200;                    // See http://docs.moodle.org/dev/Moodle_Version
-$plugin->component = 'report_learnerprogress';      // Full name of the plugin (used for diagnostics)
-$plugin->release   = '0.1.0';                       // Human-friendly version name.
-$plugin->maturity  = MATURITY_ALPHA;                // This version's maturity level.
-$plugin->dependencies = array();
+require_login();
+
+$context = context_system::instance();
+require_capability('report/learnerprogress:view', $context);
+$PAGE->set_context($context);
+
+$url = new moodle_url('/report/learnerprogress/index.php');
+$PAGE->set_url($url);
+$PAGE->set_pagelayout('report');
+
+
+
+echo $OUTPUT->header();
+
+$groupnames = \report_learnerprogress\learnerprogress::get_distinct_course_groupnames();
+$renderer = $PAGE->get_renderer('report_learnerprogress');
+
+//$sectionoptions = array('0' => get_string('selectchapter', 'gradereport_biozone'));
+$groupselect = new \report_learnerprogress\output\select('groups', $url, $groupnames);
+$groupselect->options($groupnames);
+//$sectionselect->label = get_string('chapter', 'gradereport_biozone');
+//$sectionselect->selected = $sectionid;
+echo $renderer->render($groupselect);
+
+echo $OUTPUT->footer();

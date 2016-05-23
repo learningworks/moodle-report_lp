@@ -15,12 +15,34 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Definition of language strings.
+ *  DESCRIPTION
  *
  * @package   {{PLUGIN_NAME}} {@link https://docs.moodle.org/dev/Frankenstyle}
  * @copyright 2015 LearningWorks Ltd {@link http://www.learningworks.co.nz}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Learner progress report';
-$string['report/learnerprogress:view'] = 'Can view report';
+namespace report_learnerprogress;
+
+defined('MOODLE_INTERNAL') || die();
+
+class learnerprogress {
+
+    public static function get_distinct_course_groupnames() {
+        global $DB;
+
+        $sql = "SELECT DISTINCT (g.name)
+                           FROM {groups} g
+                       GROUP BY g.name
+                       ORDER BY g.name";
+
+        $names = [];
+        $records = $DB->get_records_sql($sql);
+        if ($records) {
+           foreach($records as $record) {
+               $names[$record->name] = $record->name;
+           }
+        }
+        return $names;
+    }
+}

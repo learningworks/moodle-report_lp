@@ -15,12 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Definition of language strings.
+ *  DESCRIPTION
  *
  * @package   {{PLUGIN_NAME}} {@link https://docs.moodle.org/dev/Frankenstyle}
  * @copyright 2015 LearningWorks Ltd {@link http://www.learningworks.co.nz}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Learner progress report';
-$string['report/learnerprogress:view'] = 'Can view report';
+defined('MOODLE_INTERNAL') || die();
+
+$url = $CFG->wwwroot . '/report/learnerprogress/index.php';
+$ADMIN->add('reports', new admin_externalpage('reportlearnerprogress', get_string('pluginname', 'report_learnerprogress'), $url, 'report/learnerprogress:view'));
+
+// No report settings.
+$settings = null;

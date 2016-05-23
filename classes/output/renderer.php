@@ -14,13 +14,20 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Definition of language strings.
- *
- * @package   {{PLUGIN_NAME}} {@link https://docs.moodle.org/dev/Frankenstyle}
- * @copyright 2015 LearningWorks Ltd {@link http://www.learningworks.co.nz}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+namespace report_learnerprogress\output;
 
-$string['pluginname'] = 'Learner progress report';
-$string['report/learnerprogress:view'] = 'Can view report';
+defined('MOODLE_INTERNAL') || die;
+
+class renderer extends \plugin_renderer_base {
+    /**
+     * Defer to template.
+     *
+     * @param index_page $page
+     * @return string html for the page
+     */
+    public function render_select($page) {
+        $data = $page->export_for_template($this);
+        return parent::render_from_template('report_learnerprogress/select', $data);
+    }
+
+}

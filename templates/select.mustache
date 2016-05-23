@@ -1,0 +1,18 @@
+<form action="{{action}}" method="{{method}}">
+    <label for="{{name}}">{{label}}</label>
+    <select name="{{name}}" {{disabled}} class="moodle-actionmenu">
+        {{#options}}
+            <option value="{{value}}" {{selected}}>{{name}}</option>
+        {{/options}}
+    </select>
+    {{#hidden}}
+    <input type="hidden" name="{{name}}" value="{{value}}"/>
+    {{/hidden}}
+</form>
+{{#js}}
+require(['jquery'], function($) {
+    $('select.moodle-actionmenu').change(function(){
+        $(this).closest('form').submit();
+    });
+});
+{{/js}}
