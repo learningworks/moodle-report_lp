@@ -24,3 +24,9 @@
 
 $string['pluginname'] = 'Learner progress report';
 $string['report/learnerprogress:view'] = 'Can view report';
+$string['selectgroup'] = 'Select group...';
+$string['selectcategory'] = 'Select category...';
+$string['coursegroup'] = 'Course group';
+$string['coursecategory'] = 'Course category';
+$string['configureprogresstracking'] = 'Configure learner progress tracking';
+$string['trackassignment'] = 'Track assignment';

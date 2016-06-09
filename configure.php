@@ -28,6 +28,10 @@ $id = required_param('id', PARAM_INT);
 $params = ['id' => $id];
 $course = $DB->get_record('course', $params, '*', MUST_EXIST);
 $context = context_course::instance($course->id, MUST_EXIST);
+
+//$esql = get_enrolled_sql($context);
+//print_object($esql);
+
 require_login($course);
 
 $url = new moodle_url('/report/learnerprogress/configure.php', $params);

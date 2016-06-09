@@ -55,12 +55,14 @@ class select implements \renderable, \templatable {
         $data->name = $this->name;
 
         $options = array();
-        foreach ($this->options as $key => $name) {
-            $selected = '';
-            if (isset($this->selected) and $key == $this->selected) {
-                $selected = 'selected';
+        if (!empty($this->options)) {
+            foreach ($this->options as $key => $name) {
+                $selected = '';
+                if (isset($this->selected) and $key == $this->selected) {
+                    $selected = 'selected';
+                }
+                $options[] = (object)array('name' => $name, 'value' => $key, 'selected' => $selected);
             }
-            $options[] = (object) array('name' => $name, 'value' => $key, 'selected' => $selected);
         }
         $data->options = $options;
 

@@ -24,6 +24,8 @@
 
 require_once(__DIR__ . '/../../config.php');
 //require_once(__DIR__ . '/locallib.php');
+$groupname = optional_param('groupname', 0, PARAM_TEXT);
+$categoryid = optional_param('categoryid', 0, PARAM_TEXT);
 
 require_login();
 
@@ -32,21 +34,39 @@ require_capability('report/learnerprogress:view', $context);
 $PAGE->set_context($context);
 
 $url = new moodle_url('/report/learnerprogress/index.php');
+if ($groupname) {
+    $url->param('groupname', $groupname);
+}
+if ($categoryid) {
+    $url->param('categoryid', $categoryid);
+}
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('report');
 
 
 
 echo $OUTPUT->header();
-
-$groupnames = \report_learnerprogress\learnerprogress::get_distinct_course_groupnames();
 $renderer = $PAGE->get_renderer('report_learnerprogress');
 
-//$sectionoptions = array('0' => get_string('selectchapter', 'gradereport_biozone'));
-$groupselect = new \report_learnerprogress\output\select('groups', $url, $groupnames);
-$groupselect->options($groupnames);
-//$sectionselect->label = get_string('chapter', 'gradereport_biozone');
-//$sectionselect->selected = $sectionid;
+$groupnames = \report_learnerprogress\learnerprogress::get_course_groupnames();
+$menu = [0 => get_string('selectgroup', 'report_learnerprogress')] + $groupnames;
+$groupselect = new \report_learnerprogress\output\select('groupname', $url, $groupnames);
+$groupselect->label = get_string('coursegroup', 'report_learnerprogress');
+$groupselect->selected = $groupname;
+if ($groupname) {
+    $categories = \report_learnerprogress\learnerprogress::get_course_categorynames_by_group($groupname);
+    $menu = [0 => get_string('selectcategory', 'report_learnerprogress')] + $categories;
+    $categoryselect = new \report_learnerprogress\output\select('categoryid', $url, $menu);
+    $categoryselect->label = get_string('coursecategory', 'report_learnerprogress');
+    $categoryselect->selected = $categoryid;
+}
+
+echo html_writer::start_div('filter-wrapper');
 echo $renderer->render($groupselect);
+echo $renderer->render($categoryselect);
+echo html_writer::end_div();
+
+//$reports = get_plugin_list_with_function('report', 'extend_navigation_module', 'lib.php');
+//print_object($reports);
 
 echo $OUTPUT->footer();

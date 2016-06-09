@@ -28,11 +28,13 @@ defined('MOODLE_INTERNAL') || die();
 
 class learnerprogress {
 
-    public static function get_distinct_course_groupnames() {
+    public static function get_course_groupnames() {
         global $DB;
 
         $sql = "SELECT DISTINCT (g.name)
                            FROM {groups} g
+                           JOIN {report_learnerprogress} rlp
+                             ON rlp.courseid = g.courseid
                        GROUP BY g.name
                        ORDER BY g.name";
 
@@ -45,4 +47,28 @@ class learnerprogress {
         }
         return $names;
     }
+
+    public static function get_course_categorynames_by_group($groupname) {
+        global $DB;
+
+        $sql = "SELECT DISTINCT(cc.id) AS categoryid, cc.name as categoryname
+                           FROM mdl_course_categories cc
+                           JOIN mdl_course c
+                             ON c.category = cc.id
+                           JOIN mdl_groups g
+                             ON g.courseid = c.id
+                          WHERE g.name = ?
+                       GROUP BY cc.id, cc.name
+                       ORDER BY cc.name";
+
+        $categories = [];
+        $records = $DB->get_records_sql($sql, [$groupname]);
+        if ($records) {
+            foreach($records as $record) {
+                $categories[$record->categoryid] = $record->categoryname;
+            }
+        }
+        return $categories;
+    }
+
 }
