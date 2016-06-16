@@ -23,17 +23,17 @@
  */
 
 require_once(__DIR__ . '/../../config.php');
-//require_once(__DIR__ . '/locallib.php');
+require_once(__DIR__ . '/locallib.php');
 $groupname = optional_param('groupname', 0, PARAM_TEXT);
 $categoryid = optional_param('categoryid', 0, PARAM_TEXT);
 
 require_login();
 
 $context = context_system::instance();
-require_capability('report/learnerprogress:view', $context);
+require_capability('report/lp:view', $context);
 $PAGE->set_context($context);
 
-$url = new moodle_url('/report/learnerprogress/index.php');
+$url = new moodle_url('/report/lp/index.php');
 if ($groupname) {
     $url->param('groupname', $groupname);
 }
@@ -46,27 +46,26 @@ $PAGE->set_pagelayout('report');
 
 
 echo $OUTPUT->header();
-$renderer = $PAGE->get_renderer('report_learnerprogress');
+$renderer = $PAGE->get_renderer('report_lp');
 
-$groupnames = \report_learnerprogress\learnerprogress::get_course_groupnames();
-$menu = [0 => get_string('selectgroup', 'report_learnerprogress')] + $groupnames;
-$groupselect = new \report_learnerprogress\output\select('groupname', $url, $groupnames);
-$groupselect->label = get_string('coursegroup', 'report_learnerprogress');
+$groupnames = \report_lp\learnerprogress::get_course_groupnames();
+$menu = [0 => get_string('selectgroup', 'report_lp')] + $groupnames;
+$groupselect = new \report_lp\output\select('groupname', $url, $groupnames);
+$groupselect->label = get_string('coursegroup', 'report_lp');
 $groupselect->selected = $groupname;
 if ($groupname) {
-    $categories = \report_learnerprogress\learnerprogress::get_course_categorynames_by_group($groupname);
-    $menu = [0 => get_string('selectcategory', 'report_learnerprogress')] + $categories;
-    $categoryselect = new \report_learnerprogress\output\select('categoryid', $url, $menu);
-    $categoryselect->label = get_string('coursecategory', 'report_learnerprogress');
+    $categories = \report_lp\learnerprogress::get_course_categorynames_by_group($groupname);
+    $menu = [0 => get_string('selectcategory', 'report_lp')] + $categories;
+    $categoryselect = new \report_lp\output\select('categoryid', $url, $menu);
+    $categoryselect->label = get_string('coursecategory', 'report_lp');
     $categoryselect->selected = $categoryid;
 }
 
 echo html_writer::start_div('filter-wrapper');
 echo $renderer->render($groupselect);
-echo $renderer->render($categoryselect);
+if (isset($categoryselect)) {
+    echo $renderer->render($categoryselect);
+}
 echo html_writer::end_div();
-
-//$reports = get_plugin_list_with_function('report', 'extend_navigation_module', 'lib.php');
-//print_object($reports);
 
 echo $OUTPUT->footer();

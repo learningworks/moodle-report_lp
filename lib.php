@@ -31,13 +31,14 @@ defined('MOODLE_INTERNAL') || die;
  * @param stdClass $course The course to object for the report
  * @param stdClass $context The context of the course
  */
-function report_learnerprogress_extend_navigation_course($navigation, $course, $context) {
+function report_lp_extend_navigation_course($navigation, $course, $context) {
     global $CFG;
 
-    if (has_capability('report/learnerprogress:view', $context)) {
-        $url = new moodle_url('/report/learnerprogress/configure.php', array('id' => $course->id));
-        $label = get_string('configureprogresstracking', 'report_learnerprogress');
+    if (has_capability('report/lp:view', $context)) {
+        $url = new moodle_url('/report/lp/configure.php', array('id' => $course->id));
+        $label = get_string('configureprogresstracking', 'report_lp');
         $navigation->add($label, $url, navigation_node::TYPE_SETTING,
-            null, null, new pix_icon('icon', '', 'report_learnerprogress'));
+            null, null, new pix_icon('icon', '', 'report_lp'));
     }
 }
+

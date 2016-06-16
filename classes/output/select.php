@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace report_learnerprogress\output;
+namespace report_lp\output;
 
 class select implements \renderable, \templatable {
     public $name;

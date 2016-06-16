@@ -22,7 +22,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace report_learnerprogress;
+namespace report_lp;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -33,7 +33,7 @@ class learnerprogress {
 
         $sql = "SELECT DISTINCT (g.name)
                            FROM {groups} g
-                           JOIN {report_learnerprogress} rlp
+                           JOIN {report_lp_tracked} rlp
                              ON rlp.courseid = g.courseid
                        GROUP BY g.name
                        ORDER BY g.name";

@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace report_learnerprogress\output;
+namespace report_lp\output;
 
 defined('MOODLE_INTERNAL') || die;
 
@@ -27,7 +27,7 @@ class renderer extends \plugin_renderer_base {
      */
     public function render_select($page) {
         $data = $page->export_for_template($this);
-        return parent::render_from_template('report_learnerprogress/select', $data);
+        return parent::render_from_template('report_lp/select', $data);
     }
 
 }

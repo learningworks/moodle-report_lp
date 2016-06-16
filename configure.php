@@ -23,6 +23,7 @@
  */
 
 require_once(__DIR__ . '/../../config.php');
+require_once(__DIR__ . '/locallib.php');
 
 $id = required_param('id', PARAM_INT);
 $params = ['id' => $id];
@@ -34,33 +35,35 @@ $context = context_course::instance($course->id, MUST_EXIST);
 
 require_login($course);
 
-$url = new moodle_url('/report/learnerprogress/configure.php', $params);
+$url = new moodle_url('/report/lp/configure.php', $params);
 $PAGE->set_url($url);
 
 // Setup return url.
 $returnurl = new moodle_url('/course/view.php', array('id' => $PAGE->course->id));
 
-$record = $DB->get_record('report_learnerprogress', ['courseid' => $course->id]);
+$record = $DB->get_record('report_lp_tracked', ['courseid' => $course->id]);
 $assignmentid = isset($record->assignmentid) ? $record->assignmentid : 0;
-$form = new \report_learnerprogress\form\configure(null, array('course' => $course, 'assignmentid' => $assignmentid));
+$form = new \report_lp\form\configure(null, array('course' => $course, 'assignmentid' => $assignmentid));
 if ($form->is_cancelled()) {
     redirect($returnurl);
 }
 if ($form->is_submitted()) {
     $data = $form->get_data();
     if ($record and !$data->assignmentid) { // Delete.
-        $DB->delete_records('report_learnerprogress', ['courseid' => $course->id]);
+        $DB->delete_records('report_lp_tracked', ['courseid' => $course->id]);
     } else if ($record and $data->assignmentid) { // Update.
         $record->assignmentid = $data->assignmentid;
-        $DB->update_record('report_learnerprogress');
+        $DB->update_record('report_lp_tracked');
     } else if ($data->assignmentid) { // Insert.
         $record = new stdClass();
         $record->courseid = $course->id;
         $record->assignmentid = $data->assignmentid;
-        $DB->insert_record('report_learnerprogress', $record);
+        $DB->insert_record('report_lp_tracked', $record);
     }
     redirect($returnurl);
 }
 echo $OUTPUT->header();
+report_lp_detect_assignment_to_track($course);
+report_lp_build_learner_progress_records($course);
 $form->display();
 echo $OUTPUT->footer();

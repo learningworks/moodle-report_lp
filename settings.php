@@ -24,8 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$url = $CFG->wwwroot . '/report/learnerprogress/index.php';
-$ADMIN->add('reports', new admin_externalpage('reportlearnerprogress', get_string('pluginname', 'report_learnerprogress'), $url, 'report/learnerprogress:view'));
+$url = $CFG->wwwroot . '/report/lp/index.php';
+$ADMIN->add('reports', new admin_externalpage('reportlearnerprogress', get_string('pluginname', 'report_lp'), $url, 'report/lp:view'));
 
 // No report settings.
 $settings = null;

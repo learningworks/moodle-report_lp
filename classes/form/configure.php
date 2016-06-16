@@ -22,7 +22,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace report_learnerprogress\form;
+namespace report_lp\form;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -38,7 +38,7 @@ class configure extends \moodleform {
         // Build menu of assignments.
         $assignments = $DB->get_records_menu('assign', ['course' => $course->id], null, 'id, name');
         $menu = ['0' => get_string('none')] + $assignments;
-        $form->addElement('select','assignmentid', get_string('trackassignment', 'report_learnerprogress'), $menu);
+        $form->addElement('select','assignmentid', get_string('trackassignment', 'report_lp'), $menu);
         $form->setType('assignmentid', PARAM_INT);
         $form->setDefault('assignmentid', $assignmentid);
         $form->addElement('hidden', 'id');
