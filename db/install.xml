@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="report/lp/db" VERSION="20160616" COMMENT="XMLDB file for Moodle report/learnerprogress"
+<XMLDB PATH="report/lp/db" VERSION="20160617" COMMENT="XMLDB file for Moodle report/learnerprogress"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -24,7 +24,8 @@
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="submissionid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="submissionstatus" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="grade" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0.00000" SEQUENCE="false" DECIMALS="5"/>
+        <FIELD NAME="submissiongraderaw" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0.00000" SEQUENCE="false" DECIMALS="5"/>
+        <FIELD NAME="coursegraderaw" TYPE="number" LENGTH="10" NOTNULL="true" DEFAULT="0.00000" SEQUENCE="false" DECIMALS="5"/>
         <FIELD NAME="modified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>

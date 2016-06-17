@@ -43,8 +43,6 @@ if ($categoryid) {
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('report');
 
-
-
 echo $OUTPUT->header();
 $renderer = $PAGE->get_renderer('report_lp');
 

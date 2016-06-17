@@ -77,6 +77,8 @@ function report_lp_build_learner_progress_records(stdClass $course) {
 
     require_once($CFG->libdir . '/grouplib.php');
     require_once($CFG->dirroot . '/mod/assign/locallib.php');
+    require_once($CFG->libdir . '/gradelib.php');
+    require_once($CFG->dirroot . '/grade/querylib.php');
 
     $assignid = $DB->get_field('report_lp_tracked', 'assignmentid', array('courseid'=>$course->id));
     if (!$assignid) {
@@ -89,34 +91,58 @@ function report_lp_build_learner_progress_records(stdClass $course) {
     $assignment->set_instance($assign);
 
     $gradeitem = $assignment->get_grade_item();
+
+    $defaultdisplaytype = isset($CFG->grade_displaytype) ?  $CFG->grade_displaytype : 0;
+    $displaytype = grade_get_setting($course->id, 'displaytype', $defaultdisplaytype);
+
     $studentrole = $DB->get_record('role', array('shortname'=>'student'));
     $users = get_role_users($studentrole->id, $context->get_parent_context());
     foreach ($users as $user) {
-        $submission = $assignment->get_user_submission($user->id, false);
+        // Generic.
 
 
+        $submission = $assignment->get_user_submission($user->id, true);
         if (!empty($submission->latest)) {
             $record = new stdClass();
+            $record->id = null;
             $record->categoryid = $course->category;
             $record->courseid = $course->id;
-            $record->coursegroupid = '';
+            $groups = groups_get_all_groups($course->id, $user->id);
+            if (count($groups) == 1) {
+                $group = reset($groups);
+                $coursegroupid = $group->id;
+            } else if (count($groups) > 1) {
+                // To many!
+                $coursegroupid = -1;
+            } else {
+                // None.
+                $coursegroupid = 0;
+            }
+            $record->coursegroupid = $coursegroupid;
             $record->assignmentid = $assignment->get_instance()->id;
+            $record->userid = $user->id;
             $record->submissionid = $submission->id;
             $record->submissionstatus = $submission->status;
             $usergrade = $assignment->get_user_grade($user->id, true);
-
-            $record->gradedisplay = $display;
-            $display =  grade_format_gradevalue($usergrade->grade, $gradeitem, GRADE_DISPLAY_TYPE_LETTER);
-            $record->graderaw = $usergrade->grade;
-            $record->gradedisplay = $display;
+            if ($usergrade->grade == -1 )
+            $gradedisplay =  grade_format_gradevalue($usergrade->grade, $gradeitem, $displaytype);
+            $record->submissiongraderaw = $usergrade->grade;
+            $coursegrade = grade_get_course_grade($userid, $course->id);
+            $record->coursegraderaw = $coursegrade->grade;
+            //$record->gradedisplay = $gradedisplay;
             $record->modified = time();
+            print_object($record);exit;
 
-
-
+            $lp = $DB->get_record('report_lp_learnerprogress', array('courseid'=>$course->id, 'userid'=>$user->id));
+            if ($lp) {
+                $record->id = $lp->id;
+                mtrace("UPDATE {$course->id} {$user->id}");
+                $DB->update_record('report_lp_learnerprogress', $record);
+            } else {
+                mtrace("INSERT {$course->id} {$user->id}");
+                $DB->insert_record('report_lp_learnerprogress', $record);
+            }
         }
-
     }
-    
-
-    
+    return true;
 }

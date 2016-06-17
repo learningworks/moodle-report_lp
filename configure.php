@@ -30,9 +30,6 @@ $params = ['id' => $id];
 $course = $DB->get_record('course', $params, '*', MUST_EXIST);
 $context = context_course::instance($course->id, MUST_EXIST);
 
-//$esql = get_enrolled_sql($context);
-//print_object($esql);
-
 require_login($course);
 
 $url = new moodle_url('/report/lp/configure.php', $params);
@@ -63,7 +60,5 @@ if ($form->is_submitted()) {
     redirect($returnurl);
 }
 echo $OUTPUT->header();
-report_lp_detect_assignment_to_track($course);
-report_lp_build_learner_progress_records($course);
 $form->display();
 echo $OUTPUT->footer();
