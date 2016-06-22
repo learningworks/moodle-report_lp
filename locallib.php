@@ -24,42 +24,14 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-function report_lp_detect_assignments_to_track(stdClass $course = null) {
-    global $DB, $SITE;
-    $params = array();
-    $sql = "SELECT c.*
-              FROM {course} c
-         LEFT JOIN {report_lp_tracked} lpt
-                ON c.id = lpt.courseid AND lpt.courseid IS NULL";
-    /*if (isset($course)) {
-        $params = array('id' => $course->id);
-        $sql = "SELECT c.*
-                  FROM {course}
-                 WHERE c.id = :id";
-    }*/
-    $rs = $DB->get_recordset_sql($sql, $params);
-    foreach ($rs as $c) {
-        if ($c->id == $SITE->id) {
-            continue;
-        }
-        $assignments = $DB->get_records('assign', array('id'=>$c->id));
-        if (count($assignments) == 1) {
-            $a = reset($assignments);
-            $track = new stdClass();
-            $track->courseid = $c->id;
-            $track->assignmentid = $a->id;
-            $track->modified = time();
-            $DB->insert_record('report_lp_tracked', $track);
-        }
-    }
-    $rs->close();
-}
-
-
+/**
+ * @param stdClass $course
+ * @return bool|int
+ */
 function report_lp_detect_assignment_to_track(stdClass $course) {
     global $DB;
     $tracked = $DB->get_record('report_lp_tracked', array('courseid'=>$course->id));
-    if (! $tracked) {
+    if (!$tracked) {
         $assignments = $DB->get_records('assign', array('course'=>$course->id));
         if (count($assignments) == 1) {
             $assignment = reset($assignments);
@@ -67,18 +39,20 @@ function report_lp_detect_assignment_to_track(stdClass $course) {
             $settrack->courseid = $course->id;
             $settrack->assignmentid = $assignment->id;
             $settrack->modified = time();
-            $DB->insert_record('report_lp_tracked', $settrack);
+            return $DB->insert_record('report_lp_tracked', $settrack);
         }
+        return false;
     }
+    return false;
 }
 
 function report_lp_build_learner_progress_records(stdClass $course) {
     global $CFG, $DB;
 
     require_once($CFG->libdir . '/grouplib.php');
-    require_once($CFG->dirroot . '/mod/assign/locallib.php');
     require_once($CFG->libdir . '/gradelib.php');
     require_once($CFG->dirroot . '/grade/querylib.php');
+    require_once($CFG->dirroot . '/mod/assign/locallib.php');
 
     $assignid = $DB->get_field('report_lp_tracked', 'assignmentid', array('courseid'=>$course->id));
     if (!$assignid) {
@@ -98,9 +72,6 @@ function report_lp_build_learner_progress_records(stdClass $course) {
     $studentrole = $DB->get_record('role', array('shortname'=>'student'));
     $users = get_role_users($studentrole->id, $context->get_parent_context());
     foreach ($users as $user) {
-        // Generic.
-
-
         $submission = $assignment->get_user_submission($user->id, true);
         if (!empty($submission->latest)) {
             $record = new stdClass();
@@ -123,16 +94,18 @@ function report_lp_build_learner_progress_records(stdClass $course) {
             $record->userid = $user->id;
             $record->submissionid = $submission->id;
             $record->submissionstatus = $submission->status;
-            $usergrade = $assignment->get_user_grade($user->id, true);
-            if ($usergrade->grade == -1 )
-            $gradedisplay =  grade_format_gradevalue($usergrade->grade, $gradeitem, $displaytype);
-            $record->submissiongraderaw = $usergrade->grade;
-            $coursegrade = grade_get_course_grade($userid, $course->id);
-            $record->coursegraderaw = $coursegrade->grade;
-            //$record->gradedisplay = $gradedisplay;
-            $record->modified = time();
-            print_object($record);exit;
 
+            $usergrade = $assignment->get_user_grade($user->id, true);
+            $record->submissiongraderaw = $usergrade->grade;
+
+//$gradedisplay =  grade_format_gradevalue($usergrade->grade, $gradeitem, $displaytype);
+//$record->gradedisplay = $gradedisplay;
+
+            $coursegrade = grade_get_course_grade($user->id, $course->id);
+            if (isset($coursegrade->grade)) {
+                $record->coursegraderaw = $coursegrade->grade;
+            }
+            $record->modified = time();
             $lp = $DB->get_record('report_lp_learnerprogress', array('courseid'=>$course->id, 'userid'=>$user->id));
             if ($lp) {
                 $record->id = $lp->id;

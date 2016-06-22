@@ -24,7 +24,7 @@
 
 require_once(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/locallib.php');
-$groupname = optional_param('groupname', 0, PARAM_TEXT);
+$groupname = optional_param('groupname', '', PARAM_TEXT);
 $categoryid = optional_param('categoryid', 0, PARAM_TEXT);
 
 require_login();
@@ -47,13 +47,13 @@ echo $OUTPUT->header();
 $renderer = $PAGE->get_renderer('report_lp');
 
 $groupnames = \report_lp\learnerprogress::get_course_groupnames();
-$menu = [0 => get_string('selectgroup', 'report_lp')] + $groupnames;
-$groupselect = new \report_lp\output\select('groupname', $url, $groupnames);
+$menu = array('' => get_string('selectgroup', 'report_lp')) + $groupnames;
+$groupselect = new \report_lp\output\select('groupname', $url, $menu);
 $groupselect->label = get_string('coursegroup', 'report_lp');
 $groupselect->selected = $groupname;
 if ($groupname) {
     $categories = \report_lp\learnerprogress::get_course_categorynames_by_group($groupname);
-    $menu = [0 => get_string('selectcategory', 'report_lp')] + $categories;
+    $menu = array(0 => get_string('selectcategory', 'report_lp')) + $categories;
     $categoryselect = new \report_lp\output\select('categoryid', $url, $menu);
     $categoryselect->label = get_string('coursecategory', 'report_lp');
     $categoryselect->selected = $categoryid;
@@ -65,5 +65,9 @@ if (isset($categoryselect)) {
     echo $renderer->render($categoryselect);
 }
 echo html_writer::end_div();
+$options = array('groupname'=>$groupname);
+$report = new \report_lp\report('learner-progress', $groupname, $categoryid);
+$report->out(0, false);
+
 
 echo $OUTPUT->footer();
