@@ -35,67 +35,68 @@ class report extends \table_sql {
     protected $groupname;
     protected $courses;
 
-    public function __construct($uniqueid, $groupname, $category) {
+    public function __construct($uniqueid, $groupname=null, $category=null) {
+        global $PAGE;
         parent::__construct($uniqueid);
-        $this->groupname = $groupname;
-        if (is_object($category)) {
-            $this->category = $category;
-        } else {
-            $this->fetch_category($category);
-        }
-
-        $this->setup_table_head();
+        $this->collapsible(false);
+        $this->sortable(false);
+        $this->pageable(false);
+        $this->baseurl      = $PAGE->url;
+        $this->rawdata      = array();
+        $this->groupname    = $groupname;
+        $this->category     = $category;
+        $this->initialize();
     }
 
-    public function setup_table_head() {
+    public function initialize() {
+        global $DB;
+
         $columns = array('user');
         $headers = array('');
 
-        $sql = "SELECT c.* 
-FROM {course} c
-JOIN {course_categories} cc ON cc.id = c.category
-JOIN {report_lp_tracked} lpt ON lpt.courseid = c.id";
+        // Category identifier, so get category record.
+        if (!is_object($this->category)) {
+            $this->category = $DB->get_record('course_categories', array('id' => $this->category), "id, name, idnumber");
+        }
+        if ($this->category) {
+            // Fetch courses to build rest of columns.
+            $sql = "SELECT c.id, c.shortname, c.fullname, c.idnumber 
+                  FROM {course} c
+                  JOIN {course_categories} cc 
+                    ON cc.id = c.category
+                  JOIN {report_lp_tracked} lpt 
+                    ON lpt.courseid = c.id
+                 WHERE c.category = :category
+              ORDER BY c.sortorder";
 
-        foreach ($this->get_courses() as $course) {
-            $columns[] = $course->shortname;
-            $headers[] = $course->fullname;
+            $params = array('category' => $this->category->id);
+            $this->courses = $DB->get_recordset_sql($sql, $params);
+        }
+        if ($this->courses) {
+            foreach ($this->courses as $course) {
+                $columns[] = $course->shortname;
+                $headers[] = $course->fullname;
+            }
         }
         parent::define_columns($columns);
         parent::define_headers($headers);
     }
 
-    public function fetch_category($id) {
-        global $DB;
-
-        if (isset($this->category)) {
-            return $this->category;
-        }
-        return $this->category = $DB->get_record('course_categories', array('id'=>$id), "id, name, idnumber");
-    }
-
-    public function get_courses() {
-        global $DB;
-
-        if (isset($this->courses)) {
-            return $this->courses;
-        }
-        if (!isset($this->category->id)) {
-            throw new \moodle_exception('No category defined.');
-        }
-        $params = array('category'=>$this->category->id);
-        return $this->courses = $DB->get_records('course', $params, 'sortorder', "id, shortname, fullname, idnumber");
-
-
-
-    }
 
     public function query_db($pagesize, $useinitialsbar = true) {
         global $DB;
+        // No params set so no need to go any further.
+        if (empty($this->groupname) or empty($this->category)) {
+            return false;
+        }
 
         $userfields = \user_picture::fields('u', null, 'user_id', 'user_');
 
         $coursefields = utilities::alias(array('id', 'category', 'shortname', 'fullname', 'idnumber', 'visible'),
             'c', 'course_');
+
+        $progressfields = utilities::alias(array('submissionid', 'submissionstatus', 'submissiongraderaw', 'coursegraderaw'),
+            'lp', 'course_progress_');
         
         $basesql = "FROM {report_lp_learnerprogress} lp
                     JOIN {course_categories} cc
@@ -106,20 +107,49 @@ JOIN {report_lp_tracked} lpt ON lpt.courseid = c.id";
                       ON g.id = lp.coursegroupid
                     JOIN {user} u 
                       ON u.id = lp.userid
-                   WHERE g.name = :groupname AND c.category = :category";
+                   WHERE g.name = :groupname AND c.category = :category ";
 
+        $ordersql = "ORDER BY u.firstname, u.lastname, c.sortorder";
 
-        $sql = "SELECT $userfields, $coursefields $basesql";
-        mtrace($sql);
+        $sql = "SELECT $userfields, $coursefields, $progressfields $basesql $ordersql";
 
-        print_object($this->columns);
-
+        $collect = array();
         $params = array();
         $params['groupname'] = $this->groupname;
         $params['category'] = $this->category->id;
         $rs = $DB->get_recordset_sql($sql, $params);
-        //print_object($rs);
+        foreach ($rs as $record) {
+            $unaliased = utilities::unalias($record);
+            $user = (object) $unaliased['user'];
+            $course = (object) $unaliased['course'];
+            if (!isset($collect[$user->id])) {
+                $keys = $this->columns;
+                array_walk($keys, function(&$value, $key) {
+                    global $OUTPUT;
+                    $value = \html_writer::img($OUTPUT->pix_url('t/delete'), '');
+                });
+                $collect[$user->id] = $keys;
+                $collect[$user->id]['user'] = fullname($user); // First column always will be user.
+            }
+//print_object($course);
+            //$collect[$user->id][$course->shortname] = $record->course_progress_submissionstatus;
+            $collect[$user->id][$course->shortname] = self::build_progress_item();
+        }
         $rs->close();
-        $this->rawdata = array();
+
+        $this->rawdata = $collect;
+    }
+
+    public function not_enrolled_status() {
+        return 'Not enrolled';
+    }
+
+
+    public function build_progress_item() {
+        global $OUTPUT;
+
+        
+        
+        return \html_writer::img($OUTPUT->pix_url('icon', 'assign'), '');
     }
 }

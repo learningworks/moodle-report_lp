@@ -66,8 +66,6 @@ if (isset($categoryselect)) {
 }
 echo html_writer::end_div();
 $options = array('groupname'=>$groupname);
-$report = new \report_lp\report('learner-progress', $groupname, $categoryid);
+$report = new \report_lp\report('learner-progress-33', $groupname, $categoryid);
 $report->out(0, false);
-
-
 echo $OUTPUT->footer();
