@@ -28,10 +28,13 @@ class select implements \renderable, \templatable {
     public $tooltip;
 
 
-    public function __construct($name, \moodle_url $url, array $options) {
+    public function __construct($name, \moodle_url $url, array $options, $class='') {
         $this->name     = $name;
         $this->url      = $url;
         $this->options($options);
+        if (!empty($class)) {
+            $this->class .= " $class ";
+        }
     }
 
     public function options(array $options = null) {
@@ -53,6 +56,7 @@ class select implements \renderable, \templatable {
     public function export_for_template(\renderer_base $output) {
         $data = new \stdClass();
         $data->name = $this->name;
+        $data->class = $this->class;
 
         $options = array();
         if (!empty($this->options)) {
