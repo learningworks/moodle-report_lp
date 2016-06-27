@@ -24,23 +24,26 @@
 
 namespace report_lp;
 
-use core\session\util;
-
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/tablelib.php');
+require_once($CFG->dirroot . '/grade/querylib.php');
 
 class report extends \table_sql {
     protected $category;
     protected $groupname;
     protected $courses;
 
-    public function __construct($uniqueid, $groupname=null, $category=null) {
+    public function __construct($uniqueid, $groupname=null, $category=null, $download = '') {
         global $PAGE;
         parent::__construct($uniqueid);
+        $this->set_attribute('class', 'generaltable generalbox learner-progress');
         $this->collapsible(false);
         $this->sortable(false);
         $this->pageable(false);
+        $this->is_downloadable(true);
+        // Set download status.
+        $this->is_downloading($download, get_string('exportfilename', 'report_lp'));
         $this->baseurl      = $PAGE->url;
         $this->rawdata      = array();
         $this->groupname    = $groupname;
@@ -95,8 +98,8 @@ class report extends \table_sql {
         $coursefields = utilities::alias(array('id', 'category', 'shortname', 'fullname', 'idnumber', 'visible'),
             'c', 'course_');
 
-        $progressfields = utilities::alias(array('submissionid', 'submissionstatus', 'submissiongraderaw', 'coursegraderaw'),
-            'lp', 'course_progress_');
+        $progressfields = utilities::alias(array('coursegroupid', 'assignmentid', 'submissionid', 'submissionstatus', 'submissiongraderaw', 'coursegraderaw'),
+            'lp', 'progress_');
         
         $basesql = "FROM {report_lp_learnerprogress} lp
                     JOIN {course_categories} cc
@@ -113,6 +116,9 @@ class report extends \table_sql {
 
         $sql = "SELECT $userfields, $coursefields, $progressfields $basesql $ordersql";
 
+        // Are we downloading.
+        $downloading = $this->is_downloading();
+
         $collect = array();
         $params = array();
         $params['groupname'] = $this->groupname;
@@ -122,34 +128,61 @@ class report extends \table_sql {
             $unaliased = utilities::unalias($record);
             $user = (object) $unaliased['user'];
             $course = (object) $unaliased['course'];
+            $progress = (object) $unaliased['progress'];
             if (!isset($collect[$user->id])) {
                 $keys = $this->columns;
-                array_walk($keys, function(&$value, $key) {
+                array_walk($keys, function(&$value, $key) use($downloading) {
                     global $OUTPUT;
-                    $value = \html_writer::img($OUTPUT->pix_url('t/delete'), '');
+                    if ($downloading) {
+                        $value = get_string('notenrolled', 'report_lp');
+                    } else {
+                        $value = \html_writer::img($OUTPUT->pix_url('t/delete'),
+                            get_string('notenrolled', 'report_lp'),
+                            array('title' => get_string('notenrolled', 'report_lp')));
+                    }
                 });
                 $collect[$user->id] = $keys;
-                $collect[$user->id]['user'] = fullname($user); // First column always will be user.
+                $collect[$user->id]['user'] = fullname($user); // First column will always be user.
             }
-//print_object($course);
-            //$collect[$user->id][$course->shortname] = $record->course_progress_submissionstatus;
-            $collect[$user->id][$course->shortname] = self::build_progress_item();
+            $usergrade = grade_get_course_grade($user->id, $course->id);
+            // Dirty hackery, as can't rely on grade to pass being setup each course as this stage.
+            if ($usergrade->str_grade == '-') {
+                $status = \core_text::strtolower($progress->submissionstatus);
+                $cm = self::get_cm_by_assignment($progress->assignmentid, $course);
+                $reporturl = new \moodle_url('/mod/assign/view.php', array('id'=>$cm->id, 'group'=>$progress->coursegroupid, 'action'=>'grading'));
+                $label = get_string('submissionstatus_' . $status, 'assign');
+                $output = \html_writer::link($reporturl, $label);
+            } else {
+                $reporturl = new \moodle_url('/grade/report/user/index.php', array('id'=>$course->id, 'userid'=>$user->id));
+                $label = $usergrade->str_grade;
+                $class = preg_replace('/\s+/', '-', \core_text::strtolower($usergrade->str_grade));
+                $link = \html_writer::link($reporturl, $label);
+                $output = \html_writer::div($link, $class);
+            }
+            if ($downloading) {
+                $output = $label;
+            }
+            $collect[$user->id][$course->shortname] = $output;
         }
         $rs->close();
 
         $this->rawdata = $collect;
     }
 
-    public function not_enrolled_status() {
-        return 'Not enrolled';
-    }
-
-
-    public function build_progress_item() {
-        global $OUTPUT;
-
-        
-        
-        return \html_writer::img($OUTPUT->pix_url('icon', 'assign'), '');
+    /**
+     * Helper method to get course module for assignment.
+     *
+     * @param $assignmentid
+     * @param $course
+     * @return mixed
+     * @throws \coding_exception
+     */
+    public function get_cm_by_assignment($assignmentid, $course) {
+        static $assignments;
+        if (!isset($assignments[$assignmentid])) {
+            $cm = get_coursemodule_from_instance("assign", $assignmentid, $course->id);
+            $assignments[$assignmentid] = $cm;
+        }
+        return $assignments[$assignmentid];
     }
 }
