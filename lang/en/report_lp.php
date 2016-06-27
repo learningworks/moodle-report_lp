@@ -30,3 +30,5 @@ $string['coursegroup'] = 'Course group';
 $string['coursecategory'] = 'Course category';
 $string['configureprogresstracking'] = 'Configure learner progress tracking';
 $string['trackassignment'] = 'Track assignment';
+$string['notenrolled'] = 'Not enrolled';
+$string['exportfilename'] = 'learnerprogress';
