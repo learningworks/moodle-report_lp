@@ -26,6 +26,7 @@ require_once(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/locallib.php');
 $groupname = optional_param('groupname', '', PARAM_TEXT);
 $categoryid = optional_param('categoryid', 0, PARAM_TEXT);
+$download = optional_param('download', '', PARAM_ALPHA);
 
 require_login();
 
@@ -43,8 +44,12 @@ if ($categoryid) {
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('report');
 
-echo $OUTPUT->header();
 $renderer = $PAGE->get_renderer('report_lp');
+$report = new \report_lp\report('learner-progress', $groupname, $categoryid, $download);
+if ($report->is_downloading() and !empty($groupname) and !empty($categoryid)) {
+    $report->out(0, false);
+    die();
+}
 
 $groupnames = \report_lp\learnerprogress::get_course_groupnames();
 $menu = array('' => get_string('selectgroup', 'report_lp')) + $groupnames;
@@ -59,13 +64,14 @@ if ($groupname) {
     $categoryselect->selected = $categoryid;
 }
 
-echo html_writer::start_div('filter-wrapper');
+// OUTPUT the html report.
+echo $OUTPUT->header();
+echo $OUTPUT->heading(get_string('pluginname', 'report_lp'));
+echo html_writer::start_div('filters');
 echo $renderer->render($groupselect);
 if (isset($categoryselect)) {
     echo $renderer->render($categoryselect);
 }
 echo html_writer::end_div();
-$options = array('groupname'=>$groupname);
-$report = new \report_lp\report('learner-progress-33', $groupname, $categoryid);
 $report->out(0, false);
 echo $OUTPUT->footer();
