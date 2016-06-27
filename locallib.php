@@ -46,6 +46,11 @@ function report_lp_detect_assignment_to_track(stdClass $course) {
     return false;
 }
 
+/**
+ * @param stdClass $course
+ * @return bool
+ * @throws coding_exception
+ */
 function report_lp_build_learner_progress_records(stdClass $course) {
     global $CFG, $DB;
 
