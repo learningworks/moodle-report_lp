@@ -138,7 +138,8 @@ class report extends \table_sql {
                     } else {
                         $value = \html_writer::img($OUTPUT->pix_url('t/delete'),
                             get_string('notenrolled', 'report_lp'),
-                            array('title' => get_string('notenrolled', 'report_lp')));
+                            array('title' => get_string('notenrolled', 'report_lp'))) .
+                            ' ' . get_string('notenrolled', 'report_lp');
                     }
                 });
                 $collect[$user->id] = $keys;
