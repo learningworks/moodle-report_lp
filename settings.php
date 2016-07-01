@@ -24,8 +24,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$url = $CFG->wwwroot . '/report/lp/index.php';
-$ADMIN->add('reports', new admin_externalpage('reportlearnerprogress', get_string('pluginname', 'report_lp'), $url, 'report/lp:view'));
+// Add main report page to navigation tree
+$ADMIN->add('reports', new admin_externalpage('report_lp',
+    get_string('pluginname', 'report_lp'),
+    new moodle_url('/report/lp/index.php'),
+    'report/lp:view'));
 
 // No report settings.
 $settings = null;

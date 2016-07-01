@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016041905;
+$plugin->version   = 2016070100;
 $plugin->requires  = 2014051200;                    // See http://docs.moodle.org/dev/Moodle_Version
 $plugin->component = 'report_lp';                   // Full name of the plugin (used for diagnostics)
 $plugin->release   = '0.1.0';                       // Human-friendly version name.

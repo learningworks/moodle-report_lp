@@ -34,7 +34,7 @@ defined('MOODLE_INTERNAL') || die;
 function report_lp_extend_navigation_course($navigation, $course, $context) {
     global $CFG;
 
-    if (has_capability('report/lp:view', $context)) {
+    if (has_capability('report/lp:view', $context) and $course->id != SITEID) {
         $url = new moodle_url('/report/lp/configure.php', array('id' => $course->id));
         $label = get_string('configureprogresstracking', 'report_lp');
         $navigation->add($label, $url, navigation_node::TYPE_SETTING,
