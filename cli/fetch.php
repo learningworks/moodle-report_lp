@@ -42,14 +42,14 @@ if ($unrecognized) {
 
 if ($options['help']) {
     $help =
-"I do something.
+"Fetch learner progress information for report.
 
 Options:
 -v, --verbose         Print verbose progress information
 -h, --help            Print out this help
 
 Example:
-\$ sudo -u www-data /usr/bin/php ?.php
+\$ sudo -u www-data /usr/bin/php report/lp/cli/fetch.php
 ";
 
     echo $help;
@@ -62,11 +62,15 @@ if (empty($options['verbose'])) {
     $trace = new text_progress_trace();
 }
 
-$courses = $DB->get_records('course', array('category'=>28));
-foreach ($courses as $course) {
-    //report_lp_detect_assignment_to_track($course);
-    mtrace("course name: $course->fullname");
-    report_lp_build_learner_progress_records($course);
-}
+$now = time();
+$lastprocessed = (int) get_config('lastprocessed', 'report_lp');
 
-//exit($result);
+$sql = "SELECT c.*
+          FROM {course} c
+          JOIN {report_lp_tracked} lp
+            ON lp.courseid = c.id";
+
+$rs = $DB->get_records_sql($sql);
+foreach ($rs as $course) {
+    report_lp_build_learner_progress_records($course, $trace);
+}
