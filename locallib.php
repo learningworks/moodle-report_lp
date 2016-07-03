@@ -51,7 +51,7 @@ function report_lp_detect_assignment_to_track(stdClass $course) {
  * @return bool
  * @throws coding_exception
  */
-function report_lp_build_learner_progress_records(stdClass $course) {
+function report_lp_build_learner_progress_records(stdClass $course, progress_trace $trace) {
     global $CFG, $DB;
 
     require_once($CFG->libdir . '/grouplib.php');
@@ -103,9 +103,7 @@ function report_lp_build_learner_progress_records(stdClass $course) {
             $usergrade = $assignment->get_user_grade($user->id, true);
             $record->submissiongraderaw = $usergrade->grade;
 
-//$gradedisplay =  grade_format_gradevalue($usergrade->grade, $gradeitem, $displaytype);
-//$record->gradedisplay = $gradedisplay;
-
+            //$gradedisplay =  grade_format_gradevalue($usergrade->grade, $gradeitem, $displaytype);
             $coursegrade = grade_get_course_grade($user->id, $course->id);
             if (isset($coursegrade->grade)) {
                 $record->coursegraderaw = $coursegrade->grade;
@@ -114,10 +112,10 @@ function report_lp_build_learner_progress_records(stdClass $course) {
             $lp = $DB->get_record('report_lp_learnerprogress', array('courseid'=>$course->id, 'userid'=>$user->id));
             if ($lp) {
                 $record->id = $lp->id;
-                mtrace("UPDATE {$course->id} {$user->id}");
+                $trace->output("Updating progress record for {$user->firstname} {$user->lastname} in course {$course->fullname}");
                 $DB->update_record('report_lp_learnerprogress', $record);
             } else {
-                mtrace("INSERT {$course->id} {$user->id}");
+                $trace->output("Adding progress record for {$user->firstname} {$user->lastname} in course {$course->fullname}");
                 $DB->insert_record('report_lp_learnerprogress', $record);
             }
         }
