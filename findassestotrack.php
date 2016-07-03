@@ -66,7 +66,7 @@ if ($run) {
                 $settrack->courseid = $course->id;
                 $settrack->assignmentid = $assignment->id;
                 $settrack->modified = time();
-                if (!$DB->record_exists('assign', array('course' => $course->id))) {
+                if (!$DB->record_exists('report_lp_tracked', array('courseid' => $course->id))) {
                     $DB->insert_record('report_lp_tracked', $settrack);
                     $trace->output('Now tracking', 2);
                 }
