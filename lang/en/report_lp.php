@@ -32,3 +32,6 @@ $string['configureprogresstracking'] = 'Configure learner progress tracking';
 $string['trackassignment'] = 'Track assignment';
 $string['notenrolled'] = 'Not enrolled';
 $string['exportfilename'] = 'learnerprogress';
+$string['configure'] = 'Configure';
+$string['datalastfetched'] = 'Data last fetched at: {$a}';
+$string['fetchprogessdata'] = 'Fetch progress data';
