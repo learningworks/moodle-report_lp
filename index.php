@@ -67,6 +67,10 @@ if ($groupname) {
 // OUTPUT the html report.
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('pluginname', 'report_lp'));
+$lastprocessed = (int) get_config('report_lp', 'lastprocessed');
+if ($lastprocessed) {
+    echo get_string('datalastfetched', 'report_lp', userdate($lastprocessed));
+}
 echo html_writer::start_div('filters');
 echo $renderer->render($groupselect);
 if (isset($categoryselect)) {
