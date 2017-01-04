@@ -22,10 +22,6 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
-//report_lp_detect_assignment_to_track($course);
-//report_lp_build_learner_progress_records($course);
-
 define('CLI_SCRIPT', true);
 
 require(__DIR__.'/../../../config.php');
@@ -74,3 +70,4 @@ $rs = $DB->get_records_sql($sql);
 foreach ($rs as $course) {
     report_lp_build_learner_progress_records($course, $trace);
 }
+set_config('lastprocessed', time(), 'report_lp');
