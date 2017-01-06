@@ -145,6 +145,10 @@ class report extends \table_sql {
                 });
                 $collect[$user->id] = $keys;
                 $collect[$user->id]['user'] = fullname($user); // First column will always be user.
+                if (!$downloading) {
+                    $userlink = \html_writer::link(new \moodle_url('/user/profile.php', array('id' => $user->id)), fullname($user));
+                    $collect[$user->id]['user'] = $userlink;
+                }
             }
             $usergrade = grade_get_course_grade($user->id, $course->id);
             // Dirty hackery, as can't rely on grade to pass being setup each course as this stage.
