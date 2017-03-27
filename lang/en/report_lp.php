@@ -35,3 +35,5 @@ $string['exportfilename'] = 'learnerprogress';
 $string['configure'] = 'Configure';
 $string['datalastfetched'] = 'Data last fetched at: {$a}';
 $string['fetchprogessdata'] = 'Fetch progress data';
+$string['lp:configure'] = 'Configure assignment to track';
+$string['lp:view'] = 'View report';
