@@ -79,7 +79,7 @@ class report extends \table_sql {
         if ($this->courses) {
             foreach ($this->courses as $course) {
                 $columns[] = $course->shortname;
-                $headers[] = $course->fullname;
+                $headers[] = $course->shortname;
             }
         }
         parent::define_columns($columns);
