@@ -58,6 +58,11 @@ class report extends \table_sql {
         $columns = array('user');
         $headers = array('');
 
+        if ($this->is_downloading()) {
+            $columns = array('user', 'groupname', 'categoryname');
+            $headers = array('', get_string('group'), get_string('category'));
+        }
+
         // Category identifier, so get category record.
         if (!is_object($this->category)) {
             $this->category = $DB->get_record('course_categories', array('id' => $this->category), "id, name, idnumber");
@@ -99,6 +104,12 @@ class report extends \table_sql {
         $coursefields = utilities::alias(array('id', 'category', 'shortname', 'fullname', 'idnumber', 'visible'),
             'c', 'course_');
 
+        $groupfields = utilities::alias(array('name'),
+            'g', 'group_');
+
+        $categoryfields = utilities::alias(array('name'),
+            'cc', 'coursecategory_');
+
         $progressfields = utilities::alias(array('coursegroupid', 'assignmentid', 'submissionid', 'submissionstatus', 'submissiongraderaw', 'coursegraderaw'),
             'lp', 'progress_');
         
@@ -115,7 +126,7 @@ class report extends \table_sql {
 
         $ordersql = "ORDER BY u.firstname, u.lastname, c.sortorder";
 
-        $sql = "SELECT $userfields, $coursefields, $progressfields $basesql $ordersql";
+        $sql = "SELECT $userfields, $coursefields, $groupfields, $categoryfields, $progressfields $basesql $ordersql";
 
         // Are we downloading.
         $downloading = $this->is_downloading();
@@ -128,6 +139,8 @@ class report extends \table_sql {
         foreach ($rs as $record) {
             $unaliased = utilities::unalias($record);
             $user = (object) $unaliased['user'];
+            $group = (object) $unaliased['group'];
+            $category = (object) $unaliased['coursecategory'];
             $course = (object) $unaliased['course'];
             $progress = (object) $unaliased['progress'];
             if (!isset($collect[$user->id])) {
@@ -150,6 +163,12 @@ class report extends \table_sql {
                     $collect[$user->id]['user'] = $userlink;
                 }
             }
+
+            if ($downloading) {
+                $collect[$user->id]['groupname'] = $group->name;
+                $collect[$user->id]['categoryname'] = $category->name;
+            }
+
             $usergrade = grade_get_course_grade($user->id, $course->id);
             // Dirty hackery, as can't rely on grade to pass being setup each course as this stage.
             if ($usergrade->str_grade == '-') {
@@ -169,6 +188,7 @@ class report extends \table_sql {
                 $output = $label;
             }
             $collect[$user->id][$course->shortname] = $output;
+
         }
         $rs->close();
 
