@@ -74,9 +74,12 @@ function report_lp_build_learner_progress_records(stdClass $course, progress_tra
     $defaultdisplaytype = isset($CFG->grade_displaytype) ?  $CFG->grade_displaytype : 0;
     $displaytype = grade_get_setting($course->id, 'displaytype', $defaultdisplaytype);
 
+    $reportstoremove = $DB->get_records('report_lp_learnerprogress', array('courseid' => $course->id), 'userid', 'userid, courseid');
+
     $studentrole = $DB->get_record('role', array('shortname'=>'student'));
     $users = get_role_users($studentrole->id, $context->get_parent_context());
     foreach ($users as $user) {
+        unset($reportstoremove[$user->id]);
         $submission = $assignment->get_user_submission($user->id, true);
         if (!empty($submission->latest)) {
             $record = new stdClass();
@@ -120,5 +123,12 @@ function report_lp_build_learner_progress_records(stdClass $course, progress_tra
             }
         }
     }
+    foreach($reportstoremove as $reporttoremove) {
+        $trace->output("Removing report for userid: {$reporttoremove->userid} courseid: {$reporttoremove->courseid}");
+        $params = array('userid' => $reporttoremove->userid, 'courseid' => $reporttoremove->courseid);
+        $DB->delete_records('report_lp_learnerprogress', $params);
+    }
+
+
     return true;
 }
