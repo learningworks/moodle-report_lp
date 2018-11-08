@@ -82,7 +82,9 @@ function report_lp_build_learner_progress_records(stdClass $course, progress_tra
             $record->submissionstatus = $submission->status;
 
             $usergrade = $assignment->get_user_grade($user->id, true);
-            $record->submissiongraderaw = $usergrade->grade;
+            if (isset($usergrade->grade)) {
+                $record->submissiongraderaw = $usergrade->grade;
+            }
 
             //$gradedisplay =  grade_format_gradevalue($usergrade->grade, $gradeitem, $displaytype);
             $coursegrade = grade_get_course_grade($user->id, $course->id);
@@ -97,14 +99,14 @@ function report_lp_build_learner_progress_records(stdClass $course, progress_tra
                 try {
                     $DB->update_record('report_lp_learnerprogress', $record);
                 } catch (Exception $e) {
-                    echo PHP_EOL . 'Message: ' . $e->getMessage() . ' while updating record:' . PHP_EOL . 'lp->id = ' . $lp->id . PHP_EOL;
+                    debugging(PHP_EOL . 'Message: ' . $e->getMessage() . ' while updating record:' . PHP_EOL . 'lp->id = ' . $lp->id . PHP_EOL);
                 }
             } else {
                 $trace->output("Adding progress record for {$user->firstname} {$user->lastname} in course {$course->fullname}");
                 try {
                     $DB->insert_record('report_lp_learnerprogress', $record);
                 } catch (Exception $e) {
-                    echo PHP_EOL . 'Message: ' . $e->getMessage() . ' while adding record:' . PHP_EOL . 'lp->id = ' . $lp->id . PHP_EOL;
+                    debugging(PHP_EOL . 'Message: ' . $e->getMessage() . ' while adding record:' . PHP_EOL . 'lp->id = ' . $lp->id . PHP_EOL);
                 }
             }
         }
