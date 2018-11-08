@@ -26,28 +26,6 @@ defined('MOODLE_INTERNAL') || die;
 
 /**
  * @param stdClass $course
- * @return bool|int
- */
-function report_lp_detect_assignment_to_track(stdClass $course) {
-    global $DB;
-    $tracked = $DB->get_record('report_lp_tracked', array('courseid'=>$course->id));
-    if (!$tracked) {
-        $assignments = $DB->get_records('assign', array('course'=>$course->id));
-        if (count($assignments) == 1) {
-            $assignment = reset($assignments);
-            $settrack = new stdClass();
-            $settrack->courseid = $course->id;
-            $settrack->assignmentid = $assignment->id;
-            $settrack->modified = time();
-            return $DB->insert_record('report_lp_tracked', $settrack);
-        }
-        return false;
-    }
-    return false;
-}
-
-/**
- * @param stdClass $course
  * @return bool
  * @throws coding_exception
  */
@@ -116,10 +94,18 @@ function report_lp_build_learner_progress_records(stdClass $course, progress_tra
             if ($lp) {
                 $record->id = $lp->id;
                 $trace->output("Updating progress record for {$user->firstname} {$user->lastname} in course {$course->fullname}");
-                $DB->update_record('report_lp_learnerprogress', $record);
+                try {
+                    $DB->update_record('report_lp_learnerprogress', $record);
+                } catch (Exception $e) {
+                    echo PHP_EOL . 'Message: ' . $e->getMessage() . ' while updating record:' . PHP_EOL . 'lp->id = ' . $lp->id . PHP_EOL;
+                }
             } else {
                 $trace->output("Adding progress record for {$user->firstname} {$user->lastname} in course {$course->fullname}");
-                $DB->insert_record('report_lp_learnerprogress', $record);
+                try {
+                    $DB->insert_record('report_lp_learnerprogress', $record);
+                } catch (Exception $e) {
+                    echo PHP_EOL . 'Message: ' . $e->getMessage() . ' while adding record:' . PHP_EOL . 'lp->id = ' . $lp->id . PHP_EOL;
+                }
             }
         }
     }
