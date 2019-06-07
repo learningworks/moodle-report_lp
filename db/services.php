@@ -14,19 +14,25 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Plugin version and other meta-data are defined here.
- *
- * @package     report_lp
- * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2019060700;
-$plugin->requires  = 2019052000;                    // See http://docs.moodle.org/dev/Moodle_Version
-$plugin->component = 'report_lp';                   // Full name of the plugin (used for diagnostics)
-$plugin->release   = 'v3.7.0-alpha1';               // Human-friendly version name.
-$plugin->maturity  = MATURITY_ALPHA;                // This version's maturity level.
-$plugin->dependencies = [];
+$functions = [
+    'report_lp_get_filtered_groups' => [
+        'classname'    => 'report_lp\local\external\filters',
+        'methodname'   => 'get_filtered_groups',
+        'classpath'    => '',
+        'description'  => '',
+        'type'         => 'read',
+        'capabilities' => '',
+        'ajax'         => true
+    ],
+    'report_lp_set_filtered_groups' => [
+        'classname'    => 'report_lp\local\external\filters',
+        'methodname'   => 'set_filtered_groups',
+        'classpath'    => '',
+        'description'  => '',
+        'type'         => 'write',
+        'capabilities' => '',
+        'ajax'         => true
+    ]
+];
