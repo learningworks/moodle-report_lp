@@ -14,51 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- *  DESCRIPTION
- *
- * @package   {{PLUGIN_NAME}} {@link https://docs.moodle.org/dev/Frankenstyle}
- * @copyright 2015 LearningWorks Ltd {@link http://www.learningworks.co.nz}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 require_once(__DIR__ . '/../../config.php');
-require_once(__DIR__ . '/locallib.php');
 
 $id = required_param('id', PARAM_INT);
 $params = ['id' => $id];
 $course = $DB->get_record('course', $params, '*', MUST_EXIST);
 $context = context_course::instance($course->id, MUST_EXIST);
-
+$PAGE->set_context($context);
 require_login($course);
-
 $url = new moodle_url('/report/lp/configure.php', $params);
 $PAGE->set_url($url);
-
-// Setup return url.
-$returnurl = new moodle_url('/course/view.php', array('id' => $PAGE->course->id));
-
-$record = $DB->get_record('report_lp_tracked', ['courseid' => $course->id]);
-$assignmentid = isset($record->assignmentid) ? $record->assignmentid : 0;
-$form = new \report_lp\form\configure(null, array('course' => $course, 'assignmentid' => $assignmentid));
-if ($form->is_cancelled()) {
-    redirect($returnurl);
-}
-if ($form->is_submitted()) {
-    $data = $form->get_data();
-    if ($record and !$data->assignmentid) { // Delete.
-        $DB->delete_records('report_lp_tracked', ['courseid' => $course->id]);
-    } else if ($record and $data->assignmentid) { // Update.
-        $record->assignmentid = $data->assignmentid;
-        $DB->update_record('report_lp_tracked');
-    } else if ($data->assignmentid) { // Insert.
-        $record = new stdClass();
-        $record->courseid = $course->id;
-        $record->assignmentid = $data->assignmentid;
-        $DB->insert_record('report_lp_tracked', $record);
-    }
-    redirect($returnurl);
-}
 echo $OUTPUT->header();
 $form->display();
 echo $OUTPUT->footer();
