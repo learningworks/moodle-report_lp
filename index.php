@@ -14,68 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- *  DESCRIPTION
- *
- * @package   {{PLUGIN_NAME}} {@link https://docs.moodle.org/dev/Frankenstyle}
- * @copyright 2015 LearningWorks Ltd {@link http://www.learningworks.co.nz}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 require_once(__DIR__ . '/../../config.php');
-require_once(__DIR__ . '/locallib.php');
-$groupname = optional_param('groupname', '', PARAM_TEXT);
-$categoryid = optional_param('categoryid', 0, PARAM_TEXT);
-$download = optional_param('download', '', PARAM_ALPHA);
 
+$courseid = required_param('courseid', PARAM_INT);
 require_login();
-
 $context = context_system::instance();
-require_capability('report/lp:view', $context);
 $PAGE->set_context($context);
-
-$url = new moodle_url('/report/lp/index.php');
-if ($groupname) {
-    $url->param('groupname', $groupname);
-}
-if ($categoryid) {
-    $url->param('categoryid', $categoryid);
-}
+$url = new moodle_url('/report/lp/index.php', ['courseid' => $courseid]);
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('report');
-
 $renderer = $PAGE->get_renderer('report_lp');
-$report = new \report_lp\report('learner-progress', $groupname, $categoryid, $download);
-if ($report->is_downloading() and !empty($groupname) and !empty($categoryid)) {
-    $report->out(0, false);
-    die();
-}
-
-$groupnames = \report_lp\learnerprogress::get_course_groupnames();
-$menu = array('' => get_string('selectgroup', 'report_lp')) + $groupnames;
-$groupselect = new \report_lp\output\select('groupname', $url, $menu);
-$groupselect->label = get_string('coursegroup', 'report_lp');
-$groupselect->selected = $groupname;
-if ($groupname) {
-    $categories = \report_lp\learnerprogress::get_course_categorynames_by_group($groupname);
-    $menu = array(0 => get_string('selectcategory', 'report_lp')) + $categories;
-    $categoryselect = new \report_lp\output\select('categoryid', $url, $menu);
-    $categoryselect->label = get_string('coursecategory', 'report_lp');
-    $categoryselect->selected = $categoryid;
-}
-
-// OUTPUT the html report.
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('pluginname', 'report_lp'));
-$lastprocessed = (int) get_config('report_lp', 'lastprocessed');
-if ($lastprocessed) {
-    echo get_string('datalastfetched', 'report_lp', userdate($lastprocessed));
-}
-echo html_writer::start_div('filters');
-echo $renderer->render($groupselect);
-if (isset($categoryselect)) {
-    echo $renderer->render($categoryselect);
-}
-echo html_writer::end_div();
-$report->out(0, false);
 echo $OUTPUT->footer();
