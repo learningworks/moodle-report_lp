@@ -14,19 +14,19 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- *  DESCRIPTION
- *
- * @package   {{PLUGIN_NAME}} {@link https://docs.moodle.org/dev/Frankenstyle}
- * @copyright 2015 LearningWorks Ltd {@link http://www.learningworks.co.nz}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-namespace report_lp;
+namespace report_lp\local\dml;
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * DML utilities.
+ *
+ * @package   report_lp
+ * @copyright 2019 Troy Williams <troy.williams@learningworks.co.nz>
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class utilities {
+
     /**
      * Alias array of fields.
      *
@@ -44,6 +44,7 @@ class utilities {
         }
         return implode(',', $aliasedfields);
     }
+
     /**
      * Takes a record and builds hierarchical structure based on
      * occurrences of delimiter in key.
