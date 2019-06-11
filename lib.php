@@ -22,6 +22,8 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use report_lp\local\measures\last_course_access;
+
 defined('MOODLE_INTERNAL') || die;
 
 /**
@@ -42,3 +44,17 @@ function report_lp_extend_navigation_course($navigation, $course, $context) {
     }
 }
 
+
+/**
+ * @return array
+ */
+function report_lp_get_available_measures() {
+    return [
+        new report_lp\local\measures\assignment_resubmit_count(),
+        new report_lp\local\measures\assignment_status(),
+        new report_lp\local\measures\attendance_sessions_summary(),
+        new report_lp\local\measures\checklist_complete(),
+        new report_lp\local\measures\grade_category_activity_completion(),
+        new report_lp\local\measures\last_course_access()
+    ];
+}
