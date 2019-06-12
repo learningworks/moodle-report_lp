@@ -31,6 +31,10 @@ class last_course_access extends item {
 
     protected $shortname = 'last_course_access';
 
+    public function get_default_label(): ?string {
+        return null;
+    }
+
     public function get_name(): string {
         return get_string('last_course_access:measure:name', 'report_lp');
     }

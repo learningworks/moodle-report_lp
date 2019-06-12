@@ -34,6 +34,10 @@ class assignment_status extends item implements has_own_configuration {
 
     protected $shortname = 'assignment_status';
 
+    public function get_default_label(): ?string {
+        return null;
+    }
+
     public function get_name(): string {
         return get_string('assignment_status:measure:name', 'report_lp');
     }

@@ -24,6 +24,10 @@ class attendance_sessions_summary extends item {
 
     protected $shortname = 'attendance_sessions_summary';
 
+    public function get_default_label(): ?string {
+        return null;
+    }
+
     public function get_name(): string {
         return get_string('attendance_sessions_summary:measure:name', 'report_lp');
     }

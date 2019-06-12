@@ -24,6 +24,10 @@ class checklist_complete extends item {
 
     protected $shortname = 'checklist_complete';
 
+    public function get_default_label(): ?string {
+        return null;
+    }
+
     public function get_name(): string {
         return get_string('checklist_complete:measure:name', 'report_lp');
     }

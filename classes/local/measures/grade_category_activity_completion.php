@@ -30,7 +30,12 @@ use report_lp\local\contracts\has_own_configuration;
 use report_lp\local\item;
 
 class grade_category_activity_completion extends item implements has_own_configuration {
+
     protected $shortname = 'grade_category_activity_completion';
+
+    public function get_default_label(): ?string {
+        return null;
+    }
 
     public function get_name(): string {
         return get_string('grade_category_activity_completion:measure:name', 'report_lp');
