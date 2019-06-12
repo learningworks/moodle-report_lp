@@ -19,31 +19,30 @@
  *
  * Defines capablities related to the report.
  *
- * @package   {{PLUGIN_NAME}} {@link https://docs.moodle.org/dev/Frankenstyle}
- * @copyright 2015 LearningWorks Ltd {@link http://www.learningworks.co.nz}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     report_lp
+ * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$capabilities = array(
-    'report/lp:configure' => array(
+$capabilities = [
+
+    'report/lp:configure' => [
         'riskbitmask' => RISK_CONFIG,
         'captype' => 'read',
         'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
+        'archetypes' => [
             'manager' => CAP_ALLOW
-        ),
-    ),
+        ],
+    ],
 
-    'report/lp:view' => array(
+    'report/lp:view' => [
         'riskbitmask' => RISK_CONFIG,
         'captype' => 'read',
         'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
+        'archetypes' => [
             'manager' => CAP_ALLOW
-        ),
-    )
-);
-
-
+        ],
+    ]
+];
