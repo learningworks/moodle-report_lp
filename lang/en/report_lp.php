@@ -39,16 +39,16 @@ $string['lp:configure'] = 'Configure assignment to track';
 $string['lp:view'] = 'View report';
 
 
-$string['assignment_resubmit_count:measure:name'] = 'assignment_resubmit_count';
+$string['assignment_resubmit_count:measure:name'] = 'Assignment resubmits';
 $string['assignment_resubmit_count:measure:description'] = 'assignment_resubmit_count';
 
-$string['assignment_status:measure:name'] = 'assignment_status';
+$string['assignment_status:measure:name'] = 'Assignment status';
 $string['assignment_status:measure:description'] = 'assignment_status';
 
-$string['attendance_sessions_summary:measure:name'] = 'attendance_sessions_summary';
+$string['attendance_sessions_summary:measure:name'] = 'Attendance';
 $string['attendance_sessions_summary:measure:description'] = 'attendance_sessions_summary';
 
-$string['checklist_complete:measure:name'] = 'checklist_complete';
+$string['checklist_complete:measure:name'] = 'Checklist';
 $string['checklist_complete:measure:description'] = 'checklist_complete';
 
 $string['grade_category_activity_completion:measure:name'] = 'Grade category activity completion';
