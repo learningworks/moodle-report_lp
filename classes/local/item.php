@@ -18,10 +18,12 @@ namespace report_lp\local;
 
 defined('MOODLE_INTERNAL') || die();
 
+use moodle_url;
+use pix_icon;
 use report_lp\local\persistents\item_configuration;
 
 /**
- * The base class measure classes must extend.
+ * The base class that measure classes must extend.
  *
  * @package     report_lp
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
@@ -29,17 +31,32 @@ use report_lp\local\persistents\item_configuration;
  */
 abstract class item {
 
+    /**
+     * @var item_configuration $configuration Holds configuration information associated with this item.
+     */
     private $configuration;
 
     /**
+     * Human readable name for item. For example, Grouping, Last course access.
+     *
      * @return string
      */
     abstract public function get_name() : string;
 
     /**
+     * Short unique name used to identify item.
+     *
      * @return string
      */
     abstract public function get_short_name() : string;
+
+    /**
+     * The default text for heading or column heading for this item. This will likely be
+     * dependent on information stored in $configuration.
+     *
+     * @return string
+     */
+    abstract public function get_default_label() : ?string;
 
     /**
      * Get human friendly description of what this item does.
@@ -48,7 +65,24 @@ abstract class item {
      */
     abstract public function get_description() : string;
 
-    //abstract public function get_cell_data() : string;
+
+    /**
+     * Child class to overide if supports feature. Only call if has_icon().
+     *
+     * @return pix_icon|null
+     */
+    public function get_icon() : ? pix_icon {
+        return null;
+    }
+
+    /**
+     * Child class to overide if supports feature. Only call if has_url().
+     *
+     * @return moodle_url|null
+     */
+    public function get_url() : ? moodle_url {
+        return null;
+    }
 
     /**
      * Return the associated configuration persistent for item.
@@ -70,6 +104,24 @@ abstract class item {
 
     final public function get_class_name() : string {
         return get_class($this);
+    }
+
+    /**
+     * Child class to overide if supports feature.
+     *
+     * @return bool
+     */
+    public function has_icon() : bool {
+        return false;
+    }
+
+    /**
+     * Child class to overide if supports feature.
+     *
+     * @return bool
+     */
+    public function has_url() : bool {
+        return false;
     }
 
 }
