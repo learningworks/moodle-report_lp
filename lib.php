@@ -48,7 +48,7 @@ function report_lp_extend_navigation_course($navigation, $course, $context) {
 /**
  * @return array
  */
-function report_lp_get_available_measures() {
+function report_lp_get_supported_measures() {
     return [
         new report_lp\local\measures\assignment_resubmit_count(),
         new report_lp\local\measures\assignment_status(),
