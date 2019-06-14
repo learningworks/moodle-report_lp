@@ -63,7 +63,7 @@ class item_configuration extends persistent {
             ],
             'path' => [
                 'type' => PARAM_TEXT,
-                'null' => NULL_ALLOWED
+                'default' => ''
             ],
             'isgrouping' => [
                 'type' => PARAM_INT,
@@ -71,15 +71,15 @@ class item_configuration extends persistent {
             ],
             'visibletosummary' => [
                 'type' => PARAM_INT,
-                'default' => 0
+                'default' => 1
             ],
             'visibletoinstance' => [
                 'type' => PARAM_INT,
-                'default' => 0
+                'default' => 1
             ],
             'visibletolearner' => [
                 'type' => PARAM_INT,
-                'default' => 0
+                'default' => 1
             ],
             'extraconfigdata' => [
                 'type' => PARAM_TEXT,
@@ -88,4 +88,17 @@ class item_configuration extends persistent {
             ]
         ];
     }
+
+    /**
+     * Hook to execute after a create.
+     */
+    protected function after_create() {
+        $id = $this->raw_get('id');
+        $path = '/' . $id;
+        $this->raw_set('path', $path);
+        $displayorder = $id * 10000;
+        $this->raw_set('displayorder', $displayorder);
+        $this->update();
+    }
+
 }
