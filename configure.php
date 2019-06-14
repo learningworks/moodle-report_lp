@@ -15,15 +15,25 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 require_once(__DIR__ . '/../../config.php');
+require_once($CFG->dirroot . '/report/lp/lib.php');
 
-$id = required_param('id', PARAM_INT);
-$params = ['id' => $id];
+$courseid = required_param('courseid', PARAM_INT);
+$params = ['id' => $courseid];
 $course = $DB->get_record('course', $params, '*', MUST_EXIST);
 $context = context_course::instance($course->id, MUST_EXIST);
 $PAGE->set_context($context);
 require_login($course);
-$url = new moodle_url('/report/lp/configure.php', $params);
+$url = new moodle_url('/report/lp/configure.php', ['courseid' => $courseid]);
 $PAGE->set_url($url);
+
+$measures = report_lp_get_supported_measures();
+$measureslist = new report_lp\local\measures_list($measures);
+$learnerprogress = new report_lp\local\learner_progress($course, $measureslist);
+
+
+$renderer = $PAGE->get_renderer('report_lp');
 echo $OUTPUT->header();
-$form->display();
+echo $OUTPUT->heading(get_string('configurereportfor', 'report_lp', $course->fullname));
+echo $renderer->render(new report_lp\output\add_item_menu($course, $measureslist));
+echo '<br><br>';
 echo $OUTPUT->footer();
