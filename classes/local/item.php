@@ -21,15 +21,18 @@ defined('MOODLE_INTERNAL') || die();
 use moodle_url;
 use pix_icon;
 use report_lp\local\persistents\item_configuration;
+use ReflectionClass;
 
 /**
- * The base class that measure classes must extend.
+ * The base class that classes must extend.
  *
  * @package     report_lp
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class item {
+
+    protected $shortname = null;
 
     /**
      * @var item_configuration $configuration Holds configuration information associated with this item.
@@ -44,11 +47,16 @@ abstract class item {
     abstract public function get_name() : string;
 
     /**
-     * Short unique name used to identify item.
-     *
      * @return string
+     * @throws \ReflectionException
      */
-    abstract public function get_short_name() : string;
+    public function get_short_name() : string {
+        if (is_null($this->shortname)) {
+            $reflection = new ReflectionClass($this);
+            $this->shortname = $reflection->getShortName();
+        }
+        return $this->shortname;
+    }
 
     /**
      * The default text for heading or column heading for this item. This will likely be
@@ -56,7 +64,7 @@ abstract class item {
      *
      * @return string
      */
-    abstract public function get_default_label() : ?string;
+    abstract public function get_default_label() : ? string;
 
     /**
      * Get human friendly description of what this item does.
