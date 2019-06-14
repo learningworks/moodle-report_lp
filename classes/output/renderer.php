@@ -18,16 +18,12 @@ namespace report_lp\output;
 
 defined('MOODLE_INTERNAL') || die;
 
-class renderer extends \plugin_renderer_base {
-    /**
-     * Defer to template.
-     *
-     * @param index_page $page
-     * @return string html for the page
-     */
-    public function render_select($page) {
-        $data = $page->export_for_template($this);
-        return parent::render_from_template('report_lp/select', $data);
-    }
+use plugin_renderer_base;
 
+class renderer extends plugin_renderer_base {
+
+    public function render_add_item_menu(add_item_menu $additemmenu) {
+        $data = $additemmenu->export_for_template($this);
+        return parent::render_from_template('report_lp/add_item_menu', $data);
+    }
 }
