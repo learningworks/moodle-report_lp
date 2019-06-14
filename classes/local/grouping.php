@@ -22,12 +22,12 @@ class grouping extends item {
 
     protected $shortname = 'grouping';
 
-    public function get_name(): string {
-        return get_string('grouping:measure:name', 'report_lp');
+    public function get_default_label(): ? string {
+        return get_string('grouping', 'report_lp');
     }
 
-    public function get_short_name(): string {
-        return $this->shortname;
+    public function get_name(): string {
+        return get_string('grouping:measure:name', 'report_lp');
     }
 
     public function get_description(): string {
