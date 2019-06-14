@@ -20,7 +20,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use moodleform;
 use report_lp\local\contracts\has_own_configuration;
-use report_lp\local\item;
+use report_lp\local\measure;
 
 /**
  * Assignment status of learner for an assignment instance.
@@ -30,11 +30,9 @@ use report_lp\local\item;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class assignment_status extends item implements has_own_configuration {
+class assignment_status extends measure implements has_own_configuration {
 
-    protected $shortname = 'assignment_status';
-
-    public function get_default_label(): ?string {
+    public function get_default_label(): ? string {
         return null;
     }
 
@@ -42,9 +40,6 @@ class assignment_status extends item implements has_own_configuration {
         return get_string('assignment_status:measure:name', 'report_lp');
     }
 
-    public function get_short_name(): string {
-        return $this->shortname;
-    }
 
     public function get_description(): string {
         return get_string('assignment_status:measure:description', 'report_lp');

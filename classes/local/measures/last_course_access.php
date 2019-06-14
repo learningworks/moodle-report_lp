@@ -18,7 +18,7 @@ namespace report_lp\local\measures;
 
 defined('MOODLE_INTERNAL') || die();
 
-use report_lp\local\item;
+use report_lp\local\measure;
 
 /**
  * The date and time learner last accessed a course instance.
@@ -27,7 +27,7 @@ use report_lp\local\item;
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class last_course_access extends item {
+class last_course_access extends measure {
 
     protected $shortname = 'last_course_access';
 
@@ -37,10 +37,6 @@ class last_course_access extends item {
 
     public function get_name(): string {
         return get_string('last_course_access:measure:name', 'report_lp');
-    }
-
-    public function get_short_name(): string {
-        return $this->shortname;
     }
 
     public function get_description(): string {

@@ -27,9 +27,9 @@ defined('MOODLE_INTERNAL') || die();
 
 use moodleform;
 use report_lp\local\contracts\has_own_configuration;
-use report_lp\local\item;
+use report_lp\local\measure;
 
-class grade_category_activity_completion extends item implements has_own_configuration {
+class grade_category_activity_completion extends measure implements has_own_configuration {
 
     protected $shortname = 'grade_category_activity_completion';
 
@@ -39,10 +39,6 @@ class grade_category_activity_completion extends item implements has_own_configu
 
     public function get_name(): string {
         return get_string('grade_category_activity_completion:measure:name', 'report_lp');
-    }
-
-    public function get_short_name(): string {
-        return $this->shortname;
     }
 
     public function get_description(): string {

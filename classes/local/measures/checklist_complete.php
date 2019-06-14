@@ -18,22 +18,16 @@ namespace report_lp\local\measures;
 
 defined('MOODLE_INTERNAL') || die();
 
-use report_lp\local\item;
+use report_lp\local\measure;
 
-class checklist_complete extends item {
+class checklist_complete extends measure {
 
-    protected $shortname = 'checklist_complete';
-
-    public function get_default_label(): ?string {
+    public function get_default_label(): ? string {
         return null;
     }
 
     public function get_name(): string {
         return get_string('checklist_complete:measure:name', 'report_lp');
-    }
-
-    public function get_short_name(): string {
-        return $this->shortname;
     }
 
     public function get_description(): string {

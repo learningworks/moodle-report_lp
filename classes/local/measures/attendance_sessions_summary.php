@@ -18,22 +18,16 @@ namespace report_lp\local\measures;
 
 defined('MOODLE_INTERNAL') || die();
 
-use report_lp\local\item;
+use report_lp\local\measure;
 
-class attendance_sessions_summary extends item {
+class attendance_sessions_summary extends measure {
 
-    protected $shortname = 'attendance_sessions_summary';
-
-    public function get_default_label(): ?string {
+    public function get_default_label(): ? string {
         return null;
     }
 
     public function get_name(): string {
         return get_string('attendance_sessions_summary:measure:name', 'report_lp');
-    }
-
-    public function get_short_name(): string {
-        return $this->shortname;
     }
 
     public function get_description(): string {
