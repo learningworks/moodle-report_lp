@@ -59,3 +59,15 @@ $string['last_course_access:measure:description'] = 'Last course access';
 
 $string['grouping:measure:name'] = 'Grouping';
 $string['grouping:measure:description'] = 'Grouping allows a set of measures to be grouped together';
+
+$string['grouping'] = 'Grouping';
+$string['measures'] = 'Measures';
+$string['configurereportfor'] = 'Configure learner progress report for {$a}';
+
+$string['usecustomlabel'] = 'Use custom label';
+$string['customlabel'] = 'Custom label';
+$string['defaultlabel'] = 'Default label';
+$string['visibletosummary'] = 'Display in the summary report';
+$string['visibletoinstance'] = 'Display in the learner instance report';
+$string['visibletolearner'] = 'Display to learner';
+$string['configuregrouping'] = 'Configure grouping';
