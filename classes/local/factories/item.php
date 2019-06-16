@@ -29,6 +29,9 @@ class item {
 
     protected $course;
 
+    /**
+     * @var measurelist $measurelist.
+     */
     protected $measurelist;
 
     public function __construct(stdClass $course, measurelist $measurelist) {
@@ -74,13 +77,13 @@ class item {
             if (is_null($shortname)) {
                 throw new coding_exception("Creating a brand new measure require class shortname to be passed");
             }
-            $measure = $this->measureslist->find_by_short_name($shortname);
+            $measure = $this->measurelist->find_by_short_name($shortname);
             $itemconfiguration->set('courseid', $this->course->id);
             $itemconfiguration->set('classname', $measure->get_class_name());
             $itemconfiguration->set('shortname', $measure->get_short_name());
             $itemconfiguration->set('isgrouping', 1);
         } else {
-            $measure = $this->measureslist->find_by_short_name($itemconfiguration->get('shortname'));
+            $measure = $this->measurelist->find_by_short_name($itemconfiguration->get('shortname'));
         }
         $measure->set_configuration($itemconfiguration);
         return $measure;
