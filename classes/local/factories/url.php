@@ -43,7 +43,7 @@ class url {
     public static function get_config_url(stdClass $course) : moodle_url {
         $url =  new moodle_url('/report/lp/configure.php',
             [
-                'courseid' => $course->id,
+                'courseid' => $course->id
             ]
         );
         return $url;
@@ -52,11 +52,26 @@ class url {
     public static function get_grouping_url(stdClass $course, int $id = 0) : moodle_url {
         $url =  new moodle_url('/report/lp/grouping.php',
             [
+                'courseid' => $course->id
+            ]
+        );
+        if ($id > 0) {
+            $url->param('id', $id);
+        }
+        return $url;
+    }
+
+    public static function get_measure_url(stdclass $course, int $id = 0, string $measureshortname = null) : moodle_url {
+        $url =  new moodle_url('/report/lp/measure.php',
+            [
                 'courseid' => $course->id,
             ]
         );
         if ($id > 0) {
             $url->param('id', $id);
+        }
+        if (!is_null($measureshortname)) {
+            $url->param('measureshortname', $measureshortname);
         }
         return $url;
     }
