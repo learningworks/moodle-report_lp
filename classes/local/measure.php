@@ -25,6 +25,12 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 abstract class measure extends item {
+
+    /**
+     * @param userlist $userlist
+     * @return array|null
+     */
+    abstract public function get_data_for_users(userlist $userlist) : ? array;
+
 }
