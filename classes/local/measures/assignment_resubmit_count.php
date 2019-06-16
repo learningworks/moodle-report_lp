@@ -21,6 +21,7 @@ defined('MOODLE_INTERNAL') || die();
 use moodleform;
 use report_lp\local\contracts\has_own_configuration;
 use report_lp\local\measure;
+use report_lp\local\userlist;
 
 /**
  * Assignment resubmit count of a learner for an assignment instance.
@@ -31,6 +32,10 @@ use report_lp\local\measure;
  */
 
 class assignment_resubmit_count extends measure implements has_own_configuration {
+
+    public function get_data_for_users(userlist $userlist) : ? array {
+        return [];
+    }
 
     public function get_default_label(): ? string {
         return null;

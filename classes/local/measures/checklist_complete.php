@@ -19,8 +19,13 @@ namespace report_lp\local\measures;
 defined('MOODLE_INTERNAL') || die();
 
 use report_lp\local\measure;
+use report_lp\local\userlist;
 
 class checklist_complete extends measure {
+
+    public function get_data_for_users(userlist $userlist) : ? array {
+        return [];
+    }
 
     public function get_default_label(): ? string {
         return null;

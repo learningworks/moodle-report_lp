@@ -19,6 +19,7 @@ namespace report_lp\local\measures;
 defined('MOODLE_INTERNAL') || die();
 
 use report_lp\local\measure;
+use report_lp\local\userlist;
 
 /**
  * The date and time learner last accessed a course instance.
@@ -31,7 +32,11 @@ class last_course_access extends measure {
 
     protected $shortname = 'last_course_access';
 
-    public function get_default_label(): ?string {
+    public function get_data_for_users(userlist $userlist) : ? array {
+        return [];
+    }
+
+    public function get_default_label(): ? string {
         return null;
     }
 
