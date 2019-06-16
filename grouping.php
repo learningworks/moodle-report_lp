@@ -46,9 +46,8 @@ $mform = new report_lp\local\forms\item(
 $renderer = $PAGE->get_renderer('report_lp');
 if ($mform->is_submitted()) {
     $data = $mform->get_submitted_data();
-    if ($data->usecustomlabel) {
-        $grouping->get_configuration()->set('label', $data->label);
-    }
+    $grouping->get_configuration()->set('usecustomlabel', $data->usecustomlabel);
+    $grouping->get_configuration()->set('customlabel', $data->customlabel);
     $grouping->get_configuration()->set('visibletosummary', $data->visibletosummary);
     $grouping->get_configuration()->set('visibletoinstance', $data->visibletoinstance);
     $grouping->get_configuration()->set('visibletolearner', $data->visibletolearner);
