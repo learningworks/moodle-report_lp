@@ -15,37 +15,37 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- *  DESCRIPTION
+ * Main Moodle plugin library.
  *
- * @package   {{PLUGIN_NAME}} {@link https://docs.moodle.org/dev/Frankenstyle}
- * @copyright 2015 LearningWorks Ltd {@link http://www.learningworks.co.nz}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     report_lp
+ * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-use report_lp\local\measures\last_course_access;
 
 defined('MOODLE_INTERNAL') || die;
 
 /**
  * This function extends the navigation with the report items
  *
- * @param navigation_node $navigation The navigation node to extend
- * @param stdClass $course The course to object for the report
- * @param stdClass $context The context of the course
+ * @param $navigation
+ * @param $course
+ * @param $context
+ * @throws coding_exception
+ * @throws moodle_exception
  */
 function report_lp_extend_navigation_course($navigation, $course, $context) {
-    global $CFG;
-
     if (has_capability('report/lp:view', $context) and $course->id != SITEID) {
-        $url = new moodle_url('/report/lp/configure.php', array('id' => $course->id));
-        $label = get_string('configureprogresstracking', 'report_lp');
+        $url = new moodle_url('/report/lp/configure.php', array('courseid' => $course->id));
+        $label = get_string('pluginname', 'report_lp');
         $navigation->add($label, $url, navigation_node::TYPE_SETTING,
             null, null, new pix_icon('icon', '', 'report_lp'));
     }
 }
 
-
 /**
+ * The main source of truth for supported measures. This as where new measures must be
+ * added if order for them to be used by the plugin.
+ *
  * @return array
  */
 function report_lp_get_supported_measures() {
