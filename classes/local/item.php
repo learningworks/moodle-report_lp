@@ -73,7 +73,6 @@ abstract class item {
      */
     abstract public function get_description() : string;
 
-
     /**
      * Child class to overide if supports feature. Only call if has_icon().
      *
@@ -81,6 +80,22 @@ abstract class item {
      */
     public function get_icon() : ? pix_icon {
         return null;
+    }
+
+    /**
+     * Gets custom label if used or will get contretes default.
+     *
+     * @return string
+     * @throws \coding_exception
+     */
+    public function get_label() : string {
+        if (is_null($this->configuration)) {
+            return $this->get_default_label();
+        }
+        if ($this->configuration->get('usecustomlabel')) {
+            return $this->configuration->get('customlabel');
+        }
+        return $this->get_default_label();
     }
 
     /**
