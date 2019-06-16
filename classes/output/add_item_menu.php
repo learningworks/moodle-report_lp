@@ -56,7 +56,7 @@ class add_item_menu implements renderable, templatable {
         foreach ($this->measureslist as $measure) {
             $item = new stdClass();
             $item->measurename = $measure->get_name();
-            $item->measureurl = url::get_add_item_url($this->course, $measure)->out(false);
+            $item->measureurl = url::get_measure_url($this->course, 0, $measure->get_short_name())->out(false);
             $data->measuresdropdownitems[] = $item;
         }
         return $data;
