@@ -22,8 +22,18 @@ class grouping extends item {
 
     protected $shortname = 'grouping';
 
-    public function get_default_label(): ? string {
-        return get_string('grouping', 'report_lp');
+    public function get_default_label() : ? string {
+        $configuration = $this->get_configuration();
+        if (is_null($configuration)) {
+            $id = 0;
+        } else {
+            $id = $configuration->get('id');
+        }
+        $number = '...n';
+        if ($id > 0) {
+            $number = $id;
+        }
+        return get_string('defaultgroupinglabel', 'report_lp', $number);
     }
 
     public function get_name(): string {
