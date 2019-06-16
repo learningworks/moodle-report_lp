@@ -65,9 +65,9 @@ class item extends moodleform {
         $mform->addElement('static', 'defaultlabel', get_string('defaultlabel', 'report_lp'));
 
         $mform->addElement('advcheckbox', 'usecustomlabel', '', get_string('usecustomlabel', 'report_lp'), null, [0, 1]);
-        $mform->addElement('text', 'label', get_string('customlabel', 'report_lp'));
-        $mform->setType('label', PARAM_TEXT);
-        $mform->disabledIf('label', 'usecustomlabel');
+        $mform->addElement('text', 'customlabel', get_string('customlabel', 'report_lp'));
+        $mform->setType('customlabel', PARAM_TEXT);
+        $mform->disabledIf('customlabel', 'usecustomlabel');
 
         $mform->addElement('advcheckbox', 'visibletosummary', '', get_string('visibletosummary', 'report_lp'), null, [0, 1]);
         $mform->addElement('advcheckbox', 'visibletoinstance', '', get_string('visibletoinstance', 'report_lp'), null, [0, 1]);
@@ -89,8 +89,8 @@ class item extends moodleform {
             'defaultlabel' => $this->item->get_default_label(),
             'id' => $data->id,
             'courseid' => $data->courseid,
-            'usecustomlabel' => empty($data->label) ? 0 : 1,
-            'label' => $data->label,
+            'usecustomlabel' => $data->usecustomlabel,
+            'customlabel' => $data->customlabel,
             'visibletosummary' => $data->visibletosummary,
             'visibletoinstance' => $data->visibletoinstance,
             'visibletolearner' => $data->visibletolearner

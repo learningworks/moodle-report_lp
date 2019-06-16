@@ -44,7 +44,11 @@ class item_configuration extends persistent {
             'shortname' => [
                 'type' => PARAM_TEXT
             ],
-            'label' => [
+            'usecustomlabel' => [
+                'type' => PARAM_INT,
+                'default' => 0
+            ],
+            'customlabel' => [
                 'type' => PARAM_TEXT,
                 'null' => NULL_ALLOWED,
                 'default' => null
