@@ -33,11 +33,11 @@ class learner_progress {
      */
     protected $course;
 
-    protected $measureslist;
+    protected $measurelist;
 
-    public function __construct(stdClass $course, measures_list $measureslist) {
+    public function __construct(stdClass $course, measurelist $measurelist) {
         $this->course = $course;
-        $this->measureslist = $measureslist;
+        $this->measurelist = $measurelist;
     }
 
     public function get_items() {

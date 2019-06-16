@@ -27,13 +27,13 @@ $url = new moodle_url('/report/lp/configure.php', ['courseid' => $courseid]);
 $PAGE->set_url($url);
 
 $measures = report_lp_get_supported_measures();
-$measureslist = new report_lp\local\measures_list($measures);
-$learnerprogress = new report_lp\local\learner_progress($course, $measureslist);
+$measurelist = new report_lp\local\measurelist($measures);
+$learnerprogress = new report_lp\local\learner_progress($course, $measurelist);
 
 
 $renderer = $PAGE->get_renderer('report_lp');
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('configurereportfor', 'report_lp', $course->fullname));
-echo $renderer->render(new report_lp\output\add_item_menu($course, $measureslist));
+echo $renderer->render(new report_lp\output\add_item_menu($course, $measurelist));
 echo '<br><br>';
 echo $OUTPUT->footer();
