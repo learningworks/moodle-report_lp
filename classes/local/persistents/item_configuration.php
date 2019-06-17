@@ -26,6 +26,7 @@ namespace report_lp\local\persistents;
 defined('MOODLE_INTERNAL') || die();
 
 use core\persistent;
+use coding_exception;
 
 class item_configuration extends persistent {
 
@@ -85,7 +86,7 @@ class item_configuration extends persistent {
                 'type' => PARAM_INT,
                 'default' => 1
             ],
-            'extraconfigdata' => [
+            'extraconfigurationdata' => [
                 'type' => PARAM_TEXT,
                 'null' => NULL_ALLOWED,
                 'default' => null
@@ -97,12 +98,35 @@ class item_configuration extends persistent {
      * Hook to execute after a create.
      */
     protected function after_create() {
+        // Handle path and depth. Currently only supporting depth of 2 maximum.
         $id = $this->raw_get('id');
-        $path = '/' . $id;
+        $parentitemid = $this->raw_get('parentitemid');
+        if ($parentitemid <= 0) {
+            $path = '/' . $id;
+            $depth = 1;
+        } else {
+            $path = '/' . $parentitemid . '/' . $id;
+            $depth = 2;
+        }
         $this->raw_set('path', $path);
+        $this->raw_set('depth', $depth);
+        // Handle display order.
         $displayorder = $id * 10000;
         $this->raw_set('displayorder', $displayorder);
         $this->update();
+    }
+
+    protected function get_extraconfigurationdata() {
+        $json = $this->raw_get('extraconfigurationdata');
+        return json_decode($json);
+    }
+
+    protected function set_extraconfigurationdata($value) {
+        if (!(is_array($value) || is_object($value))) {
+            throw new coding_exception('Datatype array or object required');
+        }
+        $json = json_encode($value);
+        return $this->raw_set('extraconfigurationdata', $json);
     }
 
 }
