@@ -41,20 +41,24 @@ $PAGE->set_context($systemcontext);
 $PAGE->set_url($pageurl);
 $mform = new report_lp\local\forms\item(
     null,
-    ['item' => $grouping]
+    [
+        'course' => $course,
+        'item' => $grouping
+    ]
 );
 $renderer = $PAGE->get_renderer('report_lp');
 if ($mform->is_submitted()) {
-    $data = $mform->get_submitted_data();
-    $grouping->get_configuration()->set('usecustomlabel', $data->usecustomlabel);
-    $grouping->get_configuration()->set('customlabel', $data->customlabel);
-    $grouping->get_configuration()->set('visibletosummary', $data->visibletosummary);
-    $grouping->get_configuration()->set('visibletoinstance', $data->visibletoinstance);
-    $grouping->get_configuration()->set('visibletolearner', $data->visibletolearner);
-    $grouping->get_configuration()->save();
-    redirect($configurl);
+    $data = $mform->get_data();
+    if ($data) {
+        $grouping->get_configuration()->set('usecustomlabel', $data->usecustomlabel);
+        $grouping->get_configuration()->set('customlabel', $data->customlabel);
+        $grouping->get_configuration()->set('visibletosummary', $data->visibletosummary);
+        $grouping->get_configuration()->set('visibletoinstance', $data->visibletoinstance);
+        $grouping->get_configuration()->set('visibletolearner', $data->visibletolearner);
+        $grouping->get_configuration()->save();
+        redirect($configurl);
+    }
 }
-
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('configuregrouping', 'report_lp'));
 $mform->display();
