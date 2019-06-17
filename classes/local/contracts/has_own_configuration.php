@@ -25,9 +25,42 @@ namespace report_lp\local\contracts;
 
 defined('MOODLE_INTERNAL') || die();
 
-use moodleform;
+use stdClass;
+use MoodleQuickForm;
 
 interface has_own_configuration {
-    public function extend_mform(moodleform $mform) : moodleform;
-    public function process_mform_data(moodleform $mform) : string;
+
+    /**
+     * Extend passed in MoodleQuickForm.
+     *
+     * @param MoodleQuickForm $mform
+     * @return mixed
+     */
+    public function moodlequickform_extend(MoodleQuickForm &$mform);
+
+    /**
+     * Valid data and files, called from within main item form validation.
+     *
+     * @param $data
+     * @param $files
+     * @return array
+     */
+    public function moodlequickform_validation($data, $files) : array;
+
+    /**
+     * Use to filter specific extra configuration data to be stored in
+     * extraconfigurationdata column.
+     *
+     * @param $data
+     * @return stdClass
+     */
+    public function moodlequickform_get_extra_configuration_data($data) : stdClass;
+
+    /**
+     * Get any default values.
+     *
+     * @return array
+     */
+    public function moodlequickform_get_extra_configuration_defaults() : array;
+
 }
