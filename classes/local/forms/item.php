@@ -20,9 +20,16 @@ defined('MOODLE_INTERNAL') || die();
 
 use coding_exception;
 use moodleform;
+use report_lp\local\measure;
+use report_lp\local\measurelist;
+use stdClass;
 use report_lp\local\persistents\item_configuration;
+use report_lp\local\factories\item as item_factory;
+use report_lp\local\contracts\has_own_configuration;
 
 class item extends moodleform {
+
+    protected $course;
 
     protected $item;
 
@@ -48,10 +55,23 @@ class item extends moodleform {
         global $CFG;
         // Need to have repository library and form element loaded for this to work.
         require_once($CFG->dirroot . '/repository/lib.php');
+        // Check and set course object.
+        if (!array_key_exists('course', $customdata)) {
+            throw new coding_exception("The custom data 'course' key must be set.");
+        }
+        $course = $customdata['course'];
+        if (!($course instanceof stdClass)) {
+            throw new coding_exception("The course variable must be valid course object.");
+        }
+        $this->course = $course;
+        // Check and set item class.
         if (!array_key_exists('item', $customdata)) {
             throw new coding_exception("The custom data 'item' key must be set.");
         }
         $item = $customdata['item'];
+        if (!is_subclass_of($item, 'report_lp\local\item')) {
+            throw new coding_exception("The variable 'item' must be of subclass of item class.");
+        }
         $this->item = $item;
         parent::__construct($action, $customdata, $method, $target, $attributes, $editable, $ajaxformdata);
         $this->set_data($this->get_default_values());
@@ -61,26 +81,43 @@ class item extends moodleform {
         global $DB;
 
         $mform = $this->_form;
-        //$mform->addElement('header', 'general', get_string('general'));
-        $mform->addElement('static', 'defaultlabel', get_string('defaultlabel', 'report_lp'));
 
+        $mform->addElement('header', 'general', get_string('generalsettings', 'report_lp'));
+
+        if ($this->item instanceof measure) {
+            $options = $this->get_grouping_options();
+            $mform->addElement('select', 'parentitemid', get_string('parentgrouping', 'report_lp'), $options);
+        }
+
+        $mform->addElement('static', 'defaultlabel', get_string('defaultlabel', 'report_lp'));
         $mform->addElement('advcheckbox', 'usecustomlabel', '', get_string('usecustomlabel', 'report_lp'), null, [0, 1]);
         $mform->addElement('text', 'customlabel', get_string('customlabel', 'report_lp'));
         $mform->setType('customlabel', PARAM_TEXT);
         $mform->disabledIf('customlabel', 'usecustomlabel');
-
         $mform->addElement('advcheckbox', 'visibletosummary', '', get_string('visibletosummary', 'report_lp'), null, [0, 1]);
         $mform->addElement('advcheckbox', 'visibletoinstance', '', get_string('visibletoinstance', 'report_lp'), null, [0, 1]);
         $mform->addElement('advcheckbox', 'visibletolearner', '', get_string('visibletolearner', 'report_lp'), null, [0, 1]);
-
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
         $mform->addElement('hidden', 'courseid');
         $mform->setType('courseid', PARAM_INT);
+        $mform->addElement('hidden', 'shortname');
+        $mform->setType('shortname', PARAM_ALPHANUMEXT);
+
+        // Has own configuration settings, apply form custom elements.
+        if ($this->item instanceof has_own_configuration) {
+            $mform->addElement('header', 'specific', get_string('specificsettings', 'report_lp'));
+            $this->item->moodlequickform_extend($mform);
+        }
 
         $this->add_action_buttons();
     }
 
+    /**
+     * Set default values on form elements.
+     *
+     * @return array
+     */
     protected function get_default_values() {
         /** @var item_configuration $itemconfiguration */
         $itemconfiguration = $this->item->get_configuration();
@@ -89,13 +126,73 @@ class item extends moodleform {
             'defaultlabel' => $this->item->get_default_label(),
             'id' => $data->id,
             'courseid' => $data->courseid,
+            'shortname' => $data->shortname,
             'usecustomlabel' => $data->usecustomlabel,
             'customlabel' => $data->customlabel,
+            'parentitemid' => $data->parentitemid,
             'visibletosummary' => $data->visibletosummary,
             'visibletoinstance' => $data->visibletoinstance,
-            'visibletolearner' => $data->visibletolearner
+            'visibletolearner' => $data->visibletolearner,
         ];
+        // Include custom defaults for item with own configuration.
+        if ($this->item instanceof has_own_configuration) {
+            $itemdefaults = $this->item->moodlequickform_get_extra_configuration_defaults();
+            $defaults = array_merge($itemdefaults, $defaults);
+        }
         return $defaults;
-
     }
+
+    /**
+     * Make a menu of groupings.
+     *
+     * @return array
+     * @throws coding_exception
+     */
+    protected function get_grouping_options() {
+        $options = [0 => format_text($this->course->fullname)] ;
+        $itemfactory = new item_factory($this->course, new measurelist(report_lp_get_supported_measures()));
+        foreach ($itemfactory->get_groupings() as $grouping) {
+            $configuration = $grouping->get_configuration();
+            $options[$configuration->get('id')] = $grouping->get_label();
+        }
+        return $options;
+    }
+
+    /**
+     * Validation, hook in validation call backs for any measures that have own
+     * configuration.
+     *
+     * @param array $data
+     * @param array $files
+     * @return array
+     */
+    public function validation($data, $files) {
+        $errors = parent::validation($data, $files);
+        $itemerrors = [];
+        if ($this->item instanceof has_own_configuration) {
+            $itemerrors = $this->item->moodlequickform_validation($data, $files);
+        }
+        return array_merge($errors, $itemerrors);
+    }
+
+    /**
+     * Get extra configuration data for any measures implementing their own
+     * configuration via call backs. Based of get_data().
+     *
+     * @return array
+     */
+    public function get_extra_configuration_data() {
+        if ($this->item instanceof has_own_configuration) {
+            $mform = $this->_form;
+            if (!$this->is_cancelled() and $this->is_submitted() and $this->is_validated()) {
+                $data = $mform->exportValues();
+                unset($data['sesskey']);
+                unset($data['_qf__'.$this->_formname]);
+                unset($data['submitbutton']);
+                return $this->item->moodlequickform_get_extra_configuration_data($data);
+            }
+        }
+        return [];
+    }
+
 }
