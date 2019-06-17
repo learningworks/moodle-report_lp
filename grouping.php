@@ -51,7 +51,7 @@ if ($mform->is_submitted()) {
     $data = $mform->get_data();
     if ($data) {
         $grouping->get_configuration()->set('usecustomlabel', $data->usecustomlabel);
-        $grouping->get_configuration()->set('customlabel', $data->customlabel);
+        $grouping->get_configuration()->set('customlabel', ($data->usecustomlabel) ? $data->customlabel : '');
         $grouping->get_configuration()->set('visibletosummary', $data->visibletosummary);
         $grouping->get_configuration()->set('visibletoinstance', $data->visibletoinstance);
         $grouping->get_configuration()->set('visibletolearner', $data->visibletolearner);
