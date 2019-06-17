@@ -71,3 +71,12 @@ $string['visibletosummary'] = 'Display in the summary report';
 $string['visibletoinstance'] = 'Display in the learner instance report';
 $string['visibletolearner'] = 'Display to learner';
 $string['configuregrouping'] = 'Configure grouping';
+$string['configuremeasure'] = 'Configure measure {$a}';
+
+$string['defaultgroupinglabel'] = 'Grouping {$a}';
+
+$string['parentgrouping'] = 'Parent grouping';
+$string['generalsettings'] = 'General settings';
+$string['specificsettings'] = 'Specific settings';
+
+$string['pleasechoose'] = 'Please choose an item from the list';
