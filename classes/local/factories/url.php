@@ -61,7 +61,7 @@ class url {
         return $url;
     }
 
-    public static function get_measure_url(stdclass $course, int $id = 0, string $measureshortname = null) : moodle_url {
+    public static function get_measure_url(stdclass $course, int $id = 0, string $shortname = null) : moodle_url {
         $url =  new moodle_url('/report/lp/measure.php',
             [
                 'courseid' => $course->id,
@@ -70,8 +70,8 @@ class url {
         if ($id > 0) {
             $url->param('id', $id);
         }
-        if (!is_null($measureshortname)) {
-            $url->param('measureshortname', $measureshortname);
+        if (!is_null($shortname)) {
+            $url->param('shortname', $shortname);
         }
         return $url;
     }
