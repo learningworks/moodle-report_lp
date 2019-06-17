@@ -20,7 +20,7 @@ require_once($CFG->libdir . '/formslib.php');
 
 $id = optional_param('id', 0, PARAM_INT);
 $courseid = optional_param('courseid', 0, PARAM_INT);
-$measure = optional_param('measure', null, PARAM_ALPHAEXT);
+$shortname = optional_param('shortname', null, PARAM_ALPHAEXT);
 if ($id) {
     $record = $DB->get_record('report_lp_items', ['id' => $id], '*', MUST_EXIST);
     $courseid = $record->courseid;
@@ -30,8 +30,44 @@ if ($id) {
 if ($courseid <= 0) {
     throw new moodle_exception('Bad courseid');
 }
+
 $course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
+$coursecontext = context_course::instance($course->id);
 $systemcontext = context_system::instance();
+
+$measurelist = new report_lp\local\measurelist(report_lp_get_supported_measures());
+$itemfactory = new report_lp\local\factories\item($course, $measurelist);
+$measure = $itemfactory->create_measure($id, $record, $shortname);
+
+$pageurl = report_lp\local\factories\url::get_measure_url($course, $id, $shortname);
+$configurl = report_lp\local\factories\url::get_config_url($course);
+require_capability('report/lp:configure', $systemcontext);
+$PAGE->set_context($systemcontext);
+$PAGE->set_url($pageurl);
+$mform = new report_lp\local\forms\item(
+    null,
+    [
+        'course' => $course,
+        'item' => $measure
+    ]
+);
+$renderer = $PAGE->get_renderer('report_lp');
+if ($mform->is_submitted()) {
+    $data = $mform->get_data();
+    if ($data) {
+        $measure->get_configuration()->set('usecustomlabel', $data->usecustomlabel);
+        $measure->get_configuration()->set('customlabel', isset($data->customlabel) ? $data->customlabel : '');
+        $measure->get_configuration()->set('parentitemid', $data->parentitemid);
+        $measure->get_configuration()->set('visibletosummary', $data->visibletosummary);
+        $measure->get_configuration()->set('visibletoinstance', $data->visibletoinstance);
+        $measure->get_configuration()->set('visibletolearner', $data->visibletolearner);
+        $extradata = $mform->get_extra_configuration_data();
+        $measure->get_configuration()->set('extraconfigurationdata', $extradata);
+        $measure->get_configuration()->save();
+        redirect($configurl);
+    }
+}
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('configuremeasure', 'report_lp'));
+echo $OUTPUT->heading(get_string('configuremeasure', 'report_lp', $measure->get_name()));
+$mform->display();
 echo $OUTPUT->footer($course);
