@@ -27,6 +27,9 @@ use report_lp\local\persistents\item_configuration;
 
 class item {
 
+    /**
+     * @var stdClass $course Associated course.
+     */
     protected $course;
 
     /**
@@ -87,6 +90,23 @@ class item {
         }
         $measure->set_configuration($itemconfiguration);
         return $measure;
+    }
+
+    /**
+     * @return array
+     */
+    public function get_groupings() {
+        $groupings = [];
+        $itemconfigurations = item_configuration::get_records(
+            ['courseid' => $this->course->id],
+            'displayorder'
+        );
+        foreach ($itemconfigurations as $itemconfiguration) {
+            $grouping = new grouping();
+            $grouping->set_configuration($itemconfiguration);
+            $groupings[] = $grouping;
+        }
+        return $groupings;
     }
 
 }
