@@ -125,4 +125,27 @@ class item {
         return $groupings;
     }
 
+    /**
+     * Builds array of groupings and measures ordered by depth and sort order.
+     *
+     * @param bool $keyed
+     * @return array
+     * @throws \dml_exception
+     */
+    public function get_items(bool $keyed = true) : array {
+        $items = [];
+        $configurations = item_configuration::get_ordered_items($this->course->id);
+        foreach ($configurations as $configuration) {
+            $classname = $configuration->get('classname');
+            $item = new $classname;
+            $item->set_configuration($configuration);
+            if ($keyed) {
+                $items[$configuration->get('id')] = $item;
+            } else {
+                array_push($items, $item);
+            }
+        }
+        return $items;
+    }
+
 }
