@@ -16,18 +16,18 @@
 
 namespace report_lp\local\persistents;
 
-/**
- *
- * @package     report_lp
- * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 defined('MOODLE_INTERNAL') || die();
 
 use core\persistent;
 use coding_exception;
 
+/**
+ * Item model.
+ *
+ * @package     report_lp
+ * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class item_configuration extends persistent {
 
     /** The associated table name. */
@@ -173,24 +173,6 @@ class item_configuration extends persistent {
     }
 
     /**
-     * Depth is constructed internally.
-     *
-     * @return $this
-     */
-    protected function set_depth() {
-        return $this;
-    }
-
-    /**
-     * Path is constructed internally.
-     *
-     * @return $this
-     */
-    protected function set_path() {
-        return $this;
-    }
-
-    /**
      * Extra configuration is stored as JSON. Decode JSON before returning.
      *
      * @return mixed
@@ -214,6 +196,46 @@ class item_configuration extends persistent {
         }
         $json = json_encode($value);
         return $this->raw_set('extraconfigurationdata', $json);
+    }
+
+    /**
+     * Need to perform multi-sort.
+     *
+     * @param int $courseid
+     * @return array
+     * @throws \dml_exception
+     */
+    public static function get_ordered_items(int $courseid) {
+        global $DB;
+        $instances = [];
+        $records = $DB->get_records(
+            static::TABLE,
+            ['courseid' => $courseid],
+            'depth, sortorder'
+        );
+        foreach ($records as $record) {
+            $newrecord = new static(0, $record);
+            array_push($instances, $newrecord);
+        }
+        return $instances;
+    }
+
+    /**
+     * Depth is constructed internally.
+     *
+     * @return $this
+     */
+    protected function set_depth() {
+        return $this;
+    }
+
+    /**
+     * Path is constructed internally.
+     *
+     * @return $this
+     */
+    protected function set_path() {
+        return $this;
     }
 
 }
