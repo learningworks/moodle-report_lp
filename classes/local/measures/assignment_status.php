@@ -61,7 +61,6 @@ class assignment_status extends measure implements has_own_configuration {
         return get_string('assignmentstatus:measure:name', 'report_lp');
     }
 
-
     public function get_description(): string {
         return get_string('assignmentstatus:measure:description', 'report_lp');
     }

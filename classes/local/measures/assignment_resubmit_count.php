@@ -19,6 +19,7 @@ namespace report_lp\local\measures;
 defined('MOODLE_INTERNAL') || die();
 
 use moodleform;
+use MoodleQuickForm;
 use report_lp\local\contracts\has_own_configuration;
 use report_lp\local\measure;
 use report_lp\local\userlist;
@@ -31,7 +32,7 @@ use report_lp\local\userlist;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class assignment_resubmit_count extends measure implements has_own_configuration {
+class assignment_resubmit_count extends measure {
 
     public function get_data_for_users(userlist $userlist) : ? array {
         return [];
@@ -49,10 +50,5 @@ class assignment_resubmit_count extends measure implements has_own_configuration
         return get_string('assignment_resubmit_count:measure:description', 'report_lp');
     }
 
-    public function extend_mform(moodleform $mform) : moodleform {
-    }
-
-    public function process_mform_data(moodleform $mform) : string {
-    }
 
 }

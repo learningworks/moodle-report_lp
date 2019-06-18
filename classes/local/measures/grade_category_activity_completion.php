@@ -25,14 +25,12 @@ namespace report_lp\local\measures;
 
 defined('MOODLE_INTERNAL') || die();
 
-use moodleform;
+use MoodleQuickForm;
 use report_lp\local\contracts\has_own_configuration;
 use report_lp\local\measure;
 use report_lp\local\userlist;
 
-class grade_category_activity_completion extends measure implements has_own_configuration {
-
-    protected $shortname = 'grade_category_activity_completion';
+class grade_category_activity_completion extends measure{
 
     public function get_data_for_users(userlist $userlist) : ? array {
         return [];
@@ -50,11 +48,4 @@ class grade_category_activity_completion extends measure implements has_own_conf
         return get_string('grade_category_activity_completion:measure:description', 'report_lp');
     }
 
-    public function extend_mform(moodleform $mform) : moodleform {
-
-    }
-
-    public function process_mform_data(moodleform $mform) : string {
-
-    }
 }
