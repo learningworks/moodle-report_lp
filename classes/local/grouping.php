@@ -18,8 +18,18 @@ namespace report_lp\local;
 
 defined('MOODLE_INTERNAL') || die();
 
-class grouping extends item {
+use report_lp\local\contracts\has_children;
 
+class grouping extends item implements has_children {
+
+    /**
+     * @var array $items Store for child items.
+     */
+    protected $items = [];
+
+    /**
+     * @var string $shortname Unique short name.
+     */
     protected $shortname = 'grouping';
 
     public function get_default_label() : ? string {
@@ -29,9 +39,10 @@ class grouping extends item {
         } else {
             $id = $configuration->get('id');
         }
-        $number = '...n';
         if ($id > 0) {
             $number = $id;
+        } else {
+            $number = get_string('dotn', 'report_lp');
         }
         return get_string('defaultgroupinglabel', 'report_lp', $number);
     }
@@ -42,5 +53,29 @@ class grouping extends item {
 
     public function get_description(): string {
         return get_string('grouping:measure:description', 'report_lp');
+    }
+
+    public function add_item(item $item) {
+        $this->items[] = $item;
+    }
+
+    public function has_items() {
+        return (bool) $this->count();
+    }
+
+    public function has_children() : bool {
+        return $this->has_items();
+    }
+
+    public function count() : int {
+        return count($this->items);
+    }
+
+    public function get_items() {
+        return $this->items;
+    }
+
+    public function get_children() : array {
+        return $this->get_items();
     }
 }
