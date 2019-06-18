@@ -81,3 +81,4 @@ $string['specificsettings'] = 'Specific settings';
 
 $string['pleasechoose'] = 'Please choose an item from the list';
 $string['assignmentstatusdefaultlabel'] = 'Assignment name';
+$string['dotn'] = '...n';
