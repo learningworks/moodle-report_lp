@@ -32,7 +32,8 @@ use ReflectionClass;
  */
 abstract class item {
 
-    protected $shortname = null;
+    /** @var null SHORT_NAME Can be used to override unique short name. */
+    const SHORT_NAME = null;
 
     /**
      * @var item_configuration $configuration Holds configuration information associated with this item.
@@ -50,12 +51,13 @@ abstract class item {
      * @return string
      * @throws \ReflectionException
      */
-    public function get_short_name() : string {
-        if (is_null($this->shortname)) {
-            $reflection = new ReflectionClass($this);
-            $this->shortname = $reflection->getShortName();
+    public static function get_short_name() : string {
+        $item = new static();
+        if (is_null(static::SHORT_NAME)) {
+            $reflection = new ReflectionClass($item);
+             return $reflection->getShortName();
         }
-        return $this->shortname;
+        return static::SHORT_NAME;
     }
 
     /**
@@ -125,8 +127,13 @@ abstract class item {
         $this->configuration = $configuration;
     }
 
-    final public function get_class_name() : string {
-        return get_class($this);
+    /**
+     * Relative class name.
+     *
+     * @return string
+     */
+    final public static function get_class_name() : string {
+        return get_class(new static());
     }
 
     /**
