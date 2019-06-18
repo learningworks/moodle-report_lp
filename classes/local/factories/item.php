@@ -105,15 +105,20 @@ class item {
 
     /**
      * @return array
+     * @throws \ReflectionException
+     * @throws coding_exception
      */
     public function get_groupings() {
         $groupings = [];
         $itemconfigurations = item_configuration::get_records(
-            ['courseid' => $this->course->id],
-            'displayorder'
+            ['courseid' => $this->course->id]
         );
         foreach ($itemconfigurations as $itemconfiguration) {
             $grouping = new grouping();
+            // Only want groupings.
+            if ($grouping->get_short_name() != $itemconfiguration->get('shortname')) {
+                continue;
+            }
             $grouping->set_configuration($itemconfiguration);
             $groupings[] = $grouping;
         }
