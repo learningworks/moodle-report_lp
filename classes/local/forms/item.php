@@ -89,6 +89,7 @@ class item extends moodleform {
             $mform->addElement('select', 'parentitemid', get_string('parentgrouping', 'report_lp'), $options);
         }
 
+        $mform->addElement('static', 'description', get_string('description'));
         $mform->addElement('static', 'defaultlabel', get_string('defaultlabel', 'report_lp'));
         $mform->addElement('advcheckbox', 'usecustomlabel', '', get_string('usecustomlabel', 'report_lp'), null, [0, 1]);
         $mform->addElement('text', 'customlabel', get_string('customlabel', 'report_lp'));
@@ -123,6 +124,7 @@ class item extends moodleform {
         $itemconfiguration = $this->item->get_configuration();
         $data = $itemconfiguration->to_record();
         $defaults = [
+            'description' => $this->item->get_description(),
             'defaultlabel' => $this->item->get_default_label(),
             'id' => $data->id,
             'courseid' => $data->courseid,
