@@ -33,7 +33,7 @@ use ReflectionClass;
 abstract class item {
 
     /** @var null SHORT_NAME Can be used to override unique short name. */
-    const SHORT_NAME = null;
+    protected const SHORT_NAME = null;
 
     /**
      * @var item_configuration $configuration Holds configuration information associated with this item.
