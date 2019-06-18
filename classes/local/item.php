@@ -18,6 +18,7 @@ namespace report_lp\local;
 
 defined('MOODLE_INTERNAL') || die();
 
+use coding_exception;
 use moodle_url;
 use pix_icon;
 use report_lp\local\persistents\item_configuration;
@@ -48,6 +49,8 @@ abstract class item {
     abstract public function get_name() : string;
 
     /**
+     * Use reflection class to get extending classes shortname.
+     *
      * @return string
      * @throws \ReflectionException
      */
@@ -119,11 +122,22 @@ abstract class item {
     }
 
     /**
-     * Set the associated configuration persistent for item.
+     * Validate and set the associated configuration persistent for item.
      *
      * @param item_configuration $configuration
+     * @throws \ReflectionException
+     * @throws coding_exception
      */
     final public function set_configuration(item_configuration $configuration) {
+        if ($configuration->get('courseid') <= 0) {
+            throw new coding_exception('Invalid courseid in configuration');
+        }
+        if ($configuration->get('classname') != static::get_class_name()) {
+            throw new coding_exception('Invalid class name in configuration');
+        }
+        if ($configuration->get('shortname') != static::get_short_name()) {
+            throw new coding_exception('Invalid short name in configuration');
+        }
         $this->configuration = $configuration;
     }
 
