@@ -19,6 +19,7 @@ namespace report_lp\local;
 defined('MOODLE_INTERNAL') || die();
 
 use stdClass;
+use report_lp\local\factories\item as item_factory;
 
 /**
  *
@@ -33,14 +34,51 @@ class learner_progress {
      */
     protected $course;
 
+    protected $itemfactory;
+
     protected $measurelist;
 
     public function __construct(stdClass $course, measurelist $measurelist) {
         $this->course = $course;
         $this->measurelist = $measurelist;
+        $this->itemfactory = new item_factory($course, $measurelist);
     }
 
-    public function get_items() {
-
+    public function build_item_tree() {
+        $tree = [];
+        $reference = [];
+        /** @var item[] $items */
+        $items = $this->itemfactory->get_items();
+        while ($items) {
+            $item = array_shift($items);
+            $configuration = $item->get_configuration();
+            $parentitemid = $configuration->get('parentitemid');
+            if ($parentitemid == 0) {
+                $id = $configuration->get('id');
+                $tree[] = $item;
+                $reference[$id] = static::array_key_last($tree); // Available >= PHP 7.3.
+            } else {
+                $parentitem = $tree[$reference[$parentitemid]];
+                $parentisgrouping = $parentitem->get_configuration()->get('isgrouping');
+                if ($parentisgrouping) {
+                    $parentitem->add_item($item);
+                }
+            }
+        }
+        return $tree;
     }
+
+    /**
+     * Helper method for PHP emulates PHP 7.3 method.
+     *
+     * @param $array
+     * @return |null
+     */
+    public static function array_key_last($array) {
+        if (!is_array($array) || empty($array)) {
+            return null;
+        }
+        return array_keys($array)[count($array) - 1];
+    }
+
 }
