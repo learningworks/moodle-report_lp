@@ -58,11 +58,11 @@ class item {
         $configuration = new item_configuration($id, $record);
         if ($id <= 0) {
             $configuration->set('courseid', $this->course->id);
-            $configuration->set('classname', $grouping->get_class_name());
-            $configuration->set('shortname', $grouping->get_short_name());
+            $configuration->set('classname', $grouping::get_class_name());
+            $configuration->set('shortname', $grouping::get_short_name());
             $configuration->set('isgrouping', 1);
         } else {
-            if ($grouping->get_short_name() != $configuration->get('shortname')) {
+            if ($grouping::get_short_name() != $configuration->get('shortname')) {
                 throw new moodle_exception('You cannot use a grouping class for a existing measure');
             }
         }
@@ -89,12 +89,12 @@ class item {
             }
             $measure = $this->measurelist->find_by_short_name($shortname);
             $configuration->set('courseid', $this->course->id);
-            $configuration->set('classname', $measure->get_class_name());
-            $configuration->set('shortname', $measure->get_short_name());
+            $configuration->set('classname', $measure::get_class_name());
+            $configuration->set('shortname', $measure::get_short_name());
             $configuration->set('isgrouping', 1);
         } else {
             $measure = $this->measurelist->find_by_short_name($configuration->get('shortname'));
-            if ($measure->get_short_name() != $configuration->get('shortname')) {
+            if ($measure::get_short_name() != $configuration->get('shortname')) {
                 throw new moodle_exception('Non matching measure and configuration');
             }
 
@@ -104,6 +104,8 @@ class item {
     }
 
     /**
+     * Get all groupings for the course.
+     *
      * @return array
      * @throws \ReflectionException
      * @throws coding_exception
@@ -114,11 +116,11 @@ class item {
             ['courseid' => $this->course->id]
         );
         foreach ($itemconfigurations as $itemconfiguration) {
-            $grouping = new grouping();
             // Only want groupings.
-            if ($grouping->get_short_name() != $itemconfiguration->get('shortname')) {
+            if (grouping::get_short_name() != $itemconfiguration->get('shortname')) {
                 continue;
             }
+            $grouping = new grouping();
             $grouping->set_configuration($itemconfiguration);
             $groupings[] = $grouping;
         }
