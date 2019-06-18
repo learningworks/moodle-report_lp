@@ -30,21 +30,19 @@ use report_lp\local\userlist;
  */
 class last_course_access extends measure {
 
-    protected $shortname = 'last_course_access';
-
     public function get_data_for_users(userlist $userlist) : ? array {
         return [];
     }
 
     public function get_default_label(): ? string {
-        return null;
+        return get_string('lastcourseaccess:measure:label', 'report_lp');
     }
 
     public function get_name(): string {
-        return get_string('last_course_access:measure:name', 'report_lp');
+        return get_string('lastcourseaccess:measure:name', 'report_lp');
     }
 
     public function get_description(): string {
-        return get_string('last_course_access:measure:description', 'report_lp');
+        return get_string('lastcourseaccess:measure:description', 'report_lp');
     }
 }

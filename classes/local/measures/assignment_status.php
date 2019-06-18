@@ -58,12 +58,12 @@ class assignment_status extends measure implements has_own_configuration {
     }
 
     public function get_name(): string {
-        return get_string('assignment_status:measure:name', 'report_lp');
+        return get_string('assignmentstatus:measure:name', 'report_lp');
     }
 
 
     public function get_description(): string {
-        return get_string('assignment_status:measure:description', 'report_lp');
+        return get_string('assignmentstatus:measure:description', 'report_lp');
     }
 
     public function moodlequickform_extend(MoodleQuickForm &$mform) {

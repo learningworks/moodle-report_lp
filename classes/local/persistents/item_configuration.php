@@ -33,6 +33,12 @@ class item_configuration extends persistent {
     /** The associated table name. */
     const TABLE = 'report_lp_items';
 
+    const MIN_DEPTH = 1;
+
+    const MAX_DEPTH = 2;
+
+    const MAX_CHILDREN = 999;
+
     public static function define_properties() {
         return [
             'courseid' => [
@@ -54,10 +60,6 @@ class item_configuration extends persistent {
                 'null' => NULL_ALLOWED,
                 'default' => null
             ],
-            'displayorder' => [
-                'type' => PARAM_INT,
-                'default' => 0
-            ],
             'parentitemid' => [
                 'type' => PARAM_INT,
                 'default' => 0
@@ -69,6 +71,10 @@ class item_configuration extends persistent {
             'path' => [
                 'type' => PARAM_TEXT,
                 'default' => ''
+            ],
+            'sortorder' => [
+                'type' => PARAM_INT,
+                'default' => 0
             ],
             'isgrouping' => [
                 'type' => PARAM_INT,
@@ -95,32 +101,113 @@ class item_configuration extends persistent {
     }
 
     /**
-     * Hook to execute after a create.
+     * Trigger a before update hook.
      */
     protected function after_create() {
-        // Handle path and depth. Currently only supporting depth of 2 maximum.
-        $id = $this->raw_get('id');
-        $parentitemid = $this->raw_get('parentitemid');
-        if ($parentitemid <= 0) {
-            $path = '/' . $id;
-            $depth = 1;
-        } else {
-            $path = '/' . $parentitemid . '/' . $id;
-            $depth = 2;
-        }
-        $this->raw_set('path', $path);
-        $this->raw_set('depth', $depth);
-        // Handle display order.
-        $displayorder = $id * 10000;
-        $this->raw_set('displayorder', $displayorder);
         $this->update();
     }
 
+    /**
+     * Sets all internal stuff like path, depth, and sortorder.
+     *
+     * @throws coding_exception
+     */
+    protected function before_update() {
+        $this->raw_set('path', $this->build_path());
+        $this->raw_set('depth', $this->build_depth());
+        $this->raw_set('sortorder', $this->build_sort_order());
+    }
+
+    /**
+     * Only support a two levels maximum of depth.
+     *
+     * @return int
+     * @throws coding_exception
+     */
+    protected function build_depth() {
+        $parentitemid = $this->raw_get('parentitemid');
+        if ($parentitemid > 0) {
+            return 2;
+        }
+        return static::MIN_DEPTH;
+    }
+
+    /**
+     * Build parent/child path.
+     *
+     * @return string
+     * @throws coding_exception
+     */
+    protected function build_path() {
+        $id = $this->raw_get('id');
+        $parentitemid = $this->raw_get('parentitemid');
+        if ($id <= 0) {
+            throw new coding_exception('Valid record required');
+        }
+        if ($parentitemid > 0) {
+            return '/' . $parentitemid . '/' . $id;
+        }
+        return '/' . $id;
+    }
+
+    /**
+     * Build sort order for a child of parent (depth).
+     *
+     * @return int
+     * @throws coding_exception
+     */
+    protected function build_sort_order() {
+        $childrencount = self::count_records(
+            [
+                'courseid' => $this->raw_get('courseid'),
+                'depth' => $this->raw_get('depth')
+            ]
+        );
+
+        // Increment, this will be new sort order.
+        ++$childrencount;
+        if ($childrencount > static::MAX_CHILDREN) {
+            throw new coding_exception('Maximum number of child items at a depth reached');
+        }
+        return $childrencount;
+    }
+
+    /**
+     * Depth is constructed internally.
+     *
+     * @return $this
+     */
+    protected function set_depth() {
+        return $this;
+    }
+
+    /**
+     * Path is constructed internally.
+     *
+     * @return $this
+     */
+    protected function set_path() {
+        return $this;
+    }
+
+    /**
+     * Extra configuration is stored as JSON. Decode JSON before returning.
+     *
+     * @return mixed
+     * @throws coding_exception
+     */
     protected function get_extraconfigurationdata() {
         $json = $this->raw_get('extraconfigurationdata');
         return json_decode($json);
     }
 
+    /**
+     * Extra configuration is to be stored as JSON.
+     *
+     * @param $value
+     * @return item_configuration
+     * @throws coding_exception
+     */
     protected function set_extraconfigurationdata($value) {
         if (!(is_array($value) || is_object($value))) {
             throw new coding_exception('Datatype array or object required');

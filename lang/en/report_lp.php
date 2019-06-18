@@ -38,12 +38,11 @@ $string['fetchprogessdata'] = 'Fetch progress data';
 $string['lp:configure'] = 'Configure assignment to track';
 $string['lp:view'] = 'View report';
 
-
 $string['assignment_resubmit_count:measure:name'] = 'Assignment resubmits';
 $string['assignment_resubmit_count:measure:description'] = 'assignment_resubmit_count';
 
-$string['assignment_status:measure:name'] = 'Assignment status';
-$string['assignment_status:measure:description'] = 'assignment_status';
+$string['assignmentstatus:measure:name'] = 'Assignment status';
+$string['assignmentstatus:measure:description'] = 'Uses grade display type for submitted assignments for example "Achieved" or "Not achieved". Indicates not submitted type states such as "Draft", "No submission", and "Reopened".';
 
 $string['attendance_sessions_summary:measure:name'] = 'Attendance';
 $string['attendance_sessions_summary:measure:description'] = 'attendance_sessions_summary';
@@ -54,11 +53,12 @@ $string['checklist_complete:measure:description'] = 'checklist_complete';
 $string['grade_category_activity_completion:measure:name'] = 'Grade category activity completion';
 $string['grade_category_activity_completion:measure:description'] = 'Grade category activity completion';
 
-$string['last_course_access:measure:name'] = 'Last course access';
-$string['last_course_access:measure:description'] = 'Last course access';
+$string['lastcourseaccess:measure:label'] = 'Last course access';
+$string['lastcourseaccess:measure:name'] = 'Last course access';
+$string['lastcourseaccess:measure:description'] = 'The date and time the learner last accessed this course.';
 
 $string['grouping:measure:name'] = 'Grouping';
-$string['grouping:measure:description'] = 'Grouping allows a set of measures to be grouped together';
+$string['grouping:measure:description'] = 'Grouping allows a set of measures to be grouped together for display purposes.';
 
 $string['grouping'] = 'Grouping';
 $string['measures'] = 'Measures';
