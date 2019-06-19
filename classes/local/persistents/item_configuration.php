@@ -37,8 +37,6 @@ class item_configuration extends persistent {
 
     const MAX_DEPTH = 2;
 
-    const MAX_CHILDREN = 999;
-
     public static function define_properties() {
         return [
             'courseid' => [
@@ -104,18 +102,18 @@ class item_configuration extends persistent {
      * Trigger a before update hook.
      */
     protected function after_create() {
+        $this->raw_set('sortorder', $this->build_sort_order());
         $this->update();
     }
 
     /**
-     * Sets all internal stuff like path, depth, and sortorder.
+     * Sets all internal properties like path, depth.
      *
      * @throws coding_exception
      */
     protected function before_update() {
         $this->raw_set('path', $this->build_path());
         $this->raw_set('depth', $this->build_depth());
-        $this->raw_set('sortorder', $this->build_sort_order());
     }
 
     /**

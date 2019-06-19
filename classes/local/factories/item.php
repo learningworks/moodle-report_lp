@@ -121,11 +121,11 @@ class item {
      * @param int $id
      * @param stdClass|null $record
      * @param string|null $shortname
-     * @return item
+     * @return grouping|measure
      * @throws \ReflectionException
      * @throws coding_exception
      */
-    public function create_item(int $id = 0, stdClass $record = null, string $shortname = null) : item  {
+    public function create_item(int $id = 0, stdClass $record = null, string $shortname = null)  {
         $configuration = new item_configuration($id, $record);
         if ($id <= 0) {
             if (is_null($shortname)) {
