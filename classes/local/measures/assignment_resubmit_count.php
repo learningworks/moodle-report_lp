@@ -29,7 +29,7 @@ use stdClass;
 /**
  * Assignment resubmit count of a learner for an assignment instance.
  *
- * @package
+ * @package     report_lp
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -42,6 +42,10 @@ class assignment_resubmit_count extends measure implements has_own_configuration
     /** @var string COMPONENT_NAME Used to for name of core subsystem or plugin. Moodle frankenstyle. */
     public const COMPONENT_NAME = 'assign';
 
+    /**
+     * @param userlist $userlist
+     * @return array|null
+     */
     public function get_data_for_users(userlist $userlist) : ? array {
         return [];
     }
