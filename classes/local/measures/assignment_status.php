@@ -24,6 +24,7 @@ use coding_exception;
 use report_lp\local\contracts\has_own_configuration;
 use report_lp\local\measure;
 use report_lp\local\userlist;
+use report_lp\local\persistents\item_configuration;
 
 /**
  * Assignment status of learner for an assignment instance.
@@ -35,10 +36,23 @@ use report_lp\local\userlist;
 
 class assignment_status extends measure implements has_own_configuration {
 
+    /** @var string COMPONENT_TYPE Area component lives, Moodle frankenstyle. */
+    public const COMPONENT_TYPE = 'mod';
+
+    /** @var string COMPONENT_NAME Name of component type, Moodle frankenstyle. */
+    public const COMPONENT_NAME = 'assign';
+
     public function get_data_for_users(userlist $userlist) : ? array {
         return [];
     }
 
+    /**
+     * Build default label. If has configuration use assignment name.
+     *
+     * @return string|null
+     * @throws \dml_exception
+     * @throws coding_exception
+     */
     public function get_default_label(): ? string {
         global $DB;
         $configuration = $this->get_configuration();
@@ -52,38 +66,120 @@ class assignment_status extends measure implements has_own_configuration {
         $assignmentname = $DB->get_field(
             'assign',
             'name',
-            ['id' => $extraconfigurationdata->assignmentid]
+            ['id' => $extraconfigurationdata->id]
         );
         return format_text($assignmentname);
     }
 
+    /**
+     * Name of measure.
+     *
+     * @return string
+     * @throws coding_exception
+     */
     public function get_name(): string {
         return get_string('assignmentstatus:measure:name', 'report_lp');
     }
 
+    /**
+     * Description of what data/information this measure displays.
+     *
+     * @return string
+     * @throws coding_exception
+     */
     public function get_description(): string {
         return get_string('assignmentstatus:measure:description', 'report_lp');
     }
 
-    public function moodlequickform_extend(MoodleQuickForm &$mform) {
-        global $DB;
-
-        $configuration = $this->get_configuration();
-        $courseid = $configuration->get('courseid');
-        if ($courseid <= 0 ) {
-            throw new coding_exception("Configuration does not have courseid set");
-        }
-        $options = $DB->get_records_menu(
-            'assign',
-            ['course' => $courseid],
-            'id',
-            'id, name'
+    /**
+     * Get assignments already used in this course for this measure.
+     *
+     * @return array
+     * @throws \ReflectionException
+     * @throws coding_exception
+     */
+    protected function get_excluded_assignments() {
+        $excludes = [];
+        $configurations = item_configuration::get_records(
+            [
+                'courseid' => $this->get_configuration()->get('courseid'),
+                'shortname' => static::get_short_name()
+            ]
         );
-        $options = array_merge([0 => get_string('choose')], $options);
-        $mform->addElement('select', 'assignment',
-            get_string('assignmentname', 'mod_assign'), $options);
+        foreach ($configurations as $configuration) {
+            $extraconfigurationdata = $configuration->get('extraconfigurationdata');
+            if (isset($extraconfigurationdata->id)) {
+                $excludes[] = $extraconfigurationdata->id;
+            }
+        }
+        return $excludes;
     }
 
+    /**
+     * Get available assignments in this course to choose from. Only one assignment
+     * per measure.
+     *
+     * @return array
+     * @throws \ReflectionException
+     * @throws \dml_exception
+     * @throws coding_exception
+     */
+    protected function get_assignment_options() {
+        global $DB;
+        $params = ['course' => $this->get_configuration()->get('courseid')];
+        [$notinsql, $notinparams] = $DB->get_in_or_equal(
+            $this->get_excluded_assignments(),
+            SQL_PARAMS_NAMED,
+            'a',
+            false,
+            true
+        );
+        $params = array_merge($notinparams, $params);
+        $options = $DB->get_records_select_menu(
+            static::COMPONENT_NAME,
+            "course = :course AND id $notinsql",
+            $params,
+            null,
+            'id, name'
+        );
+        return $options;
+    }
+
+    /**
+     * Extend main item mform to allow choice of assignment to measure as
+     * implements own configuration.
+     *
+     * @param MoodleQuickForm $mform
+     * @return mixed|void
+     * @throws \ReflectionException
+     * @throws \dml_exception
+     * @throws coding_exception
+     */
+    public function moodlequickform_extend(MoodleQuickForm &$mform) {
+        $assignments = $this->get_assignment_options();
+        if (empty($assignments)) {
+            $mform->addElement('warning', 'noassignmentswarning',
+                null, get_string('noassignmentswarning', 'report_lp'));
+            $mform->addElement('hidden', 'noassignments');
+            $mform->setType('noassignments', PARAM_INT);
+            $mform->setDefault('noassignments', 1);
+            $mform->disabledIf('submitbutton', 'noassignments', 'eq', 1);
+            $mform->removeElement('specific');
+        } else {
+            $options = array_merge([0 => get_string('choose')], $assignments);
+            $mform->addElement('select', 'assignment',
+                get_string('assignmentname', 'mod_assign'), $options);
+        }
+    }
+
+    /**
+     * Extend validation for extra configuration.
+     *
+     * @param $data
+     * @param $files
+     * @return array
+     * @throws coding_exception
+     */
     public function moodlequickform_validation($data, $files) : array {
         $errors = [];
         if ($data['assignment'] == 0) {
@@ -92,15 +188,28 @@ class assignment_status extends measure implements has_own_configuration {
         return $errors;
     }
 
+    /**
+     * Format extra configuration data.
+     *
+     * @param $data
+     * @return stdClass
+     * @throws coding_exception
+     */
     public function moodlequickform_get_extra_configuration_data($data) : stdClass {
         if (empty($data['assignment'])) {
             throw new coding_exception('Something went horribly wrong');
         }
         $object = new stdClass();
-        $object->assignmentid = $data['assignment'];
+        $object->id = $data['assignment'];
         return $object;
     }
 
+    /**
+     * Get defaults based on extra configuration data.
+     *
+     * @return array
+     * @throws coding_exception
+     */
     public function moodlequickform_get_extra_configuration_defaults() : array {
         $configuration = $this->get_configuration();
         $extraconfigurationdata = $configuration->get('extraconfigurationdata');
@@ -108,7 +217,7 @@ class assignment_status extends measure implements has_own_configuration {
         if (empty($extraconfigurationdata)) {
             $defaults['assignment'] = 0;
         } else {
-            $defaults['assignment'] = $extraconfigurationdata->assignmentid;
+            $defaults['assignment'] = $extraconfigurationdata->id;
         }
         return $defaults;
     }
