@@ -35,5 +35,16 @@ $renderer = $PAGE->get_renderer('report_lp');
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('configurereportfor', 'report_lp', $course->fullname));
 echo $renderer->render(new report_lp\output\add_item_menu($course, $measurelist));
-echo '<br><br>';
+$tree = $learnerprogress->build_item_tree();
+echo "<br>";
+foreach ($tree as $item) {
+    echo html_writer::tag('strong', $item->get_label()) . '<br>';
+    if ($item instanceof report_lp\local\grouping) {
+        if ($item->has_children()) {
+            foreach ($item->get_children() as $childitem) {
+                echo html_writer::span($childitem->get_label()) . '<br>';
+            }
+        }
+    }
+}
 echo $OUTPUT->footer();
