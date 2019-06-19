@@ -166,7 +166,7 @@ class assignment_resubmit_count extends measure implements has_own_configuration
         $assignments = $this->get_assignment_options();
         if (empty($assignments)) {
             $mform->addElement('warning', 'noassignmentswarning',
-                null, get_string('noassignmentswarning', 'report_lp'));
+                null, get_string('noavailablemodules', 'report_lp', static::COMPONENT_NAME));
             $mform->addElement('hidden', 'noassignments');
             $mform->setType('noassignments', PARAM_INT);
             $mform->setDefault('noassignments', 1);

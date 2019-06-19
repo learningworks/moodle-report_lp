@@ -133,7 +133,7 @@ class attendance_sessions_summary extends measure implements has_own_configurati
         $attendances = $this->get_attendance_options();
         if (empty($attendances)) {
             $mform->addElement('warning', 'noattendanceswarning',
-                null, get_string('noattendanceswarning', 'report_lp'));
+                null, get_string('noavailablemodules', 'report_lp', static::COMPONENT_NAME));
             $mform->addElement('hidden', 'noattendances');
             $mform->setType('noattendances', PARAM_INT);
             $mform->setDefault('noattendances', 1);
