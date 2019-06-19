@@ -44,7 +44,7 @@ class grouping extends item {
         } else {
             $number = get_string('dotn', 'report_lp');
         }
-        return get_string('defaultgroupinglabel', 'report_lp', $number);
+        return get_string('defaultlabelgrouping', 'report_lp', $number);
     }
 
     public function get_name(): string {
