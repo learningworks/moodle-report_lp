@@ -38,8 +38,8 @@ $string['fetchprogessdata'] = 'Fetch progress data';
 $string['lp:configure'] = 'Configure assignment to track';
 $string['lp:view'] = 'View report';
 
-$string['assignment_resubmit_count:measure:name'] = 'Assignment resubmits';
-$string['assignment_resubmit_count:measure:description'] = 'assignment_resubmit_count';
+$string['assignmentresubmitcount:measure:name'] = 'Assignment resubmits';
+$string['assignmentresubmitcount:measure:description'] = 'assignment_resubmit_count';
 
 $string['assignmentstatus:measure:name'] = 'Assignment status';
 $string['assignmentstatus:measure:description'] = 'Uses grade display type for submitted assignments for example "Achieved" or "Not achieved". Indicates not submitted type states such as "Draft", "No submission", and "Reopened".';
@@ -73,13 +73,16 @@ $string['visibletolearner'] = 'Display to learner';
 $string['configuregrouping'] = 'Configure grouping';
 $string['configuremeasure'] = 'Configure measure {$a}';
 
-$string['defaultgroupinglabel'] = 'Grouping {$a}';
+$string['defaultlabelgrouping'] = 'Grouping {$a}';
+$string['defaultlabelassignmentstatus'] = 'Assignment name';
+$string['defaultlabelassignmentresubmitcount'] = 'Assignment name';
+
 
 $string['parentgrouping'] = 'Parent grouping';
 $string['generalsettings'] = 'General settings';
 $string['specificsettings'] = 'Specific settings';
 
 $string['pleasechoose'] = 'Please choose an item from the list';
-$string['assignmentstatusdefaultlabel'] = 'Assignment name';
+
 $string['dotn'] = '...n';
 $string['noassignmentswarning'] = 'No assignments found in course';
