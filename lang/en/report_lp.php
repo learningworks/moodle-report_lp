@@ -48,8 +48,8 @@ $string['attendancename'] = 'Attendance name';
 $string['attendancesessionssummary:measure:name'] = 'Attendance';
 $string['attendancesessionssummary:measure:description'] = 'Show how many sessions a learner has attended out of total number of sessions. For example 3/4 sessions attended.';
 
-$string['checklist_complete:measure:name'] = 'Checklist';
-$string['checklist_complete:measure:description'] = 'checklist_complete';
+$string['checklistcomplete:measure:name'] = 'Checklist';
+$string['checklistcomplete:measure:description'] = 'Indicate if checklist is incompleted or completed.';
 
 $string['grade_category_activity_completion:measure:name'] = 'Grade category activity completion';
 $string['grade_category_activity_completion:measure:description'] = 'Grade category activity completion';
@@ -87,4 +87,4 @@ $string['specificsettings'] = 'Specific settings';
 $string['pleasechoose'] = 'Please choose an item from the list';
 
 $string['dotn'] = '...n';
-$string['noassignmentswarning'] = 'No assignments found in course';
+$string['noavailablemodules'] = 'No available {$a} modules. Either none in course or all are in use be this measure.';
