@@ -48,8 +48,8 @@ $string['attendancename'] = 'Attendance name';
 $string['attendancesessionssummary:measure:name'] = 'Attendance';
 $string['attendancesessionssummary:measure:description'] = 'Show how many sessions a learner has attended out of total number of sessions. For example 3/4 sessions attended.';
 
-$string['checklistcomplete:measure:name'] = 'Checklist';
-$string['checklistcomplete:measure:description'] = 'Indicate if checklist is incompleted or completed.';
+$string['checklistcompletion:measure:name'] = 'Checklist';
+$string['checklistcompletion:measure:description'] = 'Indicate if checklist is incompleted or completed.';
 
 $string['grade_category_activity_completion:measure:name'] = 'Grade category activity completion';
 $string['grade_category_activity_completion:measure:description'] = 'Grade category activity completion';
@@ -78,6 +78,7 @@ $string['defaultlabelgrouping'] = 'Grouping {$a}';
 $string['defaultlabelassignmentstatus'] = 'Assignment name';
 $string['defaultlabelassignmentresubmitcount'] = 'Assignment name';
 $string['defaultlabelattendancesessionssummary'] = 'Sessions attended summary';
+$string['checklistname'] = 'Checklist name';
 
 
 $string['parentgrouping'] = 'Parent grouping';
