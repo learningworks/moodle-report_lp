@@ -36,10 +36,10 @@ use report_lp\local\persistents\item_configuration;
 
 class assignment_status extends measure implements has_own_configuration {
 
-    /** @var string COMPONENT_TYPE Area component lives, Moodle frankenstyle. */
+    /** @var string COMPONENT_TYPE Used to identify core subsystem or plugin type. Moodle frankenstyle. */
     public const COMPONENT_TYPE = 'mod';
 
-    /** @var string COMPONENT_NAME Name of component type, Moodle frankenstyle. */
+    /** @var string COMPONENT_NAME Used to for name of core subsystem or plugin. Moodle frankenstyle. */
     public const COMPONENT_NAME = 'assign';
 
     public function get_data_for_users(userlist $userlist) : ? array {
@@ -57,11 +57,11 @@ class assignment_status extends measure implements has_own_configuration {
         global $DB;
         $configuration = $this->get_configuration();
         if (is_null($configuration)) {
-            return get_string('assignmentstatusdefaultlabel', 'report_lp');
+            return get_string('defaultlabelassignmentstatus', 'report_lp');
         }
         $extraconfigurationdata = $configuration->get('extraconfigurationdata');
         if (empty($extraconfigurationdata)) {
-            return get_string('assignmentstatusdefaultlabel', 'report_lp');
+            return get_string('defaultlabelassignmentstatus', 'report_lp');
         }
         $assignmentname = $DB->get_field(
             'assign',
@@ -126,18 +126,22 @@ class assignment_status extends measure implements has_own_configuration {
      */
     protected function get_assignment_options() {
         global $DB;
+        $excludes = $this->get_excluded_assignments();
         $params = ['course' => $this->get_configuration()->get('courseid')];
-        [$notinsql, $notinparams] = $DB->get_in_or_equal(
-            $this->get_excluded_assignments(),
-            SQL_PARAMS_NAMED,
-            'a',
-            false,
-            true
-        );
-        $params = array_merge($notinparams, $params);
+        $select = "course = :course";
+        if ($excludes) {
+            [$notinsql, $notinparams] = $DB->get_in_or_equal(
+                $excludes,
+                SQL_PARAMS_NAMED,
+                'a',
+                false
+            );
+            $params = array_merge($notinparams, $params);
+            $select = "course = :course AND id $notinsql";
+        }
         $options = $DB->get_records_select_menu(
             static::COMPONENT_NAME,
-            "course = :course AND id $notinsql",
+            $select,
             $params,
             null,
             'id, name'
@@ -166,7 +170,7 @@ class assignment_status extends measure implements has_own_configuration {
             $mform->disabledIf('submitbutton', 'noassignments', 'eq', 1);
             $mform->removeElement('specific');
         } else {
-            $options = array_merge([0 => get_string('choose')], $assignments);
+            $options = [0 => get_string('choose')] +  $assignments;
             $mform->addElement('select', 'assignment',
                 get_string('assignmentname', 'mod_assign'), $options);
         }
