@@ -18,24 +18,182 @@ namespace report_lp\local\measures;
 
 defined('MOODLE_INTERNAL') || die();
 
+use coding_exception;
+use MoodleQuickForm;
+use report_lp\local\contracts\has_own_configuration;
 use report_lp\local\measure;
+use report_lp\local\persistents\item_configuration;
 use report_lp\local\userlist;
+use stdClass;
 
-class attendance_sessions_summary extends measure {
+/**
+ * Sessions attended out of total sessions.
+ *
+ * @package     report_lp
+ * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class attendance_sessions_summary extends measure implements has_own_configuration {
 
+    /** @var string COMPONENT_TYPE Used to identify core or plugin type. Moodle frankenstyle. */
+    public const COMPONENT_TYPE = 'mod';
+
+    /** @var string COMPONENT_NAME Used to for name of core subsystem or plugin. Moodle frankenstyle. */
+    public const COMPONENT_NAME = 'attendance';
+
+    /**
+     * @param userlist $userlist
+     * @return array|null
+     */
     public function get_data_for_users(userlist $userlist) : ? array {
         return [];
     }
 
     public function get_default_label(): ? string {
-        return null;
+        return get_string('defaultlabelattendancesessionssummary', 'report_lp');
     }
 
     public function get_name(): string {
-        return get_string('attendance_sessions_summary:measure:name', 'report_lp');
+        return get_string('attendancesessionssummary:measure:name', 'report_lp');
     }
 
     public function get_description(): string {
-        return get_string('attendance_sessions_summary:measure:description', 'report_lp');
+        return get_string('attendancesessionssummary:measure:description', 'report_lp');
     }
+
+    /**
+     * Get attendances already used in this course for this measure.
+     *
+     * @return array
+     * @throws \ReflectionException
+     * @throws coding_exception
+     */
+    protected function get_excluded_attendances() {
+        $excludes = [];
+        $configurations = item_configuration::get_records(
+            [
+                'courseid' => $this->get_configuration()->get('courseid'),
+                'shortname' => static::get_short_name()
+            ]
+        );
+        foreach ($configurations as $configuration) {
+            $extraconfigurationdata = $configuration->get('extraconfigurationdata');
+            if (isset($extraconfigurationdata->id)) {
+                $excludes[$extraconfigurationdata->id] = $extraconfigurationdata->id;
+            }
+        }
+        return $excludes;
+    }
+
+    /**
+     * Get available attendances in this course to choose from. Only one attendance
+     * per measure.
+     *
+     * @return array
+     * @throws \ReflectionException
+     * @throws \dml_exception
+     * @throws coding_exception
+     */
+    protected function get_attendance_options() {
+        global $DB;
+        $excludes = $this->get_excluded_attendances();
+        $params = ['course' => $this->get_configuration()->get('courseid')];
+        $select = "course = :course";
+        if ($excludes) {
+            [$notinsql, $notinparams] = $DB->get_in_or_equal(
+                $excludes,
+                SQL_PARAMS_NAMED,
+                'a',
+                false
+            );
+            $params = array_merge($notinparams, $params);
+            $select = "course = :course AND id $notinsql";
+        }
+        $options = $DB->get_records_select_menu(
+            static::COMPONENT_NAME,
+            $select,
+            $params,
+            null,
+            'id, name'
+        );
+        return $options;
+    }
+
+    /**
+     * Extend main item mform to allow choice of attendance to measure as
+     * implements own configuration.
+     *
+     * @param MoodleQuickForm $mform
+     * @return mixed|void
+     * @throws \ReflectionException
+     * @throws \dml_exception
+     * @throws coding_exception
+     */
+    public function moodlequickform_extend(MoodleQuickForm &$mform) {
+        $attendances = $this->get_attendance_options();
+        if (empty($attendances)) {
+            $mform->addElement('warning', 'noattendanceswarning',
+                null, get_string('noattendanceswarning', 'report_lp'));
+            $mform->addElement('hidden', 'noattendances');
+            $mform->setType('noattendances', PARAM_INT);
+            $mform->setDefault('noattendances', 1);
+            $mform->disabledIf('submitbutton', 'noattendances', 'eq', 1);
+            $mform->removeElement('specific');
+        } else {
+            $options = [0 => get_string('choose')] +  $attendances;
+            $mform->addElement('select', 'attendance',
+                get_string('attendancename', 'report_lp'), $options);
+        }
+    }
+
+    /**
+     * Extend validation for extra configuration.
+     *
+     * @param $data
+     * @param $files
+     * @return array
+     * @throws coding_exception
+     */
+    public function moodlequickform_validation($data, $files) : array {
+        $errors = [];
+        if ($data['attendance'] == 0) {
+            $errors['attendance'] = get_string('pleasechoose', 'report_lp');
+        }
+        return $errors;
+    }
+
+    /**
+     * Format extra configuration data.
+     *
+     * @param $data
+     * @return stdClass
+     * @throws coding_exception
+     */
+    public function moodlequickform_get_extra_configuration_data($data) : stdClass {
+        if (empty($data['attendance'])) {
+            throw new coding_exception('Something went horribly wrong');
+        }
+        $object = new stdClass();
+        $object->id = $data['attendance'];
+        return $object;
+    }
+
+    /**
+     * Get defaults based on extra configuration data.
+     *
+     * @return array
+     * @throws coding_exception
+     */
+    public function moodlequickform_get_extra_configuration_defaults() : array {
+        $configuration = $this->get_configuration();
+        $extraconfigurationdata = $configuration->get('extraconfigurationdata');
+        $defaults = [];
+        if (empty($extraconfigurationdata)) {
+            $defaults['attendance'] = 0;
+        } else {
+            $defaults['attendance'] = $extraconfigurationdata->id;
+        }
+        return $defaults;
+    }
+
 }
