@@ -33,7 +33,6 @@ use report_lp\local\persistents\item_configuration;
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 class assignment_status extends measure implements has_own_configuration {
 
     /** @var string COMPONENT_TYPE Used to identify core subsystem or plugin type. Moodle frankenstyle. */
