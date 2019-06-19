@@ -47,6 +47,9 @@ $mform = new report_lp\local\forms\item(
     ]
 );
 $renderer = $PAGE->get_renderer('report_lp');
+if ($mform->is_cancelled()) {
+    redirect($configurl);
+}
 if ($mform->is_submitted()) {
     $data = $mform->get_data();
     if ($data) {

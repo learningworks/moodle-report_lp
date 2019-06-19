@@ -30,15 +30,12 @@ if ($id) {
 if ($courseid <= 0) {
     throw new moodle_exception('Bad courseid');
 }
-
 $course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
 $coursecontext = context_course::instance($course->id);
 $systemcontext = context_system::instance();
-
 $measurelist = new report_lp\local\measurelist(report_lp_get_supported_measures());
 $itemfactory = new report_lp\local\factories\item($course, $measurelist);
 $measure = $itemfactory->create_measure($id, $record, $shortname);
-
 $pageurl = report_lp\local\factories\url::get_measure_url($course, $id, $shortname);
 $configurl = report_lp\local\factories\url::get_config_url($course);
 require_capability('report/lp:configure', $systemcontext);
@@ -52,6 +49,9 @@ $mform = new report_lp\local\forms\item(
     ]
 );
 $renderer = $PAGE->get_renderer('report_lp');
+if ($mform->is_cancelled()) {
+    redirect($configurl);
+}
 if ($mform->is_submitted()) {
     $data = $mform->get_data();
     if ($data) {
