@@ -18,9 +18,9 @@ namespace report_lp\local;
 
 defined('MOODLE_INTERNAL') || die();
 
-use report_lp\local\contracts\has_children;
+class grouping extends item {
 
-class grouping extends item implements has_children {
+    public const MAXIMUM_ITEMS = 999;
 
     /**
      * @var array $items Store for child items.
