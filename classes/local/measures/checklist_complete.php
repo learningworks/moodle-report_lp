@@ -18,24 +18,219 @@ namespace report_lp\local\measures;
 
 defined('MOODLE_INTERNAL') || die();
 
+use coding_exception;
+use MoodleQuickForm;
+use report_lp\local\contracts\has_own_configuration;
 use report_lp\local\measure;
+use report_lp\local\persistents\item_configuration;
 use report_lp\local\userlist;
+use stdClass;
 
-class checklist_complete extends measure {
+/**
+ * Checklist completion status.
+ *
+ * @package     report_lp
+ * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class checklist_complete extends measure implements has_own_configuration {
 
+    /** @var string COMPONENT_TYPE Used to identify core or plugin type. Moodle frankenstyle. */
+    public const COMPONENT_TYPE = 'mod';
+
+    /** @var string COMPONENT_NAME Used to for name of core subsystem or plugin. Moodle frankenstyle. */
+    public const COMPONENT_NAME = 'checklist';
+
+    /**
+     * @param userlist $userlist
+     * @return array|null
+     */
     public function get_data_for_users(userlist $userlist) : ? array {
         return [];
     }
 
+    /**
+     * Build default label. If has configuration use checklist name.
+     *
+     * @return string|null
+     * @throws \dml_exception
+     * @throws coding_exception
+     */
     public function get_default_label(): ? string {
-        return null;
+        global $DB;
+        $configuration = $this->get_configuration();
+        if (is_null($configuration)) {
+            return get_string('checklistname', 'report_lp');
+        }
+        $extraconfigurationdata = $configuration->get('extraconfigurationdata');
+        if (empty($extraconfigurationdata)) {
+            return get_string('checklistname', 'report_lp');
+        }
+        $checklistname = $DB->get_field(
+            static::COMPONENT_NAME,
+            'name',
+            ['id' => $extraconfigurationdata->id]
+        );
+        return format_text($checklistname);
     }
 
+    /**
+     * Name of measure.
+     *
+     * @return string
+     * @throws coding_exception
+     */
     public function get_name(): string {
-        return get_string('checklist_complete:measure:name', 'report_lp');
+        return get_string('checklistcompletion:measure:name', 'report_lp');
     }
 
+    /**
+     * Description of what data/information this measure displays.
+     *
+     * @return string
+     * @throws coding_exception
+     */
     public function get_description(): string {
-        return get_string('checklist_complete:measure:description', 'report_lp');
+        return get_string('checklistcompletion:measure:description', 'report_lp');
     }
+
+    /**
+     * Get checklists already used in this course for this measure.
+     *
+     * @return array
+     * @throws \ReflectionException
+     * @throws coding_exception
+     */
+    protected function get_excluded_checklists() {
+        $excludes = [];
+        $configurations = item_configuration::get_records(
+            [
+                'courseid' => $this->get_configuration()->get('courseid'),
+                'shortname' => static::get_short_name()
+            ]
+        );
+        foreach ($configurations as $configuration) {
+            $extraconfigurationdata = $configuration->get('extraconfigurationdata');
+            if (isset($extraconfigurationdata->id)) {
+                $excludes[] = $extraconfigurationdata->id;
+            }
+        }
+        return $excludes;
+    }
+
+    /**
+     * Get available checklists in this course to choose from. Only one checklist
+     * per measure.
+     *
+     * @return array
+     * @throws \ReflectionException
+     * @throws \dml_exception
+     * @throws coding_exception
+     */
+    protected function get_checklist_options() {
+        global $DB;
+        $excludes = $this->get_excluded_checklists();
+        $params = ['course' => $this->get_configuration()->get('courseid')];
+        $select = "course = :course";
+        if ($excludes) {
+            [$notinsql, $notinparams] = $DB->get_in_or_equal(
+                $excludes,
+                SQL_PARAMS_NAMED,
+                'a',
+                false
+            );
+            $params = array_merge($notinparams, $params);
+            $select = "course = :course AND id $notinsql";
+        }
+        $options = $DB->get_records_select_menu(
+            static::COMPONENT_NAME,
+            $select,
+            $params,
+            null,
+            'id, name'
+        );
+        return $options;
+    }
+
+    /**
+     * Extend main item mform to allow choice of checklist to measure as
+     * implements own configuration.
+     *
+     * @param MoodleQuickForm $mform
+     * @return mixed|void
+     * @throws \ReflectionException
+     * @throws \dml_exception
+     * @throws coding_exception
+     */
+    public function moodlequickform_extend(MoodleQuickForm &$mform) {
+        $checklists = $this->get_checklist_options();
+        if (empty($checklists)) {
+            $mform->addElement(
+                'warning',
+                'nochecklistswarning',
+                null,
+                get_string('noavailablemodules', 'report_lp', static::COMPONENT_NAME)
+            );
+            $mform->addElement('hidden', 'nochecklists');
+            $mform->setType('nochecklists', PARAM_INT);
+            $mform->setDefault('nochecklists', 1);
+            $mform->disabledIf('submitbutton', 'nochecklists', 'eq', 1);
+            $mform->removeElement('specific');
+        } else {
+            $options = [0 => get_string('choose')] +  $checklists;
+            $mform->addElement('select', 'checklist',
+                get_string('checklistname', 'report_lp'), $options);
+        }
+    }
+
+    /**
+     * Extend validation for extra configuration.
+     *
+     * @param $data
+     * @param $files
+     * @return array
+     * @throws coding_exception
+     */
+    public function moodlequickform_validation($data, $files) : array {
+        $errors = [];
+        if ($data['checklist'] == 0) {
+            $errors['checklist'] = get_string('pleasechoose', 'report_lp');
+        }
+        return $errors;
+    }
+
+    /**
+     * Format extra configuration data.
+     *
+     * @param $data
+     * @return stdClass
+     * @throws coding_exception
+     */
+    public function moodlequickform_get_extra_configuration_data($data) : stdClass {
+        if (empty($data['checklist'])) {
+            throw new coding_exception('Something went horribly wrong');
+        }
+        $object = new stdClass();
+        $object->id = $data['checklist'];
+        return $object;
+    }
+
+    /**
+     * Get defaults based on extra configuration data.
+     *
+     * @return array
+     * @throws coding_exception
+     */
+    public function moodlequickform_get_extra_configuration_defaults() : array {
+        $configuration = $this->get_configuration();
+        $extraconfigurationdata = $configuration->get('extraconfigurationdata');
+        $defaults = [];
+        if (empty($extraconfigurationdata)) {
+            $defaults['checklist'] = 0;
+        } else {
+            $defaults['checklist'] = $extraconfigurationdata->id;
+        }
+        return $defaults;
+    }
+
 }
