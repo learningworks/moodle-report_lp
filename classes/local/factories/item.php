@@ -44,65 +44,6 @@ class item {
     }
 
     /**
-     * Build a grouping, either new or load existing.
-     *
-     * @param int $id
-     * @param stdClass|null $record
-     * @return grouping
-     * @throws \ReflectionException
-     * @throws coding_exception
-     * @throws moodle_exception
-     */
-    public function create_grouping2(int $id = 0, stdClass $record = null) : grouping {
-        $grouping = new grouping();
-        $configuration = new item_configuration($id, $record);
-        if ($id <= 0) {
-            $configuration->set('courseid', $this->course->id);
-            $configuration->set('classname', $grouping::get_class_name());
-            $configuration->set('shortname', $grouping::get_short_name());
-            $configuration->set('isgrouping', 1);
-        } else {
-            if ($grouping::get_short_name() != $configuration->get('shortname')) {
-                throw new moodle_exception('You cannot use a grouping class for a existing measure');
-            }
-        }
-        $grouping->set_configuration($configuration);
-        return $grouping;
-    }
-
-    /**
-     *
-     *
-     * @param int $id
-     * @param stdClass|null $record
-     * @param string|null $shortname
-     * @return measure
-     * @throws \ReflectionException
-     * @throws coding_exception
-     * @throws moodle_exception
-     */
-    public function create_measure2(int $id = 0, stdClass $record = null, string $shortname = null) : measure  {
-        $configuration = new item_configuration($id, $record);
-        if ($id <= 0) {
-            if (is_null($shortname)) {
-                throw new coding_exception("Creating a brand new measure require class shortname to be passed");
-            }
-            $measure = $this->measurelist->find_by_short_name($shortname);
-            $configuration->set('courseid', $this->course->id);
-            $configuration->set('classname', $measure::get_class_name());
-            $configuration->set('shortname', $measure::get_short_name());
-        } else {
-            $measure = $this->measurelist->find_by_short_name($configuration->get('shortname'));
-            if ($measure::get_short_name() != $configuration->get('shortname')) {
-                throw new moodle_exception('Non matching measure and configuration');
-            }
-
-        }
-        $measure->set_configuration($configuration);
-        return $measure;
-    }
-
-    /**
      * Build a grouping, either new or load existing. A Rapper method.
      *
      * @param int $id
