@@ -20,6 +20,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use core\persistent;
 use coding_exception;
+use report_lp\local\grouping;
 
 /**
  * Item model.
@@ -99,11 +100,22 @@ class item_configuration extends persistent {
     }
 
     /**
-     * Trigger a before update hook.
+     * Force update after create to update path and depth internals.
+     *
+     * @throws \core\invalid_persistent_exception
+     * @throws coding_exception
      */
     protected function after_create() {
-        $this->raw_set('sortorder', $this->build_sort_order());
         $this->update();
+    }
+
+    /**
+     * Sets all internal properties like path, depth. Build initial sort order.
+     *
+     * @throws coding_exception
+     */
+    protected function before_create() {
+        $this->raw_set('sortorder', $this->build_sort_order());
     }
 
     /**
@@ -164,7 +176,7 @@ class item_configuration extends persistent {
 
         // Increment, this will be new sort order.
         ++$childrencount;
-        if ($childrencount > static::MAX_CHILDREN) {
+        if ($childrencount > grouping::MAXIMUM_ITEMS) {
             throw new coding_exception('Maximum number of child items at a depth reached');
         }
         return $childrencount;
