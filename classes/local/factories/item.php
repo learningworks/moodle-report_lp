@@ -53,7 +53,7 @@ class item {
      * @throws coding_exception
      * @throws moodle_exception
      */
-    public function create_grouping(int $id = 0, stdClass $record = null) : grouping {
+    public function create_grouping2(int $id = 0, stdClass $record = null) : grouping {
         $grouping = new grouping();
         $configuration = new item_configuration($id, $record);
         if ($id <= 0) {
@@ -71,7 +71,7 @@ class item {
     }
 
     /**
-     * Build a measure, either new or load existing.
+     *
      *
      * @param int $id
      * @param stdClass|null $record
@@ -81,7 +81,7 @@ class item {
      * @throws coding_exception
      * @throws moodle_exception
      */
-    public function create_measure(int $id = 0, stdClass $record = null, string $shortname = null) : measure  {
+    public function create_measure2(int $id = 0, stdClass $record = null, string $shortname = null) : measure  {
         $configuration = new item_configuration($id, $record);
         if ($id <= 0) {
             if (is_null($shortname)) {
@@ -91,7 +91,6 @@ class item {
             $configuration->set('courseid', $this->course->id);
             $configuration->set('classname', $measure::get_class_name());
             $configuration->set('shortname', $measure::get_short_name());
-            $configuration->set('isgrouping', 1);
         } else {
             $measure = $this->measurelist->find_by_short_name($configuration->get('shortname'));
             if ($measure::get_short_name() != $configuration->get('shortname')) {
@@ -101,6 +100,73 @@ class item {
         }
         $measure->set_configuration($configuration);
         return $measure;
+    }
+
+    /**
+     * Build a grouping, either new or load existing. A Rapper method.
+     *
+     * @param int $id
+     * @param stdClass|null $record
+     * @return grouping
+     * @throws \ReflectionException
+     * @throws coding_exception
+     */
+    public function create_grouping(int $id = 0, stdClass $record = null) : grouping {
+        return $this->create_item($id, $record, grouping::get_short_name());
+    }
+
+    /**
+     * Build new or existing grouping or measure.
+     *
+     * @param int $id
+     * @param stdClass|null $record
+     * @param string|null $shortname
+     * @return item
+     * @throws \ReflectionException
+     * @throws coding_exception
+     */
+    public function create_item(int $id = 0, stdClass $record = null, string $shortname = null) : item  {
+        $configuration = new item_configuration($id, $record);
+        if ($id <= 0) {
+            if (is_null($shortname)) {
+                throw new coding_exception("Valid shortname required when creating a brand new item");
+            }
+            $configuration->set('courseid', $this->course->id);
+            // Grouping or measure supported.
+            if ($shortname == grouping::get_short_name()) {
+                $item = new grouping();
+                $configuration->set('classname', $item::get_class_name());
+                $configuration->set('shortname', $item::get_short_name());
+                $configuration->set('isgrouping', 1);
+            } else {
+                $item = $this->measurelist->find_by_short_name($shortname);
+                $configuration->set('classname', $item::get_class_name());
+                $configuration->set('shortname', $item::get_short_name());
+            }
+        } else {
+            // Load existing grouping or measure.
+            if ($configuration->get('shortname') == grouping::get_short_name()) {
+                $item = new grouping();
+            } else {
+                $item = $this->measurelist->find_by_short_name($configuration->get('shortname'));
+            }
+        }
+        $item->set_configuration($configuration);
+        return $item;
+    }
+
+    /**
+     * Build a measure, either new or load existing. A Rapper method.
+     *
+     * @param int $id
+     * @param stdClass|null $record
+     * @param string|null $shortname
+     * @return measure
+     * @throws \ReflectionException
+     * @throws coding_exception
+     */
+    public function create_measure(int $id = 0, stdClass $record = null, string $shortname = null) : measure  {
+        return $this->create_item($id, $record, $shortname);
     }
 
     /**
