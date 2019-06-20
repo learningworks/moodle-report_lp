@@ -34,10 +34,6 @@ class item_configuration extends persistent {
     /** The associated table name. */
     const TABLE = 'report_lp_items';
 
-    const MIN_DEPTH = 1;
-
-    const MAX_DEPTH = 2;
-
     public static function define_properties() {
         return [
             'courseid' => [
@@ -100,46 +96,33 @@ class item_configuration extends persistent {
     }
 
     /**
-     * Force update after create to update path and depth internals.
+     * Set properties that rely on id property.
      *
      * @throws \core\invalid_persistent_exception
      * @throws coding_exception
      */
     protected function after_create() {
+        $this->raw_set('path', $this->build_path());
         $this->update();
     }
 
     /**
-     * Sets all internal properties like path, depth. Build initial sort order.
+     * Set sort order before create.
      *
+     * @throws \dml_exception
      * @throws coding_exception
      */
     protected function before_create() {
-        $this->raw_set('sortorder', $this->build_sort_order());
+        $this->raw_set('sortorder', $this->get_next_sort_order_value());
     }
 
     /**
-     * Sets all internal properties like path, depth.
+     * Sets other properties that reply id property.
      *
      * @throws coding_exception
      */
     protected function before_update() {
         $this->raw_set('path', $this->build_path());
-        $this->raw_set('depth', $this->build_depth());
-    }
-
-    /**
-     * Only support a two levels maximum of depth.
-     *
-     * @return int
-     * @throws coding_exception
-     */
-    protected function build_depth() {
-        $parentitemid = $this->raw_get('parentitemid');
-        if ($parentitemid > 0) {
-            return 2;
-        }
-        return static::MIN_DEPTH;
     }
 
     /**
@@ -150,10 +133,10 @@ class item_configuration extends persistent {
      */
     protected function build_path() {
         $id = $this->raw_get('id');
-        $parentitemid = $this->raw_get('parentitemid');
         if ($id <= 0) {
             throw new coding_exception('Valid record required');
         }
+        $parentitemid = $this->raw_get('parentitemid');
         if ($parentitemid > 0) {
             return '/' . $parentitemid . '/' . $id;
         }
@@ -161,25 +144,26 @@ class item_configuration extends persistent {
     }
 
     /**
-     * Build sort order for a child of parent (depth).
+     * Get next sort order value for a child of parent at depth.
      *
-     * @return int
+     * @return mixed
+     * @throws \dml_exception
      * @throws coding_exception
      */
-    protected function build_sort_order() {
-        $childrencount = self::count_records(
-            [
-                'courseid' => $this->raw_get('courseid'),
-                'depth' => $this->raw_get('depth')
-            ]
-        );
-
-        // Increment, this will be new sort order.
-        ++$childrencount;
-        if ($childrencount > grouping::MAXIMUM_ITEMS) {
-            throw new coding_exception('Maximum number of child items at a depth reached');
-        }
-        return $childrencount;
+    protected function get_next_sort_order_value() {
+        global $DB;
+        $sql = 'SELECT MAX(sortorder) 
+                  FROM {' . static::TABLE . '} 
+                 WHERE courseid = :courseid 
+                   AND depth = :depth';
+        $params = [
+            'courseid' => $this->raw_get('courseid'),
+            'depth' => $this->raw_get('depth')
+        ];
+        $sortorder = $DB->get_field_sql($sql, $params);
+        // Increment.
+        $sortorder++;
+        return $sortorder;
     }
 
     /**
@@ -231,11 +215,29 @@ class item_configuration extends persistent {
     }
 
     /**
+     * The parentitemid determines depth so set depth here. Depth
+     * nly supports a maximum of two levels.
+     *
+     * @param $value
+     * @return $this
+     * @throws coding_exception
+     */
+    protected function set_parentitemid($value) {
+        $this->raw_set('parentitemid', $value);
+        if ($value > 0) {
+            $this->raw_set('depth', 2);
+        } else {
+            $this->raw_set('depth', 1);
+        }
+        return $this;
+    }
+
+    /**
      * Depth is constructed internally.
      *
      * @return $this
      */
-    protected function set_depth() {
+    protected function set_depth($value) {
         return $this;
     }
 
@@ -244,7 +246,7 @@ class item_configuration extends persistent {
      *
      * @return $this
      */
-    protected function set_path() {
+    protected function set_path($value) {
         return $this;
     }
 
