@@ -21,7 +21,7 @@ defined('MOODLE_INTERNAL') || die();
 use coding_exception;
 use moodleform;
 use report_lp\local\measure;
-use report_lp\local\measurelist;
+use report_lp\local\measure_list;
 use stdClass;
 use report_lp\local\persistents\item_configuration;
 use report_lp\local\factories\item as item_factory;
@@ -152,7 +152,7 @@ class item extends moodleform {
      */
     protected function get_grouping_options() {
         $options = [0 => format_text($this->course->fullname)] ;
-        $itemfactory = new item_factory($this->course, new measurelist(report_lp_get_supported_measures()));
+        $itemfactory = new item_factory($this->course, new measure_list(report_lp_get_supported_measures()));
         foreach ($itemfactory->get_groupings() as $grouping) {
             $configuration = $grouping->get_configuration();
             $options[$configuration->get('id')] = $grouping->get_label();

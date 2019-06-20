@@ -22,7 +22,7 @@ use renderable;
 use renderer_base;
 use stdClass;
 use templatable;
-use report_lp\local\measurelist;
+use report_lp\local\measure_list;
 use report_lp\local\grouping;
 use report_lp\local\factories\url;
 
@@ -41,7 +41,7 @@ class add_item_menu implements renderable, templatable {
 
     protected $measureslist;
 
-    public function __construct(stdClass $course, measurelist $measureslist) {
+    public function __construct(stdClass $course, measure_list $measureslist) {
         $this->course = $course;
         $this->grouping = new grouping();
         $this->measureslist = $measureslist;

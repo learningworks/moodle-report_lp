@@ -38,7 +38,7 @@ class learner_progress {
 
     protected $measurelist;
 
-    public function __construct(stdClass $course, measurelist $measurelist) {
+    public function __construct(stdClass $course, measure_list $measurelist) {
         $this->course = $course;
         $this->measurelist = $measurelist;
         $this->itemfactory = new item_factory($course, $measurelist);

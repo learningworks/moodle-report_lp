@@ -31,7 +31,7 @@ if ($courseid <= 0) {
 }
 $course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
 $systemcontext = context_system::instance();
-$measurelist = new report_lp\local\measurelist(report_lp_get_supported_measures());
+$measurelist = new report_lp\local\measure_list(report_lp_get_supported_measures());
 $itemfactory = new report_lp\local\factories\item($course, $measurelist);
 $grouping = $itemfactory->create_grouping($id, $record);
 $pageurl = report_lp\local\factories\url::get_grouping_url($course, $id);

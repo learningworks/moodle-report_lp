@@ -27,7 +27,7 @@ $url = new moodle_url('/report/lp/configure.php', ['courseid' => $courseid]);
 $PAGE->set_url($url);
 
 $measures = report_lp_get_supported_measures();
-$measurelist = new report_lp\local\measurelist($measures);
+$measurelist = new report_lp\local\measure_list($measures);
 $learnerprogress = new report_lp\local\learner_progress($course, $measurelist);
 
 

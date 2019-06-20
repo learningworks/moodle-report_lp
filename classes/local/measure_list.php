@@ -30,7 +30,7 @@ use coding_exception;
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class measurelist implements Countable, IteratorAggregate {
+class measure_list implements Countable, IteratorAggregate {
 
     /**
      * @var array $measures Hold measures indexed on thier class names.

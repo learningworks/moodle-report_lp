@@ -21,7 +21,7 @@ defined('MOODLE_INTERNAL') || die();
 use stdClass;
 use coding_exception;
 use moodle_exception;
-use report_lp\local\measurelist;
+use report_lp\local\measure_list;
 use report_lp\local\grouping;
 use report_lp\local\measure;
 use report_lp\local\persistents\item_configuration;
@@ -34,11 +34,11 @@ class item {
     protected $course;
 
     /**
-     * @var measurelist $measurelist.
+     * @var measure_list $measurelist.
      */
     protected $measurelist;
 
-    public function __construct(stdClass $course, measurelist $measurelist) {
+    public function __construct(stdClass $course, measure_list $measurelist) {
         $this->course = $course;
         $this->measurelist = $measurelist;
     }
