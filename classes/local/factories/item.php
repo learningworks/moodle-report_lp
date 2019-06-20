@@ -26,6 +26,13 @@ use report_lp\local\grouping;
 use report_lp\local\measure;
 use report_lp\local\persistents\item_configuration;
 
+/**
+ * Factory item class resonsible for creating/loading groupings and measures.
+ *
+ * @package     report_lp
+ * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class item {
 
     /**
@@ -51,24 +58,27 @@ class item {
      * @return grouping
      * @throws \ReflectionException
      * @throws coding_exception
+     * @throws moodle_exception
      */
     public function create_grouping(int $id = 0, stdClass $record = null) : grouping {
+        $configuration = new item_configuration($id, $record);
+        if ($configuration->get('shortname') != grouping::get_short_name()) {
+            throw new moodle_exception('Trying to load incorrect class for configuration');
+        }
         return $this->create_item($id, $record, grouping::get_short_name());
     }
 
     /**
      * Build new or existing grouping or measure.
      *
-     * @param int $id
-     * @param stdClass|null $record
+     * @param item_configuration $configuration
      * @param string|null $shortname
      * @return grouping|measure
      * @throws \ReflectionException
      * @throws coding_exception
      */
-    public function create_item(int $id = 0, stdClass $record = null, string $shortname = null)  {
-        $configuration = new item_configuration($id, $record);
-        if ($id <= 0) {
+    public function create_item(item_configuration $configuration, string $shortname = null)  {
+        if ($configuration->get('id') <= 0) {
             if (is_null($shortname)) {
                 throw new coding_exception("Valid shortname required when creating a brand new item");
             }
@@ -105,9 +115,14 @@ class item {
      * @return measure
      * @throws \ReflectionException
      * @throws coding_exception
+     * @throws moodle_exception
      */
     public function create_measure(int $id = 0, stdClass $record = null, string $shortname = null) : measure  {
-        return $this->create_item($id, $record, $shortname);
+        $configuration = new item_configuration($id, $record);
+        if ($configuration->get('shortname') == grouping::get_short_name()) {
+            throw new moodle_exception('Trying to load incorrect class for configuration');
+        }
+        return $this->create_item($configuration, $shortname);
     }
 
     /**
