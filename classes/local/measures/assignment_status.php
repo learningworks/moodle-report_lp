@@ -29,7 +29,7 @@ use report_lp\local\persistents\item_configuration;
 /**
  * Assignment status of learner for an assignment instance.
  *
- * @package
+ * @package     report_lp
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -48,11 +48,12 @@ class assignment_status extends measure implements has_own_configuration {
     /**
      * Build default label. If has configuration use assignment name.
      *
-     * @return string|null
+     * @param string $format
+     * @return string
      * @throws \dml_exception
      * @throws coding_exception
      */
-    public function get_default_label(): ? string {
+    public function get_default_label($format = FORMAT_PLAIN): string {
         global $DB;
         $configuration = $this->get_configuration();
         if (is_null($configuration)) {
@@ -67,7 +68,7 @@ class assignment_status extends measure implements has_own_configuration {
             'name',
             ['id' => $extraconfigurationdata->id]
         );
-        return format_text($assignmentname);
+        return format_text($assignmentname, $format);
     }
 
     /**

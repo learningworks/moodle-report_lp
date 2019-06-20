@@ -49,14 +49,33 @@ class attendance_sessions_summary extends measure implements has_own_configurati
         return [];
     }
 
-    public function get_default_label(): ? string {
-        return get_string('defaultlabelattendancesessionssummary', 'report_lp');
+    /**
+     * Nothing fancy here just a language string.
+     *
+     * @param string $format
+     * @return string
+     * @throws coding_exception
+     */
+    public function get_default_label($format = FORMAT_PLAIN): string {
+        return format_text(get_string('defaultlabelattendancesessionssummary', 'report_lp'), $format);
     }
 
+    /**
+     * Name of measure.
+     *
+     * @return string
+     * @throws coding_exception
+     */
     public function get_name(): string {
         return get_string('attendancesessionssummary:measure:name', 'report_lp');
     }
 
+    /**
+     * Description of what data/information this measure displays.
+     *
+     * @return string
+     * @throws coding_exception
+     */
     public function get_description(): string {
         return get_string('attendancesessionssummary:measure:description', 'report_lp');
     }

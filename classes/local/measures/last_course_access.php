@@ -18,31 +18,58 @@ namespace report_lp\local\measures;
 
 defined('MOODLE_INTERNAL') || die();
 
+use coding_exception;
 use report_lp\local\measure;
 use report_lp\local\userlist;
 
 /**
  * The date and time learner last accessed a course instance.
  *
- * @package
+ * @package     report_lp
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class last_course_access extends measure {
 
+    /** @var string COMPONENT_TYPE Used to identify core subsystem or plugin type. Moodle frankenstyle. */
+    public const COMPONENT_TYPE = 'core';
+
+    /** @var string COMPONENT_NAME Used to for name of core subsystem or plugin. Moodle frankenstyle. */
+    public const COMPONENT_NAME = 'course';
+
     public function get_data_for_users(userlist $userlist) : ? array {
         return [];
     }
 
-    public function get_default_label(): ? string {
-        return get_string('lastcourseaccess:measure:label', 'report_lp');
+    /**
+     * Nothing fancy here just a language string.
+     *
+     * @param string $format
+     * @return string
+     * @throws coding_exception
+     */
+    public function get_default_label($format = FORMAT_PLAIN): string {
+        return format_text(get_string('lastcourseaccess:measure:label', 'report_lp'), $format);
     }
 
+    /**
+     * Name of measure.
+     *
+     * @return string
+     * @throws coding_exception
+     */
     public function get_name(): string {
         return get_string('lastcourseaccess:measure:name', 'report_lp');
     }
 
+    /**
+     * Description of what data/information this measure displays.
+     *
+     * @return string
+     * @throws coding_exception
+     */
     public function get_description(): string {
         return get_string('lastcourseaccess:measure:description', 'report_lp');
     }
+
 }

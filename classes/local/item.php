@@ -67,9 +67,10 @@ abstract class item {
      * The default text for heading or column heading for this item. This will likely be
      * dependent on information stored in $configuration.
      *
+     * @param string $format
      * @return string
      */
-    abstract public function get_default_label() : ? string;
+    abstract public function get_default_label($format = FORMAT_PLAIN) : string;
 
     /**
      * Get human friendly description of what this item does.

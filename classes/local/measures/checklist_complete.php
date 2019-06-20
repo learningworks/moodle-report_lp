@@ -52,11 +52,12 @@ class checklist_complete extends measure implements has_own_configuration {
     /**
      * Build default label. If has configuration use checklist name.
      *
-     * @return string|null
+     * @param string $format
+     * @return string
      * @throws \dml_exception
      * @throws coding_exception
      */
-    public function get_default_label(): ? string {
+    public function get_default_label($format = FORMAT_PLAIN): string {
         global $DB;
         $configuration = $this->get_configuration();
         if (is_null($configuration)) {
@@ -71,7 +72,7 @@ class checklist_complete extends measure implements has_own_configuration {
             'name',
             ['id' => $extraconfigurationdata->id]
         );
-        return format_text($checklistname);
+        return format_text($checklistname, $format);
     }
 
     /**

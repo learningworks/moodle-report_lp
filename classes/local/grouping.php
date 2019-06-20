@@ -32,7 +32,7 @@ class grouping extends item {
      */
     protected $shortname = 'grouping';
 
-    public function get_default_label() : ? string {
+    public function get_default_label($format = FORMAT_PLAIN) : string {
         $configuration = $this->get_configuration();
         if (is_null($configuration)) {
             $id = 0;
@@ -44,7 +44,7 @@ class grouping extends item {
         } else {
             $number = get_string('dotn', 'report_lp');
         }
-        return get_string('defaultlabelgrouping', 'report_lp', $number);
+        return format_text(get_string('defaultlabelgrouping', 'report_lp', $number), $format);
     }
 
     public function get_name(): string {
