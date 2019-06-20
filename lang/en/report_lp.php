@@ -51,8 +51,8 @@ $string['attendancesessionssummary:measure:description'] = 'Show how many sessio
 $string['checklistcompletion:measure:name'] = 'Checklist';
 $string['checklistcompletion:measure:description'] = 'Indicate if checklist is incompleted or completed.';
 
-$string['grade_category_activity_completion:measure:name'] = 'Grade category activity completion';
-$string['grade_category_activity_completion:measure:description'] = 'Grade category activity completion';
+$string['gradecategoryactivitycompletion:measure:name'] = 'Grade category activity completion';
+$string['gradecategoryactivitycompletion:measure:description'] = 'The percentage of activities completed by a learner that reside in a grade book category.';
 
 $string['lastcourseaccess:measure:label'] = 'Last course access';
 $string['lastcourseaccess:measure:name'] = 'Last course access';
@@ -89,3 +89,4 @@ $string['pleasechoose'] = 'Please choose an item from the list';
 
 $string['dotn'] = '...n';
 $string['noavailablemodules'] = 'No available {$a} modules. Either none in course or all are in use be this measure.';
+$string['nogradecategories'] = 'No available grade categories. Either none in course or all are in use be this measure.';
