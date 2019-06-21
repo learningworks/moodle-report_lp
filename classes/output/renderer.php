@@ -19,11 +19,22 @@ namespace report_lp\output;
 defined('MOODLE_INTERNAL') || die;
 
 use plugin_renderer_base;
+use report_lp\local\item_tree;
 
 class renderer extends plugin_renderer_base {
 
     public function render_add_item_menu(add_item_menu $additemmenu) {
         $data = $additemmenu->export_for_template($this);
         return parent::render_from_template('report_lp/add_item_menu', $data);
+    }
+
+    public function item_tree_configuration(item_tree $itemtree) {
+        $data = $itemtree->export_for_template($this);
+        return parent::render_from_template('report_lp/item_tree_configuration', $data);
+    }
+
+    public function no_items_configured(no_items_configured $thing) {
+        $data = $thing->export_for_template($this);
+        return parent::render_from_template('report_lp/no_items_configured', $data);
     }
 }
