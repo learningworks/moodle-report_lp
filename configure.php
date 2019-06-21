@@ -25,26 +25,19 @@ $PAGE->set_context($context);
 require_login($course);
 $url = new moodle_url('/report/lp/configure.php', ['courseid' => $courseid]);
 $PAGE->set_url($url);
-
 $measures = report_lp_get_supported_measures();
 $measurelist = new report_lp\local\measure_list($measures);
-$learnerprogress = new report_lp\local\learner_progress($course, $measurelist);
-
-
+$itemtree = new report_lp\local\item_tree($course, $measurelist);
 $renderer = $PAGE->get_renderer('report_lp');
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('configurereportfor', 'report_lp', $course->fullname));
 echo $renderer->render(new report_lp\output\add_item_menu($course, $measurelist));
-$tree = $learnerprogress->build_item_tree();
-echo "<br>";
-foreach ($tree as $item) {
-    echo html_writer::tag('strong', $item->get_label()) . '<br>';
-    if ($item instanceof report_lp\local\grouping) {
-        if ($item->has_children()) {
-            foreach ($item->get_children() as $childitem) {
-                echo html_writer::span($childitem->get_label()) . '<br>';
-            }
-        }
-    }
+if (count($itemtree) == 0) {
+    echo $renderer->render(new report_lp\output\no_items_configured());
+} else {
+    echo $renderer->render(new report_lp\output\item_tree_configuration($itemtree));
+    // For debugging as build template.
+    $out = new report_lp\output\item_tree_configuration($itemtree);
+    print_object($out->export_for_template($renderer));
 }
 echo $OUTPUT->footer();
