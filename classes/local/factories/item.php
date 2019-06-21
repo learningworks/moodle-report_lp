@@ -62,10 +62,13 @@ class item {
      */
     public function create_grouping(int $id = 0, stdClass $record = null) : grouping {
         $configuration = new item_configuration($id, $record);
+        if ($id == 0 || $record == null) {
+            $configuration->set('shortname', grouping::get_short_name());
+        }
         if ($configuration->get('shortname') != grouping::get_short_name()) {
             throw new moodle_exception('Trying to load incorrect class for configuration');
         }
-        return $this->create_item($id, $record, grouping::get_short_name());
+        return $this->create_item($configuration, grouping::get_short_name());
     }
 
     /**
