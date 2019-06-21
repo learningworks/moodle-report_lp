@@ -31,11 +31,10 @@ use report_lp\local\item;
  */
 class url {
 
-    public static function get_add_item_url(stdClass $course, item $item) : moodle_url {
-        return new moodle_url('/report/lp/item.php',
+    public static function get_delete_item_url(int $id) : moodle_url {
+        return new moodle_url('/report/lp/delete.php',
             [
-                'courseid' => $course->id,
-                'measure' => $item->get_short_name()
+                'id' => $id
             ]
         );
     }
@@ -64,7 +63,7 @@ class url {
     public static function get_measure_url(stdclass $course, int $id = 0, string $shortname = null) : moodle_url {
         $url =  new moodle_url('/report/lp/measure.php',
             [
-                'courseid' => $course->id,
+                'courseid' => $course->id
             ]
         );
         if ($id > 0) {
