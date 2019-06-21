@@ -27,7 +27,6 @@ use IteratorAggregate;
 /**
  * Simple tree, current only supports two levels of depth.
  *
- *
  * @package     report_lp
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -37,10 +36,13 @@ class item_tree implements Countable, IteratorAggregate {
     /** @var stdClass $course Course object. */
     protected $course;
 
+    /** @var item_factory $itemfactory */
     protected $itemfactory;
 
+    /** @var measure_list $measurelist */
     protected $measurelist;
 
+    /** @var array $tree Structure for holding items. */
     protected $tree = [];
 
     /**
