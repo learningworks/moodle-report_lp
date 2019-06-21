@@ -16,10 +16,24 @@
 
 namespace report_lp\local;
 
+use coding_exception;
+use pix_icon;
+use ArrayIterator;
+use Countable;
+use IteratorAggregate;
+
 defined('MOODLE_INTERNAL') || die();
 
-class grouping extends item {
+/**
+ * Grouping used for display purposes. Allows measures to be grouped together.
+ *
+ * @package     report_lp
+ * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class grouping extends item implements Countable, IteratorAggregate {
 
+    /** @var int MAXIMUM_ITEMS The maximum number of items/children a grouping can have. */
     public const MAXIMUM_ITEMS = 999;
 
     /**
@@ -28,10 +42,12 @@ class grouping extends item {
     protected $items = [];
 
     /**
-     * @var string $shortname Unique short name.
+     * Build default label.
+     *
+     * @param string $format
+     * @return string
+     * @throws coding_exception
      */
-    protected $shortname = 'grouping';
-
     public function get_default_label($format = FORMAT_PLAIN) : string {
         $configuration = $this->get_configuration();
         if (is_null($configuration)) {
@@ -47,35 +63,96 @@ class grouping extends item {
         return format_text(get_string('defaultlabelgrouping', 'report_lp', $number), $format);
     }
 
+    /**
+     * Item name.
+     *
+     * @return string
+     * @throws coding_exception
+     */
     public function get_name(): string {
         return get_string('grouping:measure:name', 'report_lp');
     }
 
+    /**
+     * Description of what this does.
+     *
+     * @return string
+     * @throws coding_exception
+     */
     public function get_description(): string {
         return get_string('grouping:measure:description', 'report_lp');
     }
 
-    public function add_item(item $item) {
-        $this->items[] = $item;
+    /**
+     * Add child item.
+     *
+     * @param item $item
+     * @param bool $keyed
+     * @return $this
+     * @throws coding_exception
+     */
+    public function add_item(item $item, $keyed = true) {
+        if ($keyed) {
+            $key = $item->get_configuration()->get('id');
+            $this->items[$key] = $item;
+        } else {
+            array_push($this->items, $item);
+        }
+        return $this;
     }
 
+    /**
+     * Has items in array.
+     *
+     * @return bool
+     */
     public function has_items() {
         return (bool) $this->count();
     }
 
+    /**
+     * Alias of has items.
+     *
+     * @return bool
+     */
     public function has_children() : bool {
         return $this->has_items();
     }
 
+    /**
+     * Count on items used by Countable interface.
+     *
+     * @return int
+     */
     public function count() : int {
         return count($this->items);
     }
 
+    /**
+     * Return the array of child items.
+     *
+     * @return array
+     */
     public function get_items() {
         return $this->items;
     }
 
+    /**
+     * Alias of get items.
+     *
+     * @return array
+     */
     public function get_children() : array {
         return $this->get_items();
     }
+
+    /**
+     * Return items array for iteration.
+     *
+     * @return array|\Traversable
+     */
+    public function getIterator() {
+        return new ArrayIterator($this->items);
+    }
+
 }
