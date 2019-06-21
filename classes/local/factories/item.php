@@ -156,7 +156,7 @@ class item {
      * @return array
      * @throws \dml_exception
      */
-    public function get_items(bool $keyed = true) : array {
+    public function get_ordered_items(bool $keyed = true) : array {
         $items = [];
         $configurations = item_configuration::get_ordered_items($this->course->id);
         foreach ($configurations as $configuration) {
