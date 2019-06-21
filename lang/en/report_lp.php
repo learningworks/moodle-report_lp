@@ -39,7 +39,7 @@ $string['lp:configure'] = 'Configure assignment to track';
 $string['lp:view'] = 'View report';
 
 $string['assignmentresubmitcount:measure:name'] = 'Assignment resubmits';
-$string['assignmentresubmitcount:measure:description'] = 'assignment_resubmit_count';
+$string['assignmentresubmitcount:measure:description'] = 'The number of resubmitted assignment attempts.';
 
 $string['assignmentstatus:measure:name'] = 'Assignment status';
 $string['assignmentstatus:measure:description'] = 'Uses grade display type for submitted assignments for example "Achieved" or "Not achieved". Indicates not submitted type states such as "Draft", "No submission", and "Reopened".';
@@ -90,3 +90,5 @@ $string['pleasechoose'] = 'Please choose an item from the list';
 $string['dotn'] = '...n';
 $string['noavailablemodules'] = 'No available {$a} modules. Either none in course or all are in use be this measure.';
 $string['nogradecategories'] = 'No available grade categories. Either none in course or all are in use be this measure.';
+$string['noitemsconfigured'] = 'No items configured';
+$string['noitemsconfigured:description'] = 'Use the grouping and measures controls to start configuring the learner progress report';
