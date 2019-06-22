@@ -58,11 +58,9 @@ class item_tree_configuration implements renderable, templatable {
                         }
                         $component->isgrouping = 1;
                         $component->grouping = $children;
-                        $data->items[] = $component;
                     }
-                } else {
-                    $data->items[] = $component;
                 }
+                $data->items[] = $component;
             }
         }
         return $data;
