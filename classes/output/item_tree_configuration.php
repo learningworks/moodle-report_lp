@@ -47,6 +47,7 @@ class item_tree_configuration implements renderable, templatable {
                 $component->label = $item->get_label();
                 $component->editaction = $this->get_edit_action($item);
                 if ($item instanceof grouping) {
+                    $component->isgrouping = 1;
                     $component->haschildren = 0;
                     if ($item->has_children()) {
                         $component->haschildren = 1;
@@ -56,7 +57,6 @@ class item_tree_configuration implements renderable, templatable {
                             $childcomponent->label = $childitem->get_label();
                             $children[] = $childcomponent;
                         }
-                        $component->isgrouping = 1;
                         $component->grouping = $children;
                     }
                 }
