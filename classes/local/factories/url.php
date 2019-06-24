@@ -31,10 +31,12 @@ use report_lp\local\item;
  */
 class url {
 
-    public static function get_item_action_url(int $id, string $action = '') : moodle_url {
+    public static function get_item_action_url(int $courseid, int $itemid, string $action = '') : moodle_url {
         $url =  new moodle_url('/report/lp/configure.php',
             [
-                'id' => $id
+                'courseid' => $courseid,
+                'itemid' => $itemid,
+                'sesskey' => sesskey()
             ]
         );
         if (!empty($action)) {
