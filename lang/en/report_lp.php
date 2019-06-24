@@ -92,3 +92,16 @@ $string['noavailablemodules'] = 'No available {$a} modules. Either none in cours
 $string['nogradecategories'] = 'No available grade categories. Either none in course or all are in use be this measure.';
 $string['noitemsconfigured'] = 'No items configured';
 $string['noitemsconfigured:description'] = 'Use the grouping and measures controls to start configuring the learner progress report';
+
+$string['moveup'] = 'Move item up';
+$string['movedown'] = 'Move item down';
+$string['deleteitem'] = 'Delete item';
+$string['configureitem'] = 'Configure item';
+$string['deletegroupingitem'] = '
+<h5>Delete grouping {$a}</h5>
+<p>Deleting a grouping will also delete any measures associated to the grouping</p>';
+$string['deletemeasureitem'] = '
+<h5>Delete measure {$a}</h5>';
+
+
+

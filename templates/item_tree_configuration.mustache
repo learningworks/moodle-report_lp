@@ -18,23 +18,31 @@
     <ul>
         {{#items}}
             {{#isgrouping}}
-                <div>
-                <li>
-                    {{label}}
-                    {{#haschildren}}
-                        <ul>
-                            {{#grouping}}
-                                <li><div>{{label}}</div></li>
-                            {{/grouping}}
-                        </ul>
-                    {{/haschildren}}
+                <li class="list-item">
+                    <div>
+                        {{label}}
+                        {{>report_lp/item_tree_configuration_actions}}
+                        {{#haschildren}}
+                            <ul>
+                                {{#grouping}}
+                                    <li class="list-item">
+                                        <div>{{label}}
+                                            {{>report_lp/item_tree_configuration_actions}}
+                                        </div>
+                                    </li>
+                                {{/grouping}}
+                            </ul>
+                        {{/haschildren}}
+                    </div>
                 </li>
-                </div>
             {{/isgrouping}}
             {{^isgrouping}}
-                <li><div>{{label}}</div></li>
+                <li class="list-item">
+                    <div>{{label}}
+                        {{>report_lp/item_tree_configuration_actions}}
+                    </div>
+                </li>
             {{/isgrouping}}
         {{/items}}
     </ul>
 </div>
-
