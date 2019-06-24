@@ -144,6 +144,19 @@ class item_configuration extends persistent {
     }
 
     /**
+     * Get children items of current item.
+     *
+     * @return persistent[]
+     * @throws coding_exception
+     */
+    public function get_children() {
+        return static::get_records(
+            ['parentitemid' => $this->raw_get('id')],
+            'sortorder'
+        );
+    }
+
+    /**
      * Get next sort order value for a child of parent at depth.
      *
      * @return mixed
