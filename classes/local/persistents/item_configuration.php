@@ -61,11 +61,11 @@ class item_configuration extends persistent {
             ],
             'depth' => [
                 'type' => PARAM_INT,
-                'default' => 1
+                'default' => 0
             ],
             'path' => [
                 'type' => PARAM_TEXT,
-                'default' => ''
+                'default' => '/'
             ],
             'sortorder' => [
                 'type' => PARAM_INT,
