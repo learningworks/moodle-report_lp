@@ -58,3 +58,27 @@ function report_lp_get_supported_measures() {
         new report_lp\local\measures\last_course_access()
     ];
 }
+
+/**
+ * Polyfill array_key_first() PHP 7 >= 7.3 method.
+ */
+if (!function_exists('array_key_first')) {
+    function array_key_first(array $array) {
+        foreach($array as $key => $unused) {
+            return $key;
+        }
+        return null;
+    }
+}
+
+/**
+ * Polyfill array_key_last() PHP 7 >= 7.3 method.
+ */
+if (!function_exists('array_key_last')) {
+    function array_key_last($array) {
+        if (!is_array($array) || empty($array)) {
+            return null;
+        }
+        return array_keys($array)[count($array) - 1];
+    }
+}
