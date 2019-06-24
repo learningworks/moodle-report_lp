@@ -31,12 +31,16 @@ use report_lp\local\item;
  */
 class url {
 
-    public static function get_delete_item_url(int $id) : moodle_url {
-        return new moodle_url('/report/lp/delete.php',
+    public static function get_item_action_url(int $id, string $action = '') : moodle_url {
+        $url =  new moodle_url('/report/lp/configure.php',
             [
                 'id' => $id
             ]
         );
+        if (!empty($action)) {
+            $url->param('action', $action);
+        }
+        return $url;
     }
 
     public static function get_config_url(stdClass $course) : moodle_url {
@@ -48,24 +52,22 @@ class url {
         return $url;
     }
 
-    public static function get_grouping_url(stdClass $course, int $id = 0) : moodle_url {
-        $url =  new moodle_url('/report/lp/grouping.php',
-            [
-                'courseid' => $course->id
-            ]
-        );
+    public static function get_grouping_url(stdClass $course = null, int $id = 0) : moodle_url {
+        $url =  new moodle_url('/report/lp/grouping.php');
+        if (!is_null($course)) {
+            $url->param('courseid', $course->id);
+        }
         if ($id > 0) {
             $url->param('id', $id);
         }
         return $url;
     }
 
-    public static function get_measure_url(stdclass $course, int $id = 0, string $shortname = null) : moodle_url {
-        $url =  new moodle_url('/report/lp/measure.php',
-            [
-                'courseid' => $course->id
-            ]
-        );
+    public static function get_measure_url(stdclass $course = null, int $id = 0, string $shortname = null) : moodle_url {
+        $url =  new moodle_url('/report/lp/measure.php');
+        if (!is_null($course)) {
+            $url->param('courseid', $course->id);
+        }
         if ($id > 0) {
             $url->param('id', $id);
         }
