@@ -100,8 +100,10 @@ class assignment_status extends measure implements has_own_configuration {
      */
     protected function get_excluded_assignments() {
         $excludes = [];
-        $configurations = item_configuration::get_records(
+        $configurations = item_configuration::get_records_select(
+            "id <> :id AND courseid = :courseid AND shortname = :shortname",
             [
+                'id' => $this->get_configuration()->get('id'),
                 'courseid' => $this->get_configuration()->get('courseid'),
                 'shortname' => static::get_short_name()
             ]

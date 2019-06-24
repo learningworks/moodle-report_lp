@@ -89,8 +89,10 @@ class attendance_sessions_summary extends measure implements has_own_configurati
      */
     protected function get_excluded_attendances() {
         $excludes = [];
-        $configurations = item_configuration::get_records(
+        $configurations = item_configuration::get_records_select(
+            "id <> :id AND courseid = :courseid AND shortname = :shortname",
             [
+                'id' => $this->get_configuration()->get('id'),
                 'courseid' => $this->get_configuration()->get('courseid'),
                 'shortname' => static::get_short_name()
             ]

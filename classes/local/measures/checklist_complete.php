@@ -104,8 +104,10 @@ class checklist_complete extends measure implements has_own_configuration {
      */
     protected function get_excluded_checklists() {
         $excludes = [];
-        $configurations = item_configuration::get_records(
+        $configurations = item_configuration::get_records_select(
+            "id <> :id AND courseid = :courseid AND shortname = :shortname",
             [
+                'id' => $this->get_configuration()->get('id'),
                 'courseid' => $this->get_configuration()->get('courseid'),
                 'shortname' => static::get_short_name()
             ]
@@ -231,6 +233,7 @@ class checklist_complete extends measure implements has_own_configuration {
         } else {
             $defaults['checklist'] = $extraconfigurationdata->id;
         }
+        print_object($defaults);
         return $defaults;
     }
 
