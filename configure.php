@@ -24,29 +24,19 @@ $confirmed  = optional_param('confirmed', 0, PARAM_INT);
 
 $course = get_course($courseid);
 $systemcontext = context_system::instance();
-$coursecontext = context_course::instance($course->id, MUST_EXIST);
 
-
-
-
-
-$reportconfiguration = report_lp\local\persistents\report_configuration::get_record(['courseid' => $courseid]);
-// Setup a new report configuration instance.
-if (false === $reportconfiguration) {
-    $reportconfiguration = new report_lp\local\persistents\report_configuration();
-    $reportconfiguration->set('courseid', $courseid);
-    $reportconfiguration->save();
-}
 $PAGE->set_context($systemcontext);
 require_login($course);
 require_capability('report/lp:configure', $systemcontext);
 $url = report_lp\local\factories\url::get_config_url($course);
 $PAGE->set_url($url);
+
 $css = new moodle_url('/report/lp/scss/styles.css');
 $PAGE->requires->css($css);
+
 $itemtypelist = new report_lp\local\item_type_list(report_lp_get_supported_measures());
 $learnerprogress = new report_lp\local\learner_progress($course, $itemtypelist);
-$itemfactory = new report_lp\local\factories\item($course, $itemtypelist);
+$itemfactory = $learnerprogress->get_item_factory();
 $itemtree = new report_lp\local\item_tree($course, $itemtypelist);
 $renderer = $PAGE->get_renderer('report_lp');
 switch ($action) {
@@ -102,10 +92,16 @@ switch ($action) {
 }
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('configurereportfor', 'report_lp', $course->fullname));
-echo $renderer->render(new report_lp\output\add_item_menu($course, $itemtypelist));
-if (count($itemtree) == 0) {
+if (!report_lp\local\learner_progress::report_configuration_exists($course->id)) {
+    echo $renderer->render_jumbotron(
+        get_string('noreportconfiguration', 'report_lp'),
+        get_string('instantiatenewreportquestion', 'report_lp', $course->fullname),
+        report_lp\local\factories\button::create_instantiate_button($courseid)
+    );
+} else if (count($itemtree) == 0) {
     echo $renderer->render(new report_lp\output\no_items_configured());
 } else {
+    echo $renderer->render(new report_lp\output\add_item_menu($course, $itemtypelist));
     echo $renderer->render(new report_lp\output\item_tree_configuration($itemtree));
 }
 echo $OUTPUT->footer();

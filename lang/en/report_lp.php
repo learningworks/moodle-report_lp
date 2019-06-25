@@ -104,4 +104,8 @@ $string['deletemeasureitem'] = '
 <h5>Delete measure {$a}</h5>';
 
 
+$string['noreportconfiguration'] = 'Report configuration does not exist';
+$string['instantiatenewreportquestion'] = 'Would you like to instantiate a new report configuration for {$a}?';
+$string['instantiate'] = 'Instantiate...';
+
 
