@@ -39,8 +39,8 @@ class item_tree implements Countable, IteratorAggregate {
     /** @var item_factory $itemfactory */
     protected $itemfactory;
 
-    /** @var measure_list $measurelist */
-    protected $measurelist;
+    /** @var item_type_list $itemtypelist */
+    protected $itemtypelist;
 
     /** @var array $tree Structure for holding items. */
     protected $tree = [];
@@ -49,14 +49,14 @@ class item_tree implements Countable, IteratorAggregate {
      * item_tree Constructor.
      *
      * @param stdClass $course
-     * @param measure_list $measurelist
+     * @param item_type_list $itemtypelist
      * @throws \coding_exception
      * @throws \dml_exception
      */
-    public function __construct(stdClass $course, measure_list $measurelist) {
+    public function __construct(stdClass $course, item_type_list $itemtypelist) {
         $this->course = $course;
-        $this->measurelist = $measurelist;
-        $this->itemfactory = new item_factory($course, $measurelist);
+        $this->itemtypelist = $itemtypelist;
+        $this->itemfactory = new item_factory($course, $itemtypelist);
         $this->build();
     }
 

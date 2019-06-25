@@ -22,7 +22,7 @@ use renderable;
 use renderer_base;
 use stdClass;
 use templatable;
-use report_lp\local\measure_list;
+use report_lp\local\item_type_list;
 use report_lp\local\grouping;
 use report_lp\local\factories\url;
 
@@ -39,12 +39,12 @@ class add_item_menu implements renderable, templatable {
 
     protected $grouping;
 
-    protected $measureslist;
+    protected $itemtypelist;
 
-    public function __construct(stdClass $course, measure_list $measureslist) {
+    public function __construct(stdClass $course, item_type_list $itemtypelist) {
         $this->course = $course;
         $this->grouping = new grouping();
-        $this->measureslist = $measureslist;
+        $this->itemtypelist = $itemtypelist;
     }
 
     public function export_for_template(renderer_base $output) {
@@ -53,7 +53,7 @@ class add_item_menu implements renderable, templatable {
         $data->groupingurl = url::get_grouping_url($this->course)->out(false);
         $data->measuresdropdownname = get_string('measures', 'report_lp');
         $data->measuresdropdownitems = [];
-        foreach ($this->measureslist as $measure) {
+        foreach ($this->itemtypelist->get_measures() as $measure) {
             $item = new stdClass();
             $item->measurename = $measure->get_name();
             $item->measureurl = url::get_measure_url($this->course, 0, $measure->get_short_name())->out(false);

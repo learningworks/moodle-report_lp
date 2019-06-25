@@ -21,13 +21,13 @@ defined('MOODLE_INTERNAL') || die();
 use stdClass;
 use coding_exception;
 use moodle_exception;
-use report_lp\local\measure_list;
 use report_lp\local\grouping;
+use report_lp\local\item_type_list;
 use report_lp\local\measure;
 use report_lp\local\persistents\item_configuration;
 
 /**
- * Factory item class resonsible for creating/loading groupings and measures.
+ * Simple factory item class resonsible for creating/loading groupings and measures.
  *
  * @package     report_lp
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
@@ -40,14 +40,16 @@ class item {
      */
     protected $course;
 
-    /**
-     * @var measure_list $measurelist.
-     */
-    protected $measurelist;
+    /** @var item_type_list $itemtypelist */
+    protected $itemtypelist;
 
-    public function __construct(stdClass $course, measure_list $measurelist) {
+    public function __construct(stdClass $course, item_type_list $itemtypelist) {
         $this->course = $course;
-        $this->measurelist = $measurelist;
+        $this->itemtypelist = $itemtypelist;
+    }
+
+    public function create_root_item() {
+
     }
 
     /**
@@ -93,7 +95,7 @@ class item {
                 $configuration->set('shortname', $item::get_short_name());
                 $configuration->set('isgrouping', 1);
             } else {
-                $item = $this->measurelist->find_by_short_name($shortname);
+                $item = $this->itemtypelist->find_measure_by_short_name($shortname);
                 $configuration->set('classname', $item::get_class_name());
                 $configuration->set('shortname', $item::get_short_name());
             }
@@ -102,7 +104,7 @@ class item {
             if ($configuration->get('shortname') == grouping::get_short_name()) {
                 $item = new grouping();
             } else {
-                $item = $this->measurelist->find_by_short_name($configuration->get('shortname'));
+                $item = $this->itemtypelist->find_measure_by_short_name($configuration->get('shortname'));
             }
         }
         $item->set_configuration($configuration);

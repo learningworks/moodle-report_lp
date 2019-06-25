@@ -33,8 +33,8 @@ if ($courseid <= 0) {
 $course = $DB->get_record('course', ['id' => $courseid], '*', MUST_EXIST);
 $coursecontext = context_course::instance($course->id);
 $systemcontext = context_system::instance();
-$measurelist = new report_lp\local\measure_list(report_lp_get_supported_measures());
-$itemfactory = new report_lp\local\factories\item($course, $measurelist);
+$itemtypelist = new report_lp\local\item_type_list(report_lp_get_supported_measures());
+$itemfactory = new report_lp\local\factories\item($course, $itemtypelist);
 $measure = $itemfactory->create_measure($id, $record, $shortname);
 $pageurl = report_lp\local\factories\url::get_measure_url($course, $id, $shortname);
 $configurl = report_lp\local\factories\url::get_config_url($course);
