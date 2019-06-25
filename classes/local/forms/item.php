@@ -20,6 +20,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use coding_exception;
 use moodleform;
+use report_lp\local\grouping;
 use report_lp\local\measure;
 use report_lp\local\item_type_list;
 use stdClass;
@@ -84,7 +85,10 @@ class item extends moodleform {
 
         $mform->addElement('header', 'general', get_string('generalsettings', 'report_lp'));
 
-        if ($this->item instanceof measure) {
+        if ($this->item instanceof grouping) {
+            $mform->addElement('hidden', 'parentitemid');
+            $mform->setType('parentitemid', PARAM_INT);
+        } else {
             $options = $this->get_grouping_options();
             $mform->addElement('select', 'parentitemid', get_string('parentgrouping', 'report_lp'), $options);
         }
@@ -118,6 +122,7 @@ class item extends moodleform {
      * Set default values on form elements.
      *
      * @return array
+     * @throws coding_exception
      */
     protected function get_default_values() {
         /** @var item_configuration $itemconfiguration */
@@ -136,6 +141,14 @@ class item extends moodleform {
             'visibletoinstance' => $data->visibletoinstance,
             'visibletolearner' => $data->visibletolearner,
         ];
+        // Grouping always have a parentitemid of the root configuraions as only depth of 2 levels supported.
+        if ($this->item instanceof grouping) {
+            $rootitem = $this->item->get_configuration()->get_root_configuration();
+            if (!$rootitem) {
+                throw new coding_exception('Invalid root configuration item');
+            }
+            $defaults['parentitemid'] = $rootitem->get('id');
+        }
         // Include custom defaults for item with own configuration.
         if ($this->item instanceof has_own_configuration) {
             $itemdefaults = $this->item->moodlequickform_get_extra_configuration_defaults();
