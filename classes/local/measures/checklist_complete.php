@@ -233,7 +233,6 @@ class checklist_complete extends measure implements has_own_configuration {
         } else {
             $defaults['checklist'] = $extraconfigurationdata->id;
         }
-        print_object($defaults);
         return $defaults;
     }
 
