@@ -95,6 +95,8 @@ class item_tree implements Countable, IteratorAggregate {
                     $parentitem = $this->tree[$parentitemid];
                     /** @var grouping $parentitem */
                     $parentitem->add_item($item);
+                } else {
+                    $this->tree[$id] = $item;
                 }
             } else {
                 $this->tree[$id] = $item;
