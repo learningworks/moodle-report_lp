@@ -20,8 +20,23 @@ defined('MOODLE_INTERNAL') || die;
 
 use plugin_renderer_base;
 use report_lp\local\item_tree;
+use stdClass;
 
 class renderer extends plugin_renderer_base {
+
+    public function render_jumbotron($heading, $paragraphtop, $paragraphbottom = null, $button = null) {
+        $data = new stdClass();
+        $data->heading = $heading;
+        $data->paragraphtop = $paragraphtop;
+        $data->diaplayhr = 0;
+        if (!is_null($paragraphbottom) || !is_null($button)) {
+            $data->diaplayhr = 1;
+        }
+        $data->paragraphbottom = $paragraphbottom;
+        $data->button = $button;
+
+        return parent::render_from_template('report_lp/jumbotron', $data);
+    }
 
     public function render_add_item_menu(add_item_menu $additemmenu) {
         $data = $additemmenu->export_for_template($this);
