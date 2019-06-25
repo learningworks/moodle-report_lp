@@ -102,7 +102,6 @@ class item_configuration extends persistent {
      * @throws coding_exception
      */
     protected function after_create() {
-        $this->raw_set('path', $this->build_path());
         $this->update();
     }
 
@@ -122,7 +121,7 @@ class item_configuration extends persistent {
      * @throws coding_exception
      */
     protected function before_update() {
-        $this->raw_set('path', $this->build_path());
+        $this->set_path_and_depth();
     }
 
     /**
@@ -131,16 +130,22 @@ class item_configuration extends persistent {
      * @return string
      * @throws coding_exception
      */
-    protected function build_path() {
+    private function set_path_and_depth() {
         $id = $this->raw_get('id');
         if ($id <= 0) {
             throw new coding_exception('Valid record required');
         }
-        $parentitemid = $this->raw_get('parentitemid');
-        if ($parentitemid > 0) {
-            return '/' . $parentitemid . '/' . $id;
+        $pathitems = [];
+        while (true) {
+            $item = new static($id);
+            array_unshift($pathitems, $item->get('id'));
+            $id = $item->get('parentitemid');
+            if ($id == 0) {
+                break;
+            }
         }
-        return '/' . $id;
+        $this->raw_set('depth', count($pathitems));
+        $this->raw_set('path', implode('/', $pathitems));
     }
 
     /**
