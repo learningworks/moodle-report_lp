@@ -152,7 +152,7 @@ class item extends moodleform {
      * @throws coding_exception
      */
     protected function get_grouping_options() {
-        $options = [0 => format_text($this->course->fullname)] ;
+        $options = [];
         $itemfactory = new item_factory($this->course, new item_type_list(report_lp_get_supported_measures()));
         foreach ($itemfactory->get_groupings() as $grouping) {
             $configuration = $grouping->get_configuration();
