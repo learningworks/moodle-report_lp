@@ -96,24 +96,20 @@ class item_configuration extends persistent {
     }
 
     /**
-     * Set properties that rely on id property.
+     * Set internal properties that rely on id and parentitemid properties.
      *
      * @throws \core\invalid_persistent_exception
-     * @throws coding_exception
-     */
-    protected function after_create() {
-        $this->update();
-    }
-
-    /**
-     * Set sort order before create.
-     *
      * @throws \dml_exception
      * @throws coding_exception
      */
-    protected function before_create() {
-        $this->raw_set('sortorder', $this->get_next_sort_order_value());
+    protected function after_create() {
+        $this->raw_set('path', $this->construct_path());
+        $this->raw_set('depth', $this->construct_depth());
+        $depth = $this->get_max_sort_order_at_depth();
+        $this->raw_set('sortorder', ++$depth);
+        $this->update();
     }
+
 
     /**
      * Sets other properties that reply id property.
@@ -121,16 +117,43 @@ class item_configuration extends persistent {
      * @throws coding_exception
      */
     protected function before_update() {
-        $this->set_path_and_depth();
+        $this->raw_set('path', $this->construct_path());
+        $this->raw_set('depth', $this->construct_depth());
     }
 
     /**
-     * Build parent/child path.
+     * Construct depth based of path.
+     *
+     * @param string|null $path
+     * @return int
+     * @throws coding_exception
+     */
+    private function construct_depth(string $path = null) {
+        $id = $this->raw_get('id');
+        if ($id <= 0) {
+            throw new coding_exception('Valid record required');
+        }
+        if (empty($path)) {
+            $path = $this->raw_get('path');
+        }
+        $depth = 0;
+        if (!empty($path)) {
+            $pathitems = explode('/', $path);
+            if ($pathitems) {
+                $depth = count($pathitems);
+            }
+        }
+        return $depth;
+    }
+
+    /**
+     * Builds a path of item configuration ids. Will add parentitemids until until
+     * hit the root grouping.
      *
      * @return string
      * @throws coding_exception
      */
-    private function set_path_and_depth() {
+    private function construct_path() {
         $id = $this->raw_get('id');
         if ($id <= 0) {
             throw new coding_exception('Valid record required');
@@ -144,8 +167,7 @@ class item_configuration extends persistent {
                 break;
             }
         }
-        $this->raw_set('depth', count($pathitems));
-        $this->raw_set('path', implode('/', $pathitems));
+        return implode('/', $pathitems);
     }
 
     /**
@@ -164,24 +186,29 @@ class item_configuration extends persistent {
     /**
      * Get next sort order value for a child of parent at depth.
      *
+     * @param int|null $depth
      * @return mixed
      * @throws \dml_exception
      * @throws coding_exception
      */
-    protected function get_next_sort_order_value() {
+    protected function get_max_sort_order_at_depth(int $depth = null) {
         global $DB;
+        $courseid = $this->raw_get('courseid');
+        if ($courseid <= 0) {
+            throw new coding_exception('Invalid courseid');
+        }
         $sql = 'SELECT MAX(sortorder) 
                   FROM {' . static::TABLE . '} 
                  WHERE courseid = :courseid 
                    AND depth = :depth';
+        if (is_null($depth)) {
+            $depth = $this->raw_get('depth');
+        }
         $params = [
-            'courseid' => $this->raw_get('courseid'),
-            'depth' => $this->raw_get('depth')
+            'courseid' => $courseid,
+            'depth' => $depth
         ];
-        $sortorder = $DB->get_field_sql($sql, $params);
-        // Increment.
-        $sortorder++;
-        return $sortorder;
+        return (int) $DB->get_field_sql($sql, $params);
     }
 
     /**
@@ -233,21 +260,17 @@ class item_configuration extends persistent {
     }
 
     /**
-     * The parentitemid determines depth so set depth here. Depth
-     * nly supports a maximum of two levels.
+     * Get the root configuration item.
      *
-     * @param $value
-     * @return $this
+     * @return persistent|false
      * @throws coding_exception
      */
-    protected function set_parentitemid($value) {
-        $this->raw_set('parentitemid', $value);
-        if ($value > 0) {
-            $this->raw_set('depth', 2);
-        } else {
-            $this->raw_set('depth', 1);
+    public function get_root_configuration() {
+        $courseid = $this->get('courseid');
+        if ($courseid <= 0) {
+            throw new coding_exception('Invalid courseid');
         }
-        return $this;
+        return static::get_record(['courseid' => $courseid, 'parentitemid' => 0]);
     }
 
     /**
