@@ -48,8 +48,39 @@ class item {
         $this->itemtypelist = $itemtypelist;
     }
 
-    public function create_root_item() {
+    /**
+     * @return grouping
+     * @throws \ReflectionException
+     * @throws coding_exception
+     */
+    public function get_root_grouping() {
+        $rootconfiguration = item_configuration::get_record(
+            ['courseid' => $this->course->id, 'parentitemid' => 0]
+        );
+        if (!$rootconfiguration) {
+            $rootconfiguration = new item_configuration();
+            $rootconfiguration->set('usecustomlabel', 1);
+            $rootconfiguration->set('customlabel', format_text($this->course->fullname, FORMAT_PLAIN));
+        }
+        return $this->get_grouping($rootconfiguration);
+    }
 
+    /**
+     * @param item_configuration $configuration
+     * @return grouping
+     * @throws \ReflectionException
+     * @throws coding_exception
+     */
+    public function get_grouping(item_configuration $configuration) : grouping {
+        $grouping = new grouping();
+        if ($configuration->get('id') <= 0) {
+            $configuration->set('courseid', $this->course->id);
+            $configuration->set('classname', $grouping::get_class_name());
+            $configuration->set('shortname', $grouping::get_short_name());
+            $configuration->set('isgrouping', 1);
+        }
+        $grouping->set_configuration($configuration);
+        return $grouping;
     }
 
     /**
