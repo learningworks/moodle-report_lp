@@ -89,16 +89,15 @@ class item_tree implements Countable, IteratorAggregate {
             $configuration = $item->get_configuration();
             $id = $configuration->get('id');
             $parentitemid = $configuration->get('parentitemid');
-            $depth = $configuration->get('depth');
-            if ($parentitemid == 0 && $depth == 1) {
-                $this->tree[$id] = $item;
-            } else {
-                $parentitem = $this->tree[$parentitemid];
-                $parentisgrouping = $parentitem->get_configuration()->get('isgrouping');
-                if ($parentisgrouping) {
+            $isgrouping = $configuration->get('isgrouping');
+            if ($isgrouping) {
+                if ($parentitemid) {
+                    $parentitem = $this->tree[$parentitemid];
                     /** @var grouping $parentitem */
                     $parentitem->add_item($item);
                 }
+            } else {
+                $this->tree[$id] = $item;
             }
         }
         return $this->tree;
