@@ -46,18 +46,47 @@ class item_tree_configuration implements renderable, templatable {
         $this->itemtree = $itemtree;
     }
 
+    protected static function build_line_item(item $item) {
+        $lineitem = new stdClass();
+        $lineitem->id = $item->get_configuration()->get('id');
+        $lineitem->isroot = $item->is_root_item();
+        $lineitem->label = $item->get_label();
+        $lineitem->depth = $item->get_depth();
+        $lineitem->sortorder = $item->get_sort_order();
+        $lineitem->actions = [];
+        return $lineitem;
+    }
+
     /**
-     * Get stdClass loaded with default values.
+     * Recursively pass groupings in tree flatting into 1 dimensional array.
      *
-     * @return stdClass
+     * @param grouping $grouping
+     * @return array
+     * @throws \ReflectionException
+     * @throws \coding_exception
      */
-    protected static function get_base_item() {
-        $item = new stdClass();
-        $item->isfirst = 0;
-        $item->islast = 0;
-        $item->isgrouping = 0;
-        $item->haschildren = 0;
-        return $item;
+    protected static function process_grouping(grouping $grouping) {
+        $lineitem = static::build_line_item($grouping);
+        $lineitem->isgrouping = 1;
+        if (!$lineitem->isroot) {
+            $lineitem->actions = static::get_actions_for_item($grouping);
+        }
+        $lineitems[] = $lineitem;
+        if ($grouping->has_children()) {
+            foreach ($grouping->get_children() as $child) {
+                // Nested grouping.
+                if ($child instanceof grouping) {
+                    $childlineitems = static::process_grouping($child);
+                    $lineitems = array_merge($lineitems, $childlineitems);
+                } else {
+                    $lineitem = static::build_line_item($child);
+                    $lineitem->isgrouping = 0;
+                    $lineitem->actions = static::get_actions_for_item($child);
+                    $lineitems[] = $lineitem;
+                }
+            }
+        }
+        return $lineitems;
     }
 
     /**
@@ -70,45 +99,15 @@ class item_tree_configuration implements renderable, templatable {
      */
     public function export_for_template(renderer_base $output) {
         $data = new stdClass();
-        $data->items = [];
-        if (count($this->itemtree) > 0) {
-            foreach ($this->itemtree as $item) {
-                $component = static::get_base_item();
-                $component->label = $item->get_label();
-                $component->actions = self::get_item_buttons($item);
-                if ($item instanceof grouping) {
-                    $component->isgrouping = 1;
-                    if ($item->has_children()) {
-                        $component->haschildren = 1;
-                        $children = [];
-                        foreach ($item as $childitem) {
-                            $childcomponent = static::get_base_item();
-                            $childcomponent->label = $childitem->get_label();
-                            $childcomponent->actions = self::get_item_buttons($childitem);
-                            $children[] = $childcomponent;
-                        }
-                        $first = array_key_first($children);
-                        if (!is_null($first)) {
-                            $children[$first]->isfirst = 1;
-                        }
-                        $last = array_key_last($children);
-                        if (!is_null($last)) {
-                            $children[$last]->islast = 1;
-                        }
-                        $component->grouping = $children;
-                    }
-                }
-                $data->items[] = $component;
-            }
-            $first = array_key_first($data->items);
-            if (!is_null($first)) {
-                $data->items[$first]->isfirst = 1;
-            }
-            $last = array_key_last($data->items);
-            if (!is_null($last)) {
-                $data->items[$last]->islast = 1;
+        $lineitems = [];
+        // Flatten the tree of items.
+        foreach ($this->itemtree as $item) {
+            if ($item instanceof grouping) {
+                $groupinglineitems = static::process_grouping($item);
+                $lineitems = array_merge($lineitems, $groupinglineitems);
             }
         }
+        $data->lineitems = $lineitems;
         return $data;
     }
 
@@ -120,12 +119,12 @@ class item_tree_configuration implements renderable, templatable {
      * @throws \ReflectionException
      * @throws \coding_exception
      */
-    protected function get_item_buttons(item $item) {
+    public static function get_actions_for_item(item $item) {
         $buttons = new stdClass();
-        $buttons->moveup = self::get_move_up_button($item);
-        $buttons->movedown = self::get_move_down_button($item);
-        $buttons->configure = self::get_configure_button($item);
-        $buttons->delete = self::get_delete_button($item);
+        $buttons->moveup = static::get_move_up_button($item);
+        $buttons->movedown = static::get_move_down_button($item);
+        $buttons->configure = static::get_configure_button($item);
+        $buttons->delete = static::get_delete_button($item);
         return $buttons;
     }
 
@@ -138,7 +137,7 @@ class item_tree_configuration implements renderable, templatable {
      * @throws \ReflectionException
      * @throws \coding_exception
      */
-    protected function get_configure_button(item $item) {
+    protected static function get_configure_button(item $item) {
         $button = new stdClass();
         $button->name = 'configure';
         $button->title = get_string('configureitem', 'report_lp');
@@ -159,7 +158,7 @@ class item_tree_configuration implements renderable, templatable {
      * @return stdClass
      * @throws \coding_exception
      */
-    protected function get_delete_button(item $item) {
+    protected static function get_delete_button(item $item) {
         $button = new stdClass();
         $button->name = 'delete';
         $button->title = get_string('deleteitem', 'report_lp');
@@ -181,7 +180,7 @@ class item_tree_configuration implements renderable, templatable {
      * @return stdClass
      * @throws \coding_exception
      */
-    protected function get_move_up_button(item $item) {
+    protected static function get_move_up_button(item $item) {
         $button = new stdClass();
         $button->name = 'moveup';
         $button->title = get_string('moveup', 'report_lp');
@@ -203,7 +202,7 @@ class item_tree_configuration implements renderable, templatable {
      * @return stdClass
      * @throws \coding_exception
      */
-    protected function get_move_down_button(item $item) {
+    protected static function get_move_down_button(item $item) {
         $button = new stdClass();
         $button->name = 'movedown';
         $button->title = get_string('movedown', 'report_lp');

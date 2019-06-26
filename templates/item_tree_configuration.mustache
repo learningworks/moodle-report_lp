@@ -16,33 +16,13 @@
 }}
 <div class="item-tree-configuration">
     <ul>
-        {{#items}}
-            {{#isgrouping}}
-                <li class="list-item">
-                    <div>
-                        {{label}}
-                        {{>report_lp/item_tree_configuration_actions}}
-                        {{#haschildren}}
-                            <ul>
-                                {{#grouping}}
-                                    <li class="list-item">
-                                        <div>{{label}}
-                                            {{>report_lp/item_tree_configuration_actions}}
-                                        </div>
-                                    </li>
-                                {{/grouping}}
-                            </ul>
-                        {{/haschildren}}
-                    </div>
-                </li>
-            {{/isgrouping}}
-            {{^isgrouping}}
-                <li class="list-item">
-                    <div>{{label}}
-                        {{>report_lp/item_tree_configuration_actions}}
-                    </div>
-                </li>
-            {{/isgrouping}}
-        {{/items}}
+        {{#lineitems}}
+            <li class="list-item {{#isroot}}root{{/isroot}} depth-{{depth}}" data-item-id="{{id}}">
+                <div>
+                    {{label}}
+                    {{>report_lp/item_tree_configuration_actions}}
+                </div>
+            </li>
+        {{/lineitems}}
     </ul>
 </div>

@@ -34,7 +34,6 @@ class renderer extends plugin_renderer_base {
         }
         $data->paragraphbottom = $paragraphbottom;
         $data->button = $button;
-
         return parent::render_from_template('report_lp/jumbotron', $data);
     }
 
