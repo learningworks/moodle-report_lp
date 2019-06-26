@@ -30,7 +30,7 @@ use stdClass;
 use templatable;
 
 /**
- * Factory for creating moodle urls the plugin requires.
+ * Main report configuration output exporter class.
  *
  * @todo Move buttons to a factory class.
  *
@@ -46,6 +46,13 @@ class item_tree_configuration implements renderable, templatable {
         $this->itemtree = $itemtree;
     }
 
+    /**
+     * Initial line item (li) object setup.
+     *
+     * @param item $item
+     * @return stdClass
+     * @throws \coding_exception
+     */
     protected static function build_line_item(item $item) {
         $lineitem = new stdClass();
         $lineitem->id = $item->get_configuration()->get('id');
@@ -58,7 +65,7 @@ class item_tree_configuration implements renderable, templatable {
     }
 
     /**
-     * Recursively pass groupings in tree flatting into 1 dimensional array.
+     * Recursively parse groupings in tree flatting into 1 dimensional array.
      *
      * @param grouping $grouping
      * @return array
@@ -214,6 +221,6 @@ class item_tree_configuration implements renderable, templatable {
         );
         $button->url = $url->out(false);
         return $button;
-
     }
+
 }
