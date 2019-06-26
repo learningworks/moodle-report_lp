@@ -53,6 +53,7 @@ if ($mform->is_cancelled()) {
 if ($mform->is_submitted()) {
     $data = $mform->get_data();
     if ($data) {
+        $grouping->get_configuration()->set('parentitemid', $data->parentitemid);
         $grouping->get_configuration()->set('usecustomlabel', $data->usecustomlabel);
         $grouping->get_configuration()->set('customlabel', ($data->usecustomlabel) ? $data->customlabel : '');
         $grouping->get_configuration()->set('visibletosummary', $data->visibletosummary);
