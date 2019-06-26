@@ -1,12 +1,15 @@
-.item-tree-configuration ul {
+.item-tree-configuration1 ul {
     list-style-type: none;
 }
 
+$lp-black: #333333;
+$lp-white: #FFFFFF;
+$lp-green: #8EBA33;
 .list-item {
     position: relative;
     display: block;
-    padding: .75rem 0 .75rem 1.25rem;
-    margin-bottom: -1px;
+    padding: .75rem 1.25rem .75rem 1.25rem;
+    border-bottom: 1px solid lighten($lp-black, 10%);
     .button {
         display: inline-block;
         border-radius: 50%;
@@ -16,21 +19,30 @@
         text-align: center;
         text-decoration: none;
         z-index: 1;
-        color: #373a3c;
+        color: $lp-black;
+        &:hover{
+            background-color: lighten($lp-black, 70%);
+        }
     }
-    .button:hover{
-        background-color: #E6E6E6;
+    &:hover{
+        background-color: lighten($lp-green, 90%);
+    }
+    &.root {
+        background-color: $lp-black;
+        color: $lp-white;
+    }
+    &.root:hover {
+        background-color: $lp-black;
     }
 }
 
-#page-report-lp-index div.filters {
-    padding: 15px;
-    margin-bottom: 10px;
-    border:1px solid transparent;
-    border-radius: 4px;
-    background-color: #fcf8e3;
-    border-color: #faebcc;
+$depths: ("1" : "15px", "2" : "15px", "3" : "30px");
+@each $depth, $size in $depths {
+    li.list-item.depth-#{$depth} {
+        padding-left: #{$size};
+    }
 }
+
 #page-report-lp-index div.moodle-actionmenu{margin-right:30px;}
 table.learner-progress div.achieved {background: #DFF0D8;}
 table.learner-progress div.not-achieved {background: #F2DEDE;}
