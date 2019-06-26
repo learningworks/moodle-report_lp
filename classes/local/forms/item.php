@@ -143,7 +143,7 @@ class item extends moodleform {
         ];
         // Grouping always have a parentitemid of the root configuraions as only depth of 2 levels supported.
         if ($this->item instanceof grouping) {
-            $rootitem = $this->item->get_configuration()->get_root_configuration();
+            $rootitem = item_configuration::get_root_configuration($data->courseid);
             if (!$rootitem) {
                 throw new coding_exception('Invalid root configuration item');
             }

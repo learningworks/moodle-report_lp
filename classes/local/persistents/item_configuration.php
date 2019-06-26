@@ -262,12 +262,12 @@ class item_configuration extends persistent {
     /**
      * Get the root configuration item.
      *
+     * @param int $courseid
      * @return persistent|false
      * @throws coding_exception
      */
-    public function get_root_configuration() {
-        $courseid = $this->get('courseid');
-        if ($courseid <= 0) {
+    public static function get_root_configuration(int $courseid) {
+        if (empty($courseid)) {
             throw new coding_exception('Invalid courseid');
         }
         return static::get_record(['courseid' => $courseid, 'parentitemid' => 0]);
