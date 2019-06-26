@@ -100,14 +100,21 @@ class item extends moodleform {
         $mform->setType('customlabel', PARAM_TEXT);
         $mform->disabledIf('customlabel', 'usecustomlabel');
         $mform->addElement('advcheckbox', 'visibletosummary', '', get_string('visibletosummary', 'report_lp'), null, [0, 1]);
+        $mform->disabledIf('visibletosummary', 'disabled', 'eq', 1);
         $mform->addElement('advcheckbox', 'visibletoinstance', '', get_string('visibletoinstance', 'report_lp'), null, [0, 1]);
+        $mform->disabledIf('visibletoinstance', 'disabled', 'eq', 1);
         $mform->addElement('advcheckbox', 'visibletolearner', '', get_string('visibletolearner', 'report_lp'), null, [0, 1]);
+        $mform->disabledIf('visibletolearner', 'disabled', 'eq', 1);
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
         $mform->addElement('hidden', 'courseid');
         $mform->setType('courseid', PARAM_INT);
         $mform->addElement('hidden', 'shortname');
         $mform->setType('shortname', PARAM_ALPHANUMEXT);
+        // Used for functionality not yet implemented.
+        $mform->addElement('hidden', 'disabled');
+        $mform->setType('disabled', PARAM_INT);
+        $mform->setDefault('disabled', 1);
 
         // Has own configuration settings, apply form custom elements.
         if ($this->item instanceof has_own_configuration) {
