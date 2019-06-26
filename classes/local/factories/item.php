@@ -78,6 +78,10 @@ class item {
             $configuration->set('classname', $grouping::get_class_name());
             $configuration->set('shortname', $grouping::get_short_name());
             $configuration->set('isgrouping', 1);
+        } else {
+            if ($grouping::get_short_name() != $configuration->get('shortname')) {
+                throw new coding_exception('Incorrect class for configuration');
+            }
         }
         $grouping->set_configuration($configuration);
         return $grouping;
@@ -178,9 +182,7 @@ class item {
             if (grouping::get_short_name() != $itemconfiguration->get('shortname')) {
                 continue;
             }
-            $grouping = new grouping();
-            $grouping->set_configuration($itemconfiguration);
-            $groupings[] = $grouping;
+            $groupings[] = $this->get_grouping($itemconfiguration);
         }
         return $groupings;
     }
