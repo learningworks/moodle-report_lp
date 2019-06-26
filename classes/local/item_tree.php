@@ -19,6 +19,7 @@ namespace report_lp\local;
 defined('MOODLE_INTERNAL') || die();
 
 use report_lp\local\factories\item as item_factory;
+use report_lp\local\persistents\item_configuration;
 use stdClass;
 use ArrayIterator;
 use Countable;
@@ -43,7 +44,7 @@ class item_tree implements Countable, IteratorAggregate {
     protected $itemtypelist;
 
     /** @var array $tree Structure for holding items. */
-    protected $tree = [];
+    protected $tree;
 
     /**
      * item_tree Constructor.
@@ -57,20 +58,6 @@ class item_tree implements Countable, IteratorAggregate {
         $this->course = $course;
         $this->itemtypelist = $itemtypelist;
         $this->itemfactory = new item_factory($course, $itemtypelist);
-        $this->build();
-    }
-
-    /**
-     * Helper method for PHP emulates PHP 7.3 method.
-     *
-     * @param $array
-     * @return |null
-     */
-    public static function array_key_last($array) {
-        if (!is_array($array) || empty($array)) {
-            return null;
-        }
-        return array_keys($array)[count($array) - 1];
     }
 
     /**
@@ -82,24 +69,19 @@ class item_tree implements Countable, IteratorAggregate {
      * @throws \dml_exception
      */
     public function build() {
+        $this->tree = [];
         /** @var item[] $items */
         $items = $this->itemfactory->get_ordered_items(true);
-        while ($items) {
-            $item = array_shift($items);
+        foreach ($items as $item) {
             $configuration = $item->get_configuration();
             $id = $configuration->get('id');
             $parentitemid = $configuration->get('parentitemid');
-            $isgrouping = $configuration->get('isgrouping');
-            if ($isgrouping) {
-                if ($parentitemid) {
-                    $parentitem = $this->tree[$parentitemid];
-                    /** @var grouping $parentitem */
-                    $parentitem->add_item($item);
-                } else {
-                    $this->tree[$id] = $item;
-                }
+            if (!$parentitemid) {
+                $this->tree[$id] = $item; // Root.
             } else {
-                $this->tree[$id] = $item;
+                $parentitem = $items[$parentitemid];
+                /** @var grouping $parentitem */
+                $parentitem->add_item($item);
             }
         }
         return $this->tree;
@@ -109,17 +91,27 @@ class item_tree implements Countable, IteratorAggregate {
      * Count on tree at top level used by Countable interface.
      *
      * @return int
+     * @throws \coding_exception
+     * @throws \dml_exception
      */
     public function count() : int {
+        if (is_null($this->tree)) {
+            $this->build();
+        }
         return count($this->tree);
     }
 
     /**
      * Return tree array for iteration.
      *
-     * @return array|\Traversable
+     * @return ArrayIterator|\Traversable
+     * @throws \coding_exception
+     * @throws \dml_exception
      */
     public function getIterator() {
+        if (is_null($this->tree)) {
+            $this->build();
+        }
         return new ArrayIterator($this->tree);
     }
 
