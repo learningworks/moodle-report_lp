@@ -151,6 +151,34 @@ abstract class item {
         return get_class(new static());
     }
 
+    public function get_depth() {
+        if (is_null($this->configuration)) {
+            return null;
+        }
+        return $this->configuration->get('depth');
+    }
+
+    public function get_sort_order() {
+        if (is_null($this->configuration)) {
+            return null;
+        }
+        return $this->configuration->get('sortorder');
+    }
+
+    public function is_root_item() {
+        if (is_null($this->configuration)) {
+            return null;
+        }
+        $isgrouping = ($this->configuration->get('shortname') != grouping::get_short_name()) ? false : true;
+        $firstleveldepth = ($this->configuration->get('depth') != 1) ? false : true;
+        $noparent = ($this->configuration->get('parentitemid') != 0) ? false : true;
+        $isfirstpath = ($this->configuration->get('id') != $this->configuration->get('path')) ? false : true;
+        if ($isgrouping && $firstleveldepth && $noparent && $isfirstpath) {
+            return true;
+        }
+        return false;
+    }
+
     /**
      * Child class to overide if supports feature.
      *
