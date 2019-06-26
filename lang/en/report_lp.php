@@ -76,6 +76,7 @@ $string['configuremeasure'] = 'Configure measure {$a}';
 
 $string['defaultlabelgrouping'] = 'Grouping {$a}';
 $string['defaultlabelassignmentstatus'] = 'Assignment name';
+$string['defaultlabelassignmentstatusconfigured'] = 'Status: {$a}';
 $string['defaultlabelassignmentresubmitcount'] = 'Assignment name';
 $string['defaultlabelassignmentresubmitcountconfigured'] = 'Resubmit total: {$a}';
 $string['defaultlabelattendancesessionssummary'] = 'Sessions attended summary';

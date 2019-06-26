@@ -68,7 +68,11 @@ class assignment_status extends measure implements has_own_configuration {
             'name',
             ['id' => $extraconfigurationdata->id]
         );
-        return format_text($assignmentname, $format);
+        $defaultlabelconfigured = get_string(
+            'defaultlabelassignmentstatusconfigured',
+            'report_lp',
+            $assignmentname);
+        return format_text($defaultlabelconfigured, $format);
     }
 
     /**
