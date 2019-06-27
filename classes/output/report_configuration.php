@@ -38,7 +38,7 @@ use templatable;
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class item_tree_configuration implements renderable, templatable {
+class report_configuration implements renderable, templatable {
 
     protected $course;
 
@@ -120,15 +120,23 @@ class item_tree_configuration implements renderable, templatable {
                 $lineitems = array_merge($lineitems, $groupinglineitems);
             }
         }
-        $data->itemtypemenu = $this->get_menu();
+        $data->itemtypemenu = $this->build_item_type_menu();
         $data->lineitems = $lineitems;
         return $data;
     }
 
-    public function get_menu() {
+    /**
+     * Builds data for item type menu.
+     *
+     * @return stdClass
+     * @throws \ReflectionException
+     * @throws \coding_exception
+     */
+    public function build_item_type_menu() {
         $data = new stdClass();
         $grouping = new grouping();
         $data->groupingname = $grouping->get_name();
+        $data->groupingtitle = get_string('addgrouping', 'report_lp');
         $data->groupingdescription = $grouping->get_description();
         $creategroupingurl = url::get_create_item_url($this->course, grouping::get_short_name());
         $data->creategroupingurl = $creategroupingurl->out(false);
@@ -136,6 +144,7 @@ class item_tree_configuration implements renderable, templatable {
         foreach ($this->itemtypelist->get_measures() as $measure) {
             $item = new stdClass();
             $item->measurename = $measure->get_name();
+            $item->measuretitle = get_string('addmeasure', 'report_lp', $measure->get_name());
             $item->measuredescription = $measure->get_description();
             $createmeasureurl = url::get_create_item_url($this->course, $measure::get_short_name());
             $item->createmeasureurl =  $createmeasureurl->out(false);

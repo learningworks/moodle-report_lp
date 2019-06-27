@@ -101,7 +101,6 @@ if (!report_lp\local\learner_progress::report_configuration_exists($course->id))
 } else if (count($itemtree) == 0) {
     echo $renderer->render(new report_lp\output\no_items_configured());
 } else {
-    echo $renderer->render(new report_lp\output\add_item_menu($course, $itemtypelist));
-    echo $renderer->render(new report_lp\output\item_tree_configuration($itemtree));
+    echo $renderer->render(new report_lp\output\report_configuration($itemtree));
 }
 echo $OUTPUT->footer();

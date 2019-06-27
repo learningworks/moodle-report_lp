@@ -81,7 +81,6 @@ $string['defaultlabelassignmentresubmitcountconfigured'] = 'Resubmit total: {$a}
 $string['defaultlabelattendancesessionssummary'] = 'Sessions attended summary';
 $string['checklistname'] = 'Checklist name';
 
-
 $string['parentgrouping'] = 'Parent grouping';
 $string['generalsettings'] = 'General settings';
 $string['specificsettings'] = 'Specific settings';
@@ -103,10 +102,9 @@ $string['deletegroupingitem'] = '
 <p>Deleting a grouping will also delete any measures associated to the grouping</p>';
 $string['deletemeasureitem'] = '
 <h5>Delete measure {$a}</h5>';
-
-
 $string['noreportconfiguration'] = 'Report configuration does not exist';
 $string['instantiatenewreportquestion'] = 'Would you like to instantiate a new report configuration for {$a}?';
 $string['instantiate'] = 'Instantiate...';
 
-
+$string['addgrouping'] = 'Add grouping item to the report';
+$string['addmeasure'] ='Add measure of item type {$a} to the report';

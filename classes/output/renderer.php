@@ -37,14 +37,9 @@ class renderer extends plugin_renderer_base {
         return parent::render_from_template('report_lp/jumbotron', $data);
     }
 
-    public function render_add_item_menu(add_item_menu $additemmenu) {
-        $data = $additemmenu->export_for_template($this);
-        return parent::render_from_template('report_lp/add_item_menu', $data);
-    }
-
     public function item_tree_configuration(item_tree $itemtree) {
         $data = $itemtree->export_for_template($this);
-        return parent::render_from_template('report_lp/item_tree_configuration', $data);
+        return parent::render_from_template('report_lp/report_configuration', $data);
     }
 
     public function no_items_configured(no_items_configured $thing) {

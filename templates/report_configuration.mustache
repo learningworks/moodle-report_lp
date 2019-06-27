@@ -18,21 +18,23 @@
     <div class="col-3">
         {{#itemtypemenu}}
             <ul class="list-group">
+                <li class="list-group-item header">
+                    Report status
+                    <div class="float-right"><i class="fa fa-toggle-on" aria-hidden="true"></i></div>
+                </li>
                 <li class="list-group-item">
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1">{{groupingname}}</h5>
-                            <a href="{{creategroupingurl}}" role="button"><i class="fa fa-plus-circle" aria-hidden="true"></i></a>
+                            <a href="{{creategroupingurl}}" title="{{groupingtitle}}" role="button"><i class="fa fa-plus-circle" aria-hidden="true"></i></a>
                         </div>
-
                         <small class="text-muted">{{groupingdescription}}</small>
                 </li>
                 {{#measuresmenu}}
                     <li class="list-group-item">
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1">{{measurename}}</h5>
-                            <a href="{{createmeasureurl}}" role="button"><i class="fa fa-plus-circle" aria-hidden="true"></i></a>
+                            <a href="{{createmeasureurl}}" title="{{measuretitle}}" role="button"><i class="fa fa-plus-circle" aria-hidden="true"></i></a>
                         </div>
-
                         <small class="text-muted">{{measuredescription}}</small>
                     </li>
                 {{/measuresmenu}}
