@@ -184,11 +184,8 @@ class report_configuration implements renderable, templatable {
         $button->name = 'configure';
         $button->title = get_string('configureitem', 'report_lp');
         $button->icon = '<i class="fa fa-cog fa-fw"></i>';
-        if ($item->get_configuration()->get('shortname') == grouping::get_short_name()) {
-            $button->url = url::get_grouping_url(null, $item->get_configuration()->get('id'))->out(false);
-        } else {
-            $button->url = url::get_measure_url(null, $item->get_configuration()->get('id'))->out(false);
-        }
+        $url = url::get_item_url(null, $item->get_configuration()->get('id'));
+        $button->url = $url->out(false);
         return $button;
     }
 
