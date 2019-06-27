@@ -2,14 +2,15 @@
     list-style-type: none;
 }
 
-$lp-black: #333333;
-$lp-white: #FFFFFF;
+$lw-black: #333333;
+$lw-white: #FFFFFF;
 $lp-green: #8EBA33;
+$lw-green: #96C832;
 .list-item {
     position: relative;
     display: block;
     padding: .75rem 1.25rem .75rem 1.25rem;
-    border-bottom: 1px solid lighten($lp-black, 10%);
+    border-bottom: 1px solid lighten($lw-black, 10%);
     .button {
         display: inline-block;
         border-radius: 50%;
@@ -19,26 +20,32 @@ $lp-green: #8EBA33;
         text-align: center;
         text-decoration: none;
         z-index: 1;
-        color: $lp-black;
+        color: $lw-green;
         &:hover{
-            background-color: lighten($lp-black, 70%);
+            background-color: lighten($lw-black, 70%);
         }
     }
     &:hover{
-        background-color: lighten($lp-green, 90%);
+        background-color: lighten($lw-green, 90%);
     }
     &.root {
-        background-color: $lp-black;
-        color: $lp-white;
+        background-color: $lw-black;
+        color: $lw-white;
     }
     &.root:hover {
-        background-color: $lp-black;
+        background-color: $lw-black;
     }
 }
-
+/* Bootstrap - Enhance existing. */
+.list-group-item {
+    &.header {
+        background-color: $lw-black;
+        color: $lw-white;
+    }
+}
 $depths: ("1" : "15px", "2" : "15px", "3" : "30px");
 @each $depth, $size in $depths {
-    li.list-item.depth-#{$depth} {
+    li.list-group-item.depth-#{$depth} {
         padding-left: #{$size};
     }
 }
