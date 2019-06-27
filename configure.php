@@ -92,15 +92,5 @@ switch ($action) {
 }
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('configurereportfor', 'report_lp', $course->fullname));
-if (!report_lp\local\learner_progress::report_configuration_exists($course->id)) {
-    echo $renderer->render_jumbotron(
-        get_string('noreportconfiguration', 'report_lp'),
-        get_string('instantiatenewreportquestion', 'report_lp', $course->fullname),
-        report_lp\local\factories\button::create_instantiate_button($courseid)
-    );
-} else if (count($itemtree) == 0) {
-    echo $renderer->render(new report_lp\output\no_items_configured());
-} else {
-    echo $renderer->render(new report_lp\output\report_configuration($itemtree));
-}
+echo $renderer->render(new report_lp\output\report_configuration($itemtree));
 echo $OUTPUT->footer();
