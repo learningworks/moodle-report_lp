@@ -71,8 +71,7 @@ $string['defaultlabel'] = 'Default label';
 $string['visibletosummary'] = 'Display in the summary report';
 $string['visibletoinstance'] = 'Display in the learner instance report';
 $string['visibletolearner'] = 'Display to learner';
-$string['configuregrouping'] = 'Configure grouping';
-$string['configuremeasure'] = 'Configure measure {$a}';
+$string['configure'] = 'Configure {$a}';
 
 $string['defaultlabelgrouping'] = 'Grouping {$a}';
 $string['defaultlabelassignmentstatus'] = 'Assignment name';
