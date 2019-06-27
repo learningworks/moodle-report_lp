@@ -102,6 +102,33 @@ class item_tree implements Countable, IteratorAggregate {
     }
 
     /**
+     * Public access to course variable.
+     *
+     * @return stdClass
+     */
+    public function get_course() {
+        return $this->course;
+    }
+
+    /**
+     * Return factory instance.
+     *
+     * @return mixed
+     */
+    public function get_item_factory() {
+        return $this->get_item_factory();
+    }
+
+    /**
+     * Return the item type list.
+     *
+     * @return item_type_list
+     */
+    public function get_item_type_list() {
+        return $this->itemtypelist;
+    }
+
+    /**
      * Return tree array for iteration.
      *
      * @return ArrayIterator|\Traversable

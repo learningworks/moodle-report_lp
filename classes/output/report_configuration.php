@@ -40,10 +40,16 @@ use templatable;
  */
 class item_tree_configuration implements renderable, templatable {
 
+    protected $course;
+
     protected $itemtree;
+
+    protected $itemtypelist;
 
     public function __construct(item_tree $itemtree) {
         $this->itemtree = $itemtree;
+        $this->course = $itemtree->get_course();
+        $this->itemtypelist = $itemtree->get_item_type_list();
     }
 
     /**
@@ -114,7 +120,27 @@ class item_tree_configuration implements renderable, templatable {
                 $lineitems = array_merge($lineitems, $groupinglineitems);
             }
         }
+        $data->itemtypemenu = $this->get_menu();
         $data->lineitems = $lineitems;
+        return $data;
+    }
+
+    public function get_menu() {
+        $data = new stdClass();
+        $grouping = new grouping();
+        $data->groupingname = $grouping->get_name();
+        $data->groupingdescription = $grouping->get_description();
+        $creategroupingurl = url::get_create_item_url($this->course, grouping::get_short_name());
+        $data->creategroupingurl = $creategroupingurl->out(false);
+        $data->measuresmenu = [];
+        foreach ($this->itemtypelist->get_measures() as $measure) {
+            $item = new stdClass();
+            $item->measurename = $measure->get_name();
+            $item->measuredescription = $measure->get_description();
+            $createmeasureurl = url::get_create_item_url($this->course, $measure::get_short_name());
+            $item->createmeasureurl =  $createmeasureurl->out(false);
+            $data->measuresmenu[] = $item;
+        }
         return $data;
     }
 
