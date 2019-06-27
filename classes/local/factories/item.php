@@ -66,6 +66,8 @@ class item {
     }
 
     /**
+     * Get a grouping based on configuration.
+     *
      * @param item_configuration $configuration
      * @return grouping
      * @throws \ReflectionException
@@ -86,6 +88,50 @@ class item {
         $grouping->set_configuration($configuration);
         return $grouping;
     }
+
+    /**
+     * Helper used to direct to correct method.
+     *
+     * @param item_configuration $configuration
+     * @return grouping|measure
+     * @throws \ReflectionException
+     * @throws coding_exception
+     */
+    public function get_item(item_configuration $configuration) {
+        if (grouping::get_short_name() == $configuration->get('shortname')) {
+            return $this->get_grouping($configuration);
+        }
+        return $this->get_measure($configuration);
+    }
+
+    /**
+     * Get a measure based on configuration. Will throw exception if no shortname set.
+     *
+     * @param item_configuration $configuration
+     * @return measure
+     * @throws \ReflectionException
+     * @throws coding_exception
+     */
+    public function get_measure(item_configuration $configuration) : measure {
+        $measure = $this->itemtypelist->find_measure_by_short_name($configuration->get('shortname'));
+        if ($configuration->get('id') <= 0) {
+            $configuration->set('courseid', $this->course->id);
+            $configuration->set('classname', $measure::get_class_name());
+            $configuration->set('shortname', $measure::get_short_name());
+        }
+        $measure->set_configuration($configuration);
+        return $measure;
+    }
+
+    public function get_from_shortname(string $shortname) {
+        if (!$this->itemtypelist->item_type_exists($shortname)) {
+            throw new coding_exception("{$shortname} is not a registered item type.");
+        }
+        $configuration = new item_configuration();
+        $configuration->set('shortname', $shortname);
+        return $this->get_item($configuration);
+    }
+
 
     /**
      * Build a grouping, either new or load existing. A Rapper method.
