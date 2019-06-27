@@ -62,6 +62,10 @@ class item {
         );
         if (!$rootconfiguration) {
             $rootconfiguration = new item_configuration();
+            $rootconfiguration->set('courseid', $this->course->id);
+            $rootconfiguration->set('classname', grouping::get_class_name());
+            $rootconfiguration->set('shortname', grouping::get_short_name());
+            $rootconfiguration->set('isgrouping', 1);
             $rootconfiguration->set('usecustomlabel', 1);
             $rootconfiguration->set('customlabel', format_text($this->course->fullname, FORMAT_PLAIN));
             if ($create) {
