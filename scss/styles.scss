@@ -42,6 +42,12 @@ $lw-green: #96C832;
         background-color: $lw-black;
         color: $lw-white;
     }
+    .fa-toggle-on {
+        color: #8EBA33;
+    }
+    .fa-toggle-off {
+        color: #FF0000;
+    }
 }
 $depths: ("1" : "15px", "2" : "15px", "3" : "30px");
 @each $depth, $size in $depths {
