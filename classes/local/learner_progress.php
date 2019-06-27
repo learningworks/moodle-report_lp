@@ -47,31 +47,51 @@ class learner_progress {
 
     public function __construct(stdClass $course, item_type_list $itemtypelist = null) {
         $this->course = $course;
-        $this->itemtypelist = $itemtypelist;
+        $this->set_item_type_list($itemtypelist);
+        $this->initialise();
     }
 
     public function get_item_factory() {
         if (is_null($this->itemtypelist)) {
-            throw new coding_exception('Variable $itemtypelist item_type_list must be set');
+            throw new coding_exception('Parameter $itemtypelist of item_type_list must be set');
         }
-        return new item_factory($this->course, $this->itemtypelist);
+        if (is_null($this->itemfactory)) {
+            $this->itemfactory = new item_factory($this->course, $this->itemtypelist);
+        }
+        return $this->itemfactory;
     }
 
-    public static function report_configuration_exists(int $courseid) {
-        return report_configuration::get_record(['courseid' => $courseid]);
+    public function get_item_type_list() {
+        return $this->itemtypelist;
     }
 
-    public function setup_report_configuration() : void {
-        $configuration = report_configuration::get_record(['courseid' => $this->course->id]);
+    public function set_item_type_list(item_type_list $itemtypelist) {
+        $this->itemtypelist = $itemtypelist;
+        return $this;
+    }
+
+    public static function configuration_exists(int $courseid) {
+        return report_configuration::get_record(
+            ['courseid' => $courseid]
+        );
+    }
+
+    public static function root_grouping_exists(int $courseid) {
+        return item_configuration::get_record(
+            ['courseid' => $courseid, 'parentitemid' => 0]
+        );
+    }
+
+    protected function initialise(bool $enabled = false) : void {
+        $configuration = static::configuration_exists($this->course->id);
         if (!$configuration) {
             $configuration = new report_configuration();
             $configuration->set('courseid', $this->course->id);
+            $configuration->set('enabled', (int) $enabled);
             $configuration->save();
         }
-        // Setup the root grouping item.
-        $rootgrouping = $this->get_item_factory()->get_root_grouping();
-        $rootgrouping->get_configuration()->save();
         $this->configuration = $configuration;
+        $rootgrouping = $this->get_item_factory()->get_root_grouping();
         $this->rootgrouping = $rootgrouping;
     }
 
