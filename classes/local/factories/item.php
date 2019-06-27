@@ -49,11 +49,14 @@ class item {
     }
 
     /**
+     * Get root grouping, always create if non existent by default.
+     *
+     * @param bool $create
      * @return grouping
      * @throws \ReflectionException
      * @throws coding_exception
      */
-    public function get_root_grouping() {
+    public function get_root_grouping(bool $create = true) : grouping {
         $rootconfiguration = item_configuration::get_record(
             ['courseid' => $this->course->id, 'parentitemid' => 0]
         );
@@ -61,6 +64,9 @@ class item {
             $rootconfiguration = new item_configuration();
             $rootconfiguration->set('usecustomlabel', 1);
             $rootconfiguration->set('customlabel', format_text($this->course->fullname, FORMAT_PLAIN));
+            if ($create) {
+                $rootconfiguration->save();
+            }
         }
         return $this->get_grouping($rootconfiguration);
     }
