@@ -132,28 +132,6 @@ class item {
         return $this->get_item($configuration);
     }
 
-
-    /**
-     * Build a grouping, either new or load existing. A Rapper method.
-     *
-     * @param int $id
-     * @param stdClass|null $record
-     * @return grouping
-     * @throws \ReflectionException
-     * @throws coding_exception
-     * @throws moodle_exception
-     */
-    public function create_grouping(int $id = 0, stdClass $record = null) : grouping {
-        $configuration = new item_configuration($id, $record);
-        if ($id == 0 || $record == null) {
-            $configuration->set('shortname', grouping::get_short_name());
-        }
-        if ($configuration->get('shortname') != grouping::get_short_name()) {
-            throw new moodle_exception('Trying to load incorrect class for configuration');
-        }
-        return $this->create_item($configuration, grouping::get_short_name());
-    }
-
     /**
      * Build new or existing grouping or measure.
      *
@@ -192,24 +170,6 @@ class item {
         return $item;
     }
 
-    /**
-     * Build a measure, either new or load existing. A Rapper method.
-     *
-     * @param int $id
-     * @param stdClass|null $record
-     * @param string|null $shortname
-     * @return measure
-     * @throws \ReflectionException
-     * @throws coding_exception
-     * @throws moodle_exception
-     */
-    public function create_measure(int $id = 0, stdClass $record = null, string $shortname = null) : measure  {
-        $configuration = new item_configuration($id, $record);
-        if ($configuration->get('shortname') == grouping::get_short_name()) {
-            throw new moodle_exception('Trying to load incorrect class for configuration');
-        }
-        return $this->create_item($configuration, $shortname);
-    }
 
     /**
      * Get all groupings for the course.
