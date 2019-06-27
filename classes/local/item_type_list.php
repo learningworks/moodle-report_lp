@@ -82,7 +82,7 @@ class item_type_list implements Countable, IteratorAggregate {
      */
     public function add_measure(measure $measure) {
         $this->itemtypes[$measure::get_short_name()] = $measure;
-        $this->measurenamekeys[] = $measure::get_short_name();
+        $this->measurenamekeys[$measure->get_name()] = $measure::get_short_name();
         return $this;
     }
 
@@ -103,26 +103,54 @@ class item_type_list implements Countable, IteratorAggregate {
      * @throws coding_exception
      */
     public function find_measure_by_name(string $name) : measure {
-        if (!isset($this->namekeys[$name])) {
+        if (!isset($this->measurenamekeys[$name])) {
             throw new coding_exception("Measure with {$name} does not exist");
         }
-        $shortname = $this->namekeys[$name];
-        return $this->find_measure_by_short_name($shortname);
+        $shortname = $this->measurenamekeys[$name];
+        return $this->find_by_short_name($shortname);
 
     }
 
     /**
-     * Get measure based on class short name.
+     * Get item based on class short name.
+     *
+     * @param string $shortname
+     * @return item
+     * @throws coding_exception
+     */
+    public function find_by_short_name(string $shortname) : item {
+        if (!$this->item_type_exists($shortname)) {
+            throw new coding_exception("Item with {$shortname} does not exist");
+        }
+        return $this->itemtypes[$shortname];
+    }
+
+    /**
+     * Get measure by short name.
      *
      * @param string $shortname
      * @return measure
      * @throws coding_exception
      */
     public function find_measure_by_short_name(string $shortname) : measure {
-        if (!isset($this->itemtypes[$shortname])) {
-            throw new coding_exception("Measure with {$shortname} does not exist");
+        $measure = $this->find_by_short_name($shortname);
+        if (!($measure instanceof measure)) {
+            throw new coding_exception('Item is not a measure');
         }
-        return $this->itemtypes[$shortname];
+        return $measure;
+    }
+
+    /**
+     * Check if item type exists.
+     *
+     * @param string $shortname
+     * @return bool
+     */
+    public function item_type_exists(string $shortname) : bool {
+        if (!isset($this->itemtypes[$shortname])) {
+            return false;
+        }
+        return true;
     }
 
     /**
