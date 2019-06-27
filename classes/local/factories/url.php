@@ -65,6 +65,30 @@ class url {
         return $url;
     }
 
+    public static function get_create_item_url(stdClass $course, $shortname) {
+        return new moodle_url(
+            '/report/lp/item.php',
+            [
+                'courseid' => $course->id,
+                'shortname' => $shortname
+            ]
+        );
+    }
+
+    public static function get_item_url(stdclass $course = null, int $id = 0, string $shortname = null) : moodle_url {
+        $url =  new moodle_url('/report/lp/item.php');
+        if (!is_null($course)) {
+            $url->param('courseid', $course->id);
+        }
+        if ($id > 0) {
+            $url->param('id', $id);
+        }
+        if (!is_null($shortname)) {
+            $url->param('shortname', $shortname);
+        }
+        return $url;
+    }
+
     public static function get_measure_url(stdclass $course = null, int $id = 0, string $shortname = null) : moodle_url {
         $url =  new moodle_url('/report/lp/measure.php');
         if (!is_null($course)) {
