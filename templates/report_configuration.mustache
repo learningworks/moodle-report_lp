@@ -51,6 +51,9 @@
                     {{#isroot}}
                         <li class="list-group-item header">
                             {{label}}
+                            <div class="float-right">
+                                <span class="badge badge-primary badge-pill">{{#userdate}} {{coursestartdate}}, %B %Y {{/userdate}} </span>
+                            </div>
                         </li>
                     {{/isroot}}
                    {{^isroot}}

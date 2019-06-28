@@ -113,6 +113,7 @@ class report_configuration implements renderable, templatable {
     public function export_for_template(renderer_base $output) {
         $data = new stdClass();
         $data->courseid = $this->course->id;
+        $data->coursestartdate = $this->course->startdate;
         $lineitems = [];
         // Flatten the tree of items.
         foreach ($this->itemtree as $item) {
