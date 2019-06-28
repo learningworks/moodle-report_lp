@@ -45,16 +45,8 @@
   color: #FF0000;
 }
 
-li.list-group-item.depth-1 {
-  padding-left: 15px;
-}
-
-li.list-group-item.depth-2 {
-  padding-left: 15px;
-}
-
 li.list-group-item.depth-3 {
-  padding-left: 30px;
+  padding-left: 2.5rem;
 }
 
 #page-report-lp-index div.moodle-actionmenu {

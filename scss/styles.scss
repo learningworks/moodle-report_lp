@@ -49,13 +49,9 @@ $lw-green: #96C832;
         color: #FF0000;
     }
 }
-$list-group-item-padding-y:         .75rem !default;
-$list-group-item-padding-x:         1.25rem !default;
-$depths: ("1" : "15px", "2" : "15px", "3" : "30px");
-@each $depth, $size in $depths {
-    li.list-group-item.depth-#{$depth} {
-        padding-left: #{$size};
-    }
+
+li.list-group-item.depth-3 {
+    padding-left: (1.25 * 2) + rem;
 }
 
 #page-report-lp-index div.moodle-actionmenu{margin-right:30px;}
