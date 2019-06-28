@@ -21,6 +21,8 @@ defined('MOODLE_INTERNAL') || die();
 use core\persistent;
 use coding_exception;
 use report_lp\local\grouping;
+use report_lp\local\item_tree;
+use report_lp\local\item_type_list;
 
 /**
  * Item model.
@@ -257,6 +259,53 @@ class item_configuration extends persistent {
             array_push($instances, $newrecord);
         }
         return $instances;
+    }
+
+    /**
+     * @todo move not in right place.
+     *
+     * @param item_configuration $source
+     * @param int $position
+     * @return item_configuration
+     * @throws \ReflectionException
+     * @throws \dml_exception
+     * @throws coding_exception
+     */
+    public static function move_item_to_position(item_configuration $source, int $position) {
+        if ($source->get('id') <= 0) {
+            throw new coding_exception('Invalid item configuration');
+        }
+        if ($position <= 0) {
+            throw new coding_exception('Invalid position');
+        }
+        $courseid = $source->get('courseid');
+        $course = get_course($courseid);
+        $itemtypelist = new item_type_list(report_lp_get_supported_measures());
+        $tree = new item_tree($course, $itemtypelist);
+        $items = $tree->get_flattened_configurations();
+        if (!isset($items[$position])) {
+            throw new coding_exception('No item at position');
+        }
+        $moveto = $items[$position];
+        if ($source->get('parentitemid') == $moveto->get('parentitemid')) {
+            $sourcesortorder = $source->get('sortorder');
+            $movetosortorder = $moveto->get('sortorder');
+            foreach ($items as $key => $item) {
+                /** var item_configuration $item */
+                if ($key < $position) {
+                    continue;
+                }
+                if ($item->get('parentitemid') == $moveto->get('parentitemid')) {
+                    $sortorder = $item->get('sortorder');
+                    $item->set('sortorder', ++$sortorder);
+                    $item->save();
+                }
+            }
+            $source->set('sortorder', $movetosortorder);
+            $source->save();
+
+        }
+        return $source;
     }
 
     /**
