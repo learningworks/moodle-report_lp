@@ -64,7 +64,11 @@ class grade_category_activity_completion extends measure implements has_own_conf
         $gradecategory = grade_category::fetch(
             ['id' => $extraconfigurationdata->id]
         );
-        return format_text($gradecategory->get_name(), $format);
+        $defaultlabelconfigured = get_string(
+            'defaultlabelgradecategoryconfigured',
+            'report_lp',
+            $gradecategory->get_name());
+        return format_text($defaultlabelconfigured, $format);
     }
 
     /**

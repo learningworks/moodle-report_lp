@@ -80,6 +80,7 @@ $string['defaultlabelassignmentresubmitcount'] = 'Assignment name';
 $string['defaultlabelassignmentresubmitcountconfigured'] = 'Resubmit total: {$a}';
 $string['defaultlabelattendancesessionssummary'] = 'Sessions attended summary';
 $string['checklistname'] = 'Checklist name';
+$string['defaultlabelgradecategoryconfigured'] = 'Grade category completion: {$a}';
 
 $string['parentgrouping'] = 'Parent grouping';
 $string['generalsettings'] = 'General settings';
