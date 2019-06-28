@@ -88,6 +88,67 @@ class item_tree implements Countable, IteratorAggregate {
     }
 
     /**
+     *
+     * @return array
+     * @throws \ReflectionException
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function get_flattened_tree() {
+        if (is_null($this->tree)) {
+            $this->build();
+        }
+        $items = [];
+        // Flatten the tree of items.
+        foreach ($this->tree as $item) {
+            if ($item instanceof grouping) {
+                $groupingitems = static::process_grouping($item);
+                $items = array_merge($items, $groupingitems);
+            }
+        }
+        return $items;
+    }
+
+    /**
+     * @return array
+     * @throws \ReflectionException
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function get_flattened_configurations() {
+        $configurations = [];
+        $flattree = $this->get_flattened_tree();
+        foreach ($flattree as $branch) {
+            $configurations[] = $branch->get_configuration();
+        }
+        return $configurations;
+    }
+
+    /**
+     * Recursively parse groupings in tree flatting into 1 dimensional array.
+     *
+     * @param grouping $grouping
+     * @return array
+     * @throws \ReflectionException
+     * @throws \coding_exception
+     */
+    protected static function process_grouping(grouping $grouping) {
+        $items[] = $grouping;
+        if ($grouping->has_children()) {
+            foreach ($grouping->get_children() as $child) {
+                // Nested grouping.
+                if ($child instanceof grouping) {
+                    $childitems = static::process_grouping($child);
+                    $items = array_merge($items, $childitems);
+                } else {
+                    $items[] = $child;
+                }
+            }
+        }
+        return $items;
+    }
+
+    /**
      * Count on tree at top level used by Countable interface.
      *
      * @return int
