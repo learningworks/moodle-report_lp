@@ -34,5 +34,14 @@ $functions = [
         'type'         => 'write',
         'capabilities' => '',
         'ajax'         => true
+    ],
+    'report_lp_report_configuration_move_item' => [
+        'classname'    => 'report_lp\local\external\report_configuration',
+        'methodname'   => 'move_item',
+        'classpath'    => '',
+        'description'  => '',
+        'type'         => 'write',
+        'capabilities' => 'report/lp:configure',
+        'ajax'         => true
     ]
 ];

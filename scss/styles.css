@@ -1,12 +1,12 @@
-.item-tree-configuration ul {
+.item-tree-configuration1 ul {
   list-style-type: none;
 }
 
 .list-item {
   position: relative;
   display: block;
-  padding: 0.75rem 0 0.75rem 1.25rem;
-  margin-bottom: -1px;
+  padding: 0.75rem 1.25rem 0.75rem 1.25rem;
+  border-bottom: 1px solid #4d4d4d;
 }
 .list-item .button {
   display: inline-block;
@@ -17,19 +17,44 @@
   text-align: center;
   text-decoration: none;
   z-index: 1;
-  color: #373a3c;
+  color: #96C832;
 }
 .list-item .button:hover {
-  background-color: #E6E6E6;
+  background-color: #e6e6e6;
+}
+.list-item:hover {
+  background-color: white;
+}
+.list-item.root {
+  background-color: #333333;
+  color: #FFFFFF;
+}
+.list-item.root:hover {
+  background-color: #333333;
 }
 
-#page-report-lp-index div.filters {
-  padding: 15px;
-  margin-bottom: 10px;
-  border: 1px solid transparent;
-  border-radius: 4px;
-  background-color: #fcf8e3;
-  border-color: #faebcc;
+/* Bootstrap - Enhance existing. */
+.list-group-item.header {
+  background-color: #333333;
+  color: #FFFFFF;
+}
+.list-group-item .fa-toggle-on {
+  color: #8EBA33;
+}
+.list-group-item .fa-toggle-off {
+  color: #FF0000;
+}
+
+li.list-group-item.depth-1 {
+  padding-left: 15px;
+}
+
+li.list-group-item.depth-2 {
+  padding-left: 15px;
+}
+
+li.list-group-item.depth-3 {
+  padding-left: 30px;
 }
 
 #page-report-lp-index div.moodle-actionmenu {

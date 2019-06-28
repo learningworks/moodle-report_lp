@@ -43,18 +43,28 @@
                 {{/measuresmenu}}
             </ul>
         {{/itemtypemenu}}
-
     </div>
     <div class="col-9">
-        <div class="list-group item-tree-configuration">
-            <ul>
+        <div>
+            <ul id="list-configured-items" class="list-group" data-course-id="{{courseid}}">
                 {{#lineitems}}
-                    <li class="list-group-item {{#isroot}}header{{/isroot}} depth-{{depth}}" data-item-id="{{id}}">
-                        <div>
+                    {{#isroot}}
+                        <li class="list-group-item header">
                             {{label}}
-                            {{>report_lp/item_tree_configuration_actions}}
-                        </div>
-                    </li>
+                        </li>
+                    {{/isroot}}
+                   {{^isroot}}
+                       <li class="list-group-item depth-{{depth}} draggable" data-name="{{label}}" data-depth="{{depth}}" data-item-id="{{id}}" >
+                            <span data-action="move">
+                                <span tabindex="0" role="button" aria-haspopup="true" data-drag-type="move" title="Move item">
+                                    <i class="icon fa fa-arrows fa-fw " aria-hidden="true"></i>
+                                </span>
+                            </span>
+                           {{label}}
+                           {{>report_lp/item_tree_configuration_actions}}
+                       </li>
+                   {{/isroot}}
+
                 {{/lineitems}}
             </ul>
         </div>

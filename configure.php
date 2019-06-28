@@ -33,6 +33,7 @@ $PAGE->set_url($url);
 
 $css = new moodle_url('/report/lp/scss/styles.css');
 $PAGE->requires->css($css);
+$PAGE->requires->js_call_amd('report_lp/move', 'init', ['list-configured-items', 'move']);
 
 $itemtypelist = new report_lp\local\item_type_list(report_lp_get_supported_measures());
 $learnerprogress = new report_lp\local\learner_progress($course, $itemtypelist);
