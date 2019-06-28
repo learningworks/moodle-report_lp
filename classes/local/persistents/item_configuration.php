@@ -290,14 +290,14 @@ class item_configuration extends persistent {
         if ($source->get('parentitemid') == $moveto->get('parentitemid')) {
             $sourcesortorder = $source->get('sortorder');
             $movetosortorder = $moveto->get('sortorder');
+            $newsortorder = $movetosortorder;
             foreach ($items as $key => $item) {
                 /** var item_configuration $item */
                 if ($key < $position) {
                     continue;
                 }
                 if ($item->get('parentitemid') == $moveto->get('parentitemid')) {
-                    $sortorder = $item->get('sortorder');
-                    $item->set('sortorder', ++$sortorder);
+                    $item->set('sortorder', ++$newsortorder);
                     $item->save();
                 }
             }
