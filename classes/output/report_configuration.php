@@ -112,6 +112,7 @@ class report_configuration implements renderable, templatable {
      */
     public function export_for_template(renderer_base $output) {
         $data = new stdClass();
+        $data->courseid = $this->course->id;
         $lineitems = [];
         // Flatten the tree of items.
         foreach ($this->itemtree as $item) {
@@ -163,8 +164,6 @@ class report_configuration implements renderable, templatable {
      */
     public static function get_actions_for_item(item $item) {
         $buttons = new stdClass();
-        $buttons->moveup = static::get_move_up_button($item);
-        $buttons->movedown = static::get_move_down_button($item);
         $buttons->configure = static::get_configure_button($item);
         $buttons->delete = static::get_delete_button($item);
         return $buttons;
