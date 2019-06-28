@@ -63,6 +63,7 @@ if ($mform->is_cancelled()) {
 if ($mform->is_submitted()) {
     $data = $mform->get_data();
     if ($data) {
+        $item->get_configuration()->set('id',  isset($data->id) ? $data->id : 0);
         $item->get_configuration()->set('usecustomlabel', $data->usecustomlabel);
         $item->get_configuration()->set('customlabel', isset($data->customlabel) ? $data->customlabel : '');
         $item->get_configuration()->set('parentitemid', $data->parentitemid);
