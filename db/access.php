@@ -29,7 +29,16 @@ defined('MOODLE_INTERNAL') || die();
 $capabilities = [
 
     'report/lp:configure' => [
-        'riskbitmask' => RISK_CONFIG,
+        'riskbitmask' => RISK_CONFIG | RISK_PERSONAL,
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => [
+            'manager' => CAP_ALLOW
+        ],
+    ],
+
+    'report/lp:viewsummary' => [
+        'riskbitmask' => RISK_PERSONAL,
         'captype' => 'read',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => [
@@ -37,9 +46,18 @@ $capabilities = [
         ],
     ],
 
-    'report/lp:view' => [
-        'riskbitmask' => RISK_CONFIG,
-        'captype' => 'read',
+    'report/lp:viewindividual' => [
+    'riskbitmask' => RISK_PERSONAL,
+    'captype' => 'read',
+    'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => [
+            'manager' => CAP_ALLOW
+        ],
+    ],
+
+    'report/lp:exportsummary' => [
+        'riskbitmask' => RISK_PERSONAL,
+        'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => [
             'manager' => CAP_ALLOW
