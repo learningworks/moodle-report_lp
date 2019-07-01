@@ -48,14 +48,14 @@ class learners {
     public function set_filter($name, $value) {
     }
 
-    public function get_ue_join(string $useridcolumn = 'u.id') {
+    public function get_ue_join(string $userenrolmentsprefix = 'ue', string $useridcolumn = 'u.id') {
         global $CFG, $DB;
         require_once("$CFG->libdir/enrollib.php");
 
         // Try to avoid collisions with other potential joins.
         static $i = 0;
         $i++;
-        $prefix = 'ue' . $i . '_';
+        $prefix = $userenrolmentsprefix . $i . '_';
 
         $parameters = [];
         $parameters["{$prefix}ecourseid"] = $this->course->id;
@@ -69,13 +69,14 @@ class learners {
 
         $parameters = array_merge($parameters, $roleparameters);
 
-        $sql = "JOIN {user_enrolments} {$prefix}ua ON {$prefix}ua.userid = {$useridcolumn}
-                JOIN {enrol} {$prefix}e ON {$prefix}e.id = {$prefix}ua.enrolid AND {$prefix}e.courseid = :{$prefix}ecourseid
+        $sql = "JOIN {user_enrolments} {$userenrolmentsprefix} ON {$userenrolmentsprefix}.userid = {$useridcolumn}
+                JOIN {enrol} {$prefix}e
+                  ON {$prefix}e.id = {$userenrolmentsprefix}.enrolid AND {$prefix}e.courseid = :{$prefix}ecourseid
                 JOIN ( SELECT DISTINCT({$prefix}ra.userid)
                          FROM {role_assignments} {$prefix}ra 
                         WHERE {$prefix}ra.contextid = :{$prefix}racontextid 
                           AND {$prefix}ra.roleid $rolesql) AS {$prefix}dra
-                  ON {$prefix}dra.userid = {$prefix}ua.userid";
+                  ON {$prefix}dra.userid = {$userenrolmentsprefix}.userid";
 
         return [$sql, $parameters];
     }
