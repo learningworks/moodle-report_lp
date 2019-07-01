@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use stdClass;
 use context_course;
+use coding_exception;
 
 class learners {
 
@@ -39,7 +40,6 @@ class learners {
     public function __construct(stdClass $course, array $filters = []) {
         $this->course = $course;
         $this->context = context_course::instance($course->id);
-
     }
 
     public function add_filters(array $filters) {
@@ -48,37 +48,83 @@ class learners {
     public function set_filter($name, $value) {
     }
 
-    public function get_ue_join(string $userenrolmentsprefix = 'ue', string $useridcolumn = 'u.id') {
+    /**
+     * Make SQL that will get distinct learner enrolments within the course.
+     *
+     * @param string $userenrolmentprefix
+     * @param string $useridcolumn
+     * @return array
+     * @throws \dml_exception
+     * @throws coding_exception
+     */
+    public function get_user_enrolment_join(string $userenrolmentprefix = 'ue', string $useridcolumn = 'u.id') {
         global $CFG, $DB;
         require_once("$CFG->libdir/enrollib.php");
 
-        // Try to avoid collisions with other potential joins.
+        // Collision avoidance, may going overboard here.
         static $i = 0;
         $i++;
-        $prefix = $userenrolmentsprefix . $i . '_';
+        $prefix = $userenrolmentprefix . $i . '_';
 
-        $parameters = [];
-        $parameters["{$prefix}ecourseid"] = $this->course->id;
-        $parameters["{$prefix}racontextid"] = $this->context->id;
-
+        // Use gradebookroles to determine valid learner/student roles.
         [$rolesql, $roleparameters] = $DB->get_in_or_equal(
             explode(',', $CFG->gradebookroles),
             SQL_PARAMS_NAMED,
             "{$prefix}ra"
         );
 
+        $parameters = [];
+        $parameters["{$prefix}ecourseid"] = $this->course->id;
+        $parameters["{$prefix}racontextid"] = $this->context->id;
         $parameters = array_merge($parameters, $roleparameters);
 
-        $sql = "JOIN {user_enrolments} {$userenrolmentsprefix} ON {$userenrolmentsprefix}.userid = {$useridcolumn}
+        // SQL uses sub-select as we only want distinct users.
+        $sql = "JOIN {user_enrolments} {$userenrolmentprefix} ON {$userenrolmentprefix}.userid = {$useridcolumn}
                 JOIN {enrol} {$prefix}e
-                  ON {$prefix}e.id = {$userenrolmentsprefix}.enrolid AND {$prefix}e.courseid = :{$prefix}ecourseid
-                JOIN ( SELECT DISTINCT({$prefix}ra.userid)
-                         FROM {role_assignments} {$prefix}ra 
-                        WHERE {$prefix}ra.contextid = :{$prefix}racontextid 
-                          AND {$prefix}ra.roleid $rolesql) AS {$prefix}dra
-                  ON {$prefix}dra.userid = {$userenrolmentsprefix}.userid";
+                  ON {$prefix}e.id = {$userenrolmentprefix}.enrolid AND {$prefix}e.courseid = :{$prefix}ecourseid
+                JOIN (SELECT DISTINCT({$prefix}ra.userid)
+                        FROM {role_assignments} {$prefix}ra 
+                       WHERE {$prefix}ra.contextid = :{$prefix}racontextid 
+                         AND {$prefix}ra.roleid $rolesql) AS {$prefix}dra
+                  ON {$prefix}dra.userid = {$userenrolmentprefix}.userid";
 
         return [$sql, $parameters];
+    }
+
+    /**
+     * Make SQL that will indicate if a user has a group membership in one or more passed in groups.
+     *
+     * @param array $groupids
+     * @param string $useridcolumn
+     * @return array
+     * @throws \dml_exception
+     * @throws coding_exception
+     */
+    public function get_course_group_membership_join(array $groupids, string $useridcolumn = 'u.id') {
+        global $DB;
+
+        // Collision avoidance, may going overboard here.
+        static $i = 0;
+        $i++;
+        $prefix = 'gm' . $i . '_';
+
+        if (empty($groupids)) {
+            throw new coding_exception("No group identifiers");
+        }
+
+        [$groupsql, $groupparameters] = $DB->get_in_or_equal(
+            $groupids,
+            SQL_PARAMS_NAMED,
+            "{$prefix}g"
+        );
+
+        // SQL uses sub-select as we only want distinct users.
+        $sql = "JOIN (SELECT DISTINCT({$prefix}gm.userid)
+                        FROM {groups_members} {$prefix}gm
+                       WHERE {$prefix}gm.groupid $groupsql) AS {$prefix}cgm
+                  ON {$prefix}cgm.userid = {$useridcolumn}";
+
+        return [$sql, $groupparameters];
     }
 
 }
