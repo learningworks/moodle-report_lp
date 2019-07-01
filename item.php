@@ -36,13 +36,15 @@ $course = get_course($courseid);
 $systemcontext = context_system::instance();
 $itemtypelist = new report_lp\local\item_type_list(report_lp_get_supported_measures());
 $itemfactory = new report_lp\local\factories\item($course, $itemtypelist);
-if (!is_null($shortname)){
+if (isset($itemconfiguration)) {
+    $item = $itemfactory->get_item($itemconfiguration);
+} else if (!is_null($shortname)){
     if (!$itemtypelist->item_type_exists($shortname)) {
         throw new moodle_exception("{$shortname} is not a reqistered item type");
     }
     $item = $itemfactory->get_from_shortname($shortname);
 } else {
-    $item = $itemfactory->get_item($itemconfiguration);
+    throw new moodle_exception("Could not load item");
 }
 $configurl = report_lp\local\factories\url::get_config_url($course);
 $pageurl = report_lp\local\factories\url::get_item_url($course, $id, $shortname);
@@ -63,7 +65,6 @@ if ($mform->is_cancelled()) {
 if ($mform->is_submitted()) {
     $data = $mform->get_data();
     if ($data) {
-        $item->get_configuration()->set('id',  isset($data->id) ? $data->id : 0);
         $item->get_configuration()->set('usecustomlabel', $data->usecustomlabel);
         $item->get_configuration()->set('customlabel', isset($data->customlabel) ? $data->customlabel : '');
         $item->get_configuration()->set('parentitemid', $data->parentitemid);
