@@ -37,7 +37,7 @@ $string['datalastfetched'] = 'Data last fetched at: {$a}';
 $string['fetchprogessdata'] = 'Fetch progress data';
 $string['lp:configure'] = 'Build report add/remove groupings and measures';
 $string['lp:viewsummary'] = 'View the summary Learner progress report';
-$string['lp:individual'] = 'View individual Learner progress report';
+$string['lp:viewindividual'] = 'View individual Learner progress report';
 $string['lp:exportsummary'] = 'Export summary to file';
 
 $string['assignmentresubmitcount:measure:name'] = 'Assignment resubmits';

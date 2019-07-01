@@ -24,11 +24,3 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-// Add main report page to navigation tree
-$ADMIN->add('reports', new admin_externalpage('report_lp',
-    get_string('pluginname', 'report_lp'),
-    new moodle_url('/report/lp/index.php'),
-    'report/lp:view'));
-
-// No report settings.
-$settings = null;
