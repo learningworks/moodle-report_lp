@@ -112,17 +112,6 @@ class item_configuration extends persistent {
         $this->update();
     }
 
-
-    /**
-     * Sets other properties that reply id property.
-     *
-     * @throws coding_exception
-     */
-    protected function before_update() {
-        $this->raw_set('path', $this->construct_path());
-        $this->raw_set('depth', $this->construct_depth());
-    }
-
     /**
      * Construct depth based of path.
      *
@@ -131,10 +120,6 @@ class item_configuration extends persistent {
      * @throws coding_exception
      */
     private function construct_depth(string $path = null) {
-        $id = $this->raw_get('id');
-        if ($id <= 0) {
-            throw new coding_exception('Valid record required');
-        }
         if (empty($path)) {
             $path = $this->raw_get('path');
         }
@@ -157,18 +142,13 @@ class item_configuration extends persistent {
      */
     private function construct_path() {
         $id = $this->raw_get('id');
-        if ($id <= 0) {
-            throw new coding_exception('Valid record required');
-        }
         $pathitems = [];
-        while (true) {
-            $item = new static($id);
-            array_unshift($pathitems, $item->get('id'));
-            $id = $item->get('parentitemid');
-            if ($id == 0) {
-                break;
-            }
+        $parentitem = new static($this->get('parentitemid'));
+        while ($parentitem->get('id') > 0) {
+            array_unshift($pathitems, $parentitem->get('id'));
+            $parentitem = new static($parentitem->raw_get('parentitemid'));
         }
+        $pathitems[] = $id;
         return implode('/', $pathitems);
     }
 
@@ -338,6 +318,18 @@ class item_configuration extends persistent {
      */
     protected function set_path($value) {
         return $this;
+    }
+
+    /**
+     * Path and depth are determined by parentitemid. See before_create method also.
+     *
+     * @param $value
+     * @throws coding_exception
+     */
+    protected function set_parentitemid($value) {
+        $this->raw_set('parentitemid', $value);
+        $this->raw_set('path', $this->construct_path());
+        $this->raw_set('depth', $this->construct_depth());
     }
 
 }
