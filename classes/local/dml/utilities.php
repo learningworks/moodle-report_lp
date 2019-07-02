@@ -37,10 +37,14 @@ class utilities {
      * @param $aliasprefix
      * @return string
      */
-    public static function alias(array $fields, $tableprefix, $aliasprefix) {
+    public static function alias(array $fields, string $tableprefix, string $aliasprefix = null) : string {
         $aliasedfields = array();
         foreach ($fields as $field) {
-            $aliasedfields[$field] = "$tableprefix.$field AS $aliasprefix$field";
+            $aliasedfield = "{$tableprefix}.{$field}";
+            if (!is_null($aliasprefix)) {
+                $aliasedfield .= " AS {$aliasprefix}{$field}";
+            }
+            $aliasedfields[$field] = $aliasedfield;
         }
         return implode(',', $aliasedfields);
     }
