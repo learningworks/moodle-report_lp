@@ -29,6 +29,9 @@ $string['selectcategory'] = 'Select category...';
 $string['coursegroup'] = 'Course group';
 $string['coursecategory'] = 'Course category';
 $string['configureprogresstracking'] = 'Configure learner progress tracking';
+$string['configurelearnerprogressreport'] = 'Configure learner progress report';
+$string['viewlearnerprogresssummary'] = 'View learner progress summary';
+
 $string['trackassignment'] = 'Track assignment';
 $string['notenrolled'] = 'Not enrolled';
 $string['exportfilename'] = 'learnerprogress';

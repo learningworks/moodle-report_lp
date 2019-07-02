@@ -54,6 +54,15 @@ class url {
         return $url;
     }
 
+    public static function get_summary_url(stdClass $course) : moodle_url {
+        $url =  new moodle_url('/report/lp/index.php',
+            [
+                'courseid' => $course->id
+            ]
+        );
+        return $url;
+    }
+
     public static function get_grouping_url(stdClass $course = null, int $id = 0) : moodle_url {
         $url =  new moodle_url('/report/lp/grouping.php');
         if (!is_null($course)) {

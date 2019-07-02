@@ -34,17 +34,31 @@ defined('MOODLE_INTERNAL') || die;
  * @throws moodle_exception
  */
 function report_lp_extend_navigation_course($navigation, $course, $context) {
-    if (has_capability('report/lp:configure', $context) and $course->id != SITEID) {
-        $url = new moodle_url('/report/lp/configure.php', ['courseid' => $course->id]);
-        $label = get_string('pluginname', 'report_lp');
-        $navigation->add(
-            $label,
-            $url,
-            navigation_node::TYPE_SETTING,
-            null,
-            null,
-            new pix_icon('icon', '', 'report_lp')
-        );
+    if ($course->id != SITEID) {
+        if (has_capability('report/lp:configure', $context)) {
+            $url = report_lp\local\factories\url::get_config_url($course);
+            $label = get_string('configurelearnerprogressreport', 'report_lp');
+            $navigation->add(
+                $label,
+                $url,
+                navigation_node::TYPE_SETTING,
+                null,
+                null,
+                new pix_icon('icon', '', 'report_lp')
+            );
+        }
+        if (has_capability('report/lp:viewsummary', $context)) {
+            $url = report_lp\local\factories\url::get_summary_url($course);
+            $label = get_string('viewlearnerprogresssummary', 'report_lp');
+            $navigation->add(
+                $label,
+                $url,
+                navigation_node::TYPE_SETTING,
+                null,
+                null,
+                new pix_icon('icon', '', 'report_lp')
+            );
+        }
     }
 }
 
