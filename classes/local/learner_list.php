@@ -25,68 +25,58 @@ namespace report_lp\local;
 
 defined('MOODLE_INTERNAL') || die();
 
+use ArrayIterator;
+use Countable;
+use IteratorAggregate;
 use report_lp\local\dml\utilities as dml_utilities;
 use stdClass;
 use context_course;
 use coding_exception;
+use Traversable;
 
-class learners {
+class learner_list implements Countable, IteratorAggregate {
 
     public const PER_PAGE_DEFAULT = 10;
-    public const PER_PAGE_MAXIMUM = 200;
-
-    /**
-     * @var stdClass
-     */
-    protected $course;
 
     /**
      * @var context_course
      */
     protected $context;
 
-    private $learners = [];
+    /**
+     * @var stdClass
+     */
+    protected $course;
+
+    private $filters;
 
     private $hasfetched;
 
-    public function __construct(stdClass $course, array $filters = []) {
-        $this->course = $course;
-        $this->context = context_course::instance($course->id);
+    private $learners = [];
+
+    private $page;
+
+    private $pagelimit;
+
+    private $sortorder;
+
+
+    public function __construct(
+        stdClass $course,
+        array $filters = null,
+        string $sortorder = null
+    ) {
         $this->learners = [];
         $this->hasfetched = false;
+        $this->course = $course;
+        $this->context = context_course::instance($course->id);
+        $this->filters = $filters;
+        $this->sortorder = $sortorder;
+        //$this->page = $page;
+        //$this->pagelimit = $pagelimit;
     }
 
     public function add_filters(array $filters) {
-    }
-
-    public function set_filter($name, $value) {
-        $this->purge_learners();
-
-    }
-
-    private function purge_learners() {
-        unset($this->learners);
-        unset($this->hasfetched);
-        $this->learners = [];
-        $this->hasfetched = false;
-    }
-
-    public function fetch() {
-        global $DB;
-
-        $defaultuserfields = static::get_default_user_fields();
-        $sqluserfields = dml_utilities::alias($defaultuserfields, 'u');
-        [$uesql, $ueparameters] = $this->get_user_enrolment_join('ue');
-
-        $sql = "SELECT {$sqluserfields}, ue.status  
-                  FROM {user} u {$uesql}";
-        $parameters = array_merge($ueparameters);
-        $rs = $DB->get_recordset_sql($sql, $parameters, 0, 10);
-        foreach ($rs as $record) {
-            $this->add_learner($record);
-        }
-        $rs->close();
-        $this->hasfetched = true;
     }
 
     public function add_learner(stdClass $learner) {
@@ -97,15 +87,37 @@ class learners {
         $this->learners[$learner->id] = $learner;
     }
 
-    public function total() {
-        global $DB;
-        [$uesql, $ueparameters] = $this->get_user_enrolment_join('ue');
-        $sql = "SELECT COUNT(1)
-                  FROM {user} u {$uesql}";
-        $parameters = array_merge($ueparameters);
-        return $DB->count_records_sql($sql, $parameters);
+    public function count() {
+        return count($this->learners);
     }
 
+    /**
+     * @todo pagination.
+     *
+     * @throws \dml_exception
+     * @throws coding_exception
+     */
+    public function fetch() {
+        global $DB;
+
+        $defaultuserfields = static::get_default_user_fields();
+        $sqluserfields = dml_utilities::alias($defaultuserfields, 'u');
+        [$uesql, $ueparameters] = $this->get_user_enrolment_join('ue');
+
+        $sql = "SELECT {$sqluserfields}, ue.status  
+                  FROM {user} u {$uesql}";
+        $parameters = array_merge($ueparameters);
+        $rs = $DB->get_recordset_sql($sql, $parameters);
+        foreach ($rs as $record) {
+            $this->add_learner($record);
+        }
+        $rs->close();
+        $this->hasfetched = true;
+    }
+
+    /**
+     * @return array
+     */
     public static function get_default_user_fields() {
         $fields = [
             'id' => 'id',
@@ -113,6 +125,19 @@ class learners {
             'idnumber' => 'idnumber'
         ];
         return array_merge($fields, get_all_user_name_fields());
+    }
+
+    /**
+     * Allow collection of learners to be iterated.
+     * @return ArrayIterator|Traversable
+     * @throws \dml_exception
+     * @throws coding_exception
+     */
+    public function getIterator() {
+        if (!$this->hasfetched) {
+            $this->fetch();
+        }
+        return new ArrayIterator($this->learners);
     }
 
     /**
@@ -159,6 +184,15 @@ class learners {
     }
 
     /**
+     * Get array of user identifiers.
+     *
+     * @return array
+     */
+    public function get_learner_userids() {
+        return array_keys($this->learners);
+    }
+
+    /**
      * Make SQL that will indicate if a user has a group membership in one or more passed in groups.
      *
      * @param array $groupids
@@ -193,5 +227,34 @@ class learners {
 
         return [$sql, $groupparameters];
     }
+
+    private function purge_learners() {
+        unset($this->learners);
+        unset($this->hasfetched);
+        $this->learners = [];
+        $this->hasfetched = false;
+    }
+
+    public function set_filter($name, $value) {
+        $this->purge_learners();
+
+    }
+
+    /**
+     * Total of all available learners non-paged.
+     *
+     * @return int
+     * @throws \dml_exception
+     * @throws coding_exception
+     */
+    public function total() {
+        global $DB;
+        [$uesql, $ueparameters] = $this->get_user_enrolment_join('ue');
+        $sql = "SELECT COUNT(1)
+                  FROM {user} u {$uesql}";
+        $parameters = array_merge($ueparameters);
+        return $DB->count_records_sql($sql, $parameters);
+    }
+
 
 }
