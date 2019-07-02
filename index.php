@@ -17,12 +17,17 @@
 require_once(__DIR__ . '/../../config.php');
 
 $courseid = required_param('courseid', PARAM_INT);
-require_login();
-$context = context_system::instance();
-$PAGE->set_context($context);
-$url = new moodle_url('/report/lp/index.php', ['courseid' => $courseid]);
+$course = get_course($courseid);
+
+require_login($course);
+require_capability('report/lp:configure', $systemcontext);
+
+$url = report_lp\local\factories\url::get_summary_url($course);
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('report');
+$css = new moodle_url('/report/lp/scss/styles.css');
+$PAGE->requires->css($css);
+
 $renderer = $PAGE->get_renderer('report_lp');
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('pluginname', 'report_lp'));
