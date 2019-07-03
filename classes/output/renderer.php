@@ -19,6 +19,7 @@ namespace report_lp\output;
 defined('MOODLE_INTERNAL') || die;
 
 use plugin_renderer_base;
+use report_lp\local\course_group;
 use report_lp\local\item_tree;
 use stdClass;
 
@@ -35,6 +36,23 @@ class renderer extends plugin_renderer_base {
         $data->paragraphbottom = $paragraphbottom;
         $data->button = $button;
         return parent::render_from_template('report_lp/jumbotron', $data);
+    }
+
+    public function render_group_filter(stdClass $course) {
+        $data = new stdClass;
+        $data->active = '19-3a, 19-3b';
+        $data->active = get_string('none', 'report_lp');
+        $data->groups = [];
+        $coursegroup = new course_group($course);
+        $availablegroups = $coursegroup->get_available_groups();
+        foreach ($availablegroups as $availablegroup) {
+            $group = new stdClass();
+            $group->id = $availablegroup->id;
+            $group->name = $availablegroup->name;
+            $group->isactive = false;
+            $data->groups[] = $group;
+        }
+        return parent::render_from_template("report_lp/group_filter", $data);
     }
 
     public function item_tree_configuration(item_tree $itemtree) {

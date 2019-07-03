@@ -18,6 +18,7 @@ require_once(__DIR__ . '/../../config.php');
 
 $courseid = required_param('courseid', PARAM_INT);
 $course = get_course($courseid);
+$systemcontext = context_system::instance();
 
 require_login($course);
 require_capability('report/lp:configure', $systemcontext);
@@ -31,4 +32,17 @@ $PAGE->requires->css($css);
 $renderer = $PAGE->get_renderer('report_lp');
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('pluginname', 'report_lp'));
+echo $renderer->render_group_filter($course);
+echo '<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+        <h1 class="display-5">Stuff</h1>
+        <p class="lead">more stuff</p>
+    </div>
+</div>';
+echo '<div class="jumbotron jumbotron-fluid">
+    <div class="container">
+        <h1 class="display-5">Stuff</h1>
+        <p class="lead">more stuff</p>
+    </div>
+</div>';
 echo $OUTPUT->footer();

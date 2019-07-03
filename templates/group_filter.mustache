@@ -1,0 +1,47 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_dialogue/list_filter_selector
+
+    This template renders filter dropdown.
+
+    Example context (json):
+    {
+
+    }
+}}
+<div id="report-lp-group-filter-{{uniqid}}" class="dropdown m-b-1">
+    <button id="groupingdropdown" type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="{{#str}} aria:filterdropdown, report_lp {{/str}}">
+        {{#pix}} i/filter {{/pix}} {{#pix}} i/group {{/pix}}
+        <span class="d-sm-inline-block" data-active-item-text>
+            {{active}}
+        </span>
+    </button>
+    <ul class="dropdown-menu" data-show-active-item data-active-item-text aria-labelledby="filterdropdown">
+        <li>
+            <h6 class="dropdown-header">{{#str}} groups {{/str}}</h6>
+        </li>
+        {{#groups}}
+            <li>
+                <a class="dropdown-item {{#isactive}}active{{/isactive}}" href="#" data-filter="filter" data-value="{{id}}" aria-label="" aria-controls="summary-view-{{uniqid}}">
+                    {{name}}{{#isactive}}<div class="float-right"><i class="fa fa-check" aria-hidden="true"></i></div>{{/isactive}}
+                </a>
+            </li>
+        {{/groups}}
+
+    </ul>
+</div>

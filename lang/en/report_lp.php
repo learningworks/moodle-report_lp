@@ -114,3 +114,10 @@ $string['instantiate'] = 'Instantiate...';
 
 $string['addgrouping'] = 'Add grouping item to the report';
 $string['addmeasure'] ='Add measure of item type {$a} to the report';
+
+$string['none'] = 'None';
+$string['aria:filterdropdown'] = 'Filtering dropdown';
+$string['aria:none'] = 'aria:none';
+$string['aria:open'] = 'aria:open';
+$string['aria:closed'] = 'aria:closed';
+$string['aria:controls'] = 'aria:controls';
