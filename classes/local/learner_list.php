@@ -25,70 +25,30 @@ namespace report_lp\local;
 
 defined('MOODLE_INTERNAL') || die();
 
-use ArrayIterator;
-use Countable;
-use IteratorAggregate;
 use report_lp\local\dml\utilities as dml_utilities;
 use stdClass;
-use context_course;
 use coding_exception;
-use Traversable;
 
-class learner_list implements Countable, IteratorAggregate {
+class learner_list extends user_list {
 
     public const PER_PAGE_DEFAULT = 10;
 
-    /**
-     * @var context_course
-     */
-    protected $context;
-
-    /**
-     * @var stdClass
-     */
-    protected $course;
-
     private $filters;
-
-    private $hasfetched;
-
-    private $learners = [];
-
-    private $page;
-
-    private $pagelimit;
 
     private $sortorder;
 
-
-    public function __construct(
-        stdClass $course,
-        array $filters = null,
-        string $sortorder = null
-    ) {
-        $this->learners = [];
-        $this->hasfetched = false;
-        $this->course = $course;
-        $this->context = context_course::instance($course->id);
+    public function __construct(stdClass $course, array $filters = null, string $sortorder = null) {
+        parent::__construct($course);
         $this->filters = $filters;
         $this->sortorder = $sortorder;
-        //$this->page = $page;
-        //$this->pagelimit = $pagelimit;
     }
 
     public function add_filters(array $filters) {
     }
 
     public function add_learner(stdClass $learner) {
-        if (empty($learner->id)) {
-            throw new coding_exception("ID property not found");
-        }
         $learner->coursegroups = course_group::get_groups_for_user($this->course->id, $learner->id);
-        $this->learners[$learner->id] = $learner;
-    }
-
-    public function count() {
-        return count($this->learners);
+        $this->add_user($learner);
     }
 
     /**
@@ -112,33 +72,10 @@ class learner_list implements Countable, IteratorAggregate {
             $this->add_learner($record);
         }
         $rs->close();
-        $this->hasfetched = true;
+
     }
 
-    /**
-     * @return array
-     */
-    public static function get_default_user_fields() {
-        $fields = [
-            'id' => 'id',
-            'email' => 'email',
-            'idnumber' => 'idnumber'
-        ];
-        return array_merge($fields, get_all_user_name_fields());
-    }
 
-    /**
-     * Allow collection of learners to be iterated.
-     * @return ArrayIterator|Traversable
-     * @throws \dml_exception
-     * @throws coding_exception
-     */
-    public function getIterator() {
-        if (!$this->hasfetched) {
-            $this->fetch();
-        }
-        return new ArrayIterator($this->learners);
-    }
 
     /**
      * Make SQL that will get distinct learner enrolments within the course.
@@ -183,14 +120,6 @@ class learner_list implements Countable, IteratorAggregate {
         return [$sql, $parameters];
     }
 
-    /**
-     * Get array of user identifiers.
-     *
-     * @return array
-     */
-    public function get_learner_userids() {
-        return array_keys($this->learners);
-    }
 
     /**
      * Make SQL that will indicate if a user has a group membership in one or more passed in groups.
@@ -226,18 +155,6 @@ class learner_list implements Countable, IteratorAggregate {
                   ON {$prefix}cgm.userid = {$useridcolumn}";
 
         return [$sql, $groupparameters];
-    }
-
-    private function purge_learners() {
-        unset($this->learners);
-        unset($this->hasfetched);
-        $this->learners = [];
-        $this->hasfetched = false;
-    }
-
-    public function set_filter($name, $value) {
-        $this->purge_learners();
-
     }
 
     /**
