@@ -17,9 +17,41 @@ namespace report_lp\local;
 
 defined('MOODLE_INTERNAL') || die();
 
+use context_course;
+use stdClass;
 
 class course_group {
 
+    /**
+     * @var stdClass $course Course object.
+     */
+    protected $course;
+
+    /**
+     * @var context_course Context class.
+     */
+    protected $context;
+
+    /**
+     * course_group constructor.
+     *
+     * @param stdClass $course
+     */
+    public function __construct(stdClass $course) {
+        global $CFG;
+        require_once("$CFG->libdir/grouplib.php");
+
+        $this->course = $course;
+        $this->context = context_course::instance($course->id);
+    }
+
+    /**
+     * Gets all group objects for a user in a course. Uses Cache so ok to call heaps.
+     *
+     * @param int $courseid
+     * @param int $userid
+     * @return array
+     */
     public static function get_groups_for_user(int $courseid, int $userid) : array {
         global $CFG;
         require_once("$CFG->libdir/grouplib.php");
@@ -34,6 +66,28 @@ class course_group {
             }
         }
         return $coursegroups;
+    }
+
+    /**
+     * Get all available groups a user has access to in a course.
+     *
+     * @param stdClass|null $user
+     * @return array
+     * @throws \coding_exception
+     */
+    public function get_available_groups(stdClass $user = null) : array {
+        global $USER;
+
+        if (is_null($user)) {
+            $user = $USER;
+        }
+        $accessallgroups = has_capability('moodle/site:accessallgroups', $this->context, $user);
+        if ($this->course->groupmode == VISIBLEGROUPS || $accessallgroups) {
+            $allowedgroups = groups_get_all_groups($this->course->id, 0);
+        } else {
+            $allowedgroups = groups_get_all_groups($this->course->id, $user->id);
+        }
+        return $allowedgroups;
     }
 }
 
