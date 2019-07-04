@@ -27,21 +27,30 @@
 <div id="report-lp-group-filter-{{uniqid}}" class="dropdown m-b-1">
     <button id="groupingdropdown" type="button" class="btn btn-outline-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="{{#str}} aria:filterdropdown, report_lp {{/str}}">
         {{#pix}} i/filter {{/pix}} {{#pix}} i/group {{/pix}}
-        <span class="d-sm-inline-block" data-active-item-text>
+        <span class="d-sm-inline-block" data-active-text>
             {{active}}
         </span>
     </button>
-    <ul class="dropdown-menu" data-show-active-item data-active-item-text aria-labelledby="filterdropdown">
+    <ul class="dropdown-menu" data-active-menu aria-labelledby="filterdropdown">
         <li>
             <h6 class="dropdown-header">{{#str}} groups {{/str}}</h6>
         </li>
         {{#groups}}
             <li>
-                <a class="dropdown-item {{#isactive}}active{{/isactive}}" href="#" data-filter="filter" data-value="{{id}}" aria-label="" aria-controls="summary-view-{{uniqid}}">
-                    {{name}}{{#isactive}}<div class="float-right"><i class="fa fa-check" aria-hidden="true"></i></div>{{/isactive}}
+                <a class="dropdown-item {{#isactive}}active{{/isactive}}" href="#" data-filter="filter" data-group-id="{{id}}" aria-label="" data-skip-active-class aria-controls="summary-view-{{uniqid}}">
+                    {{name}}<div class="checked {{^isactive}}d-none{{/isactive}} float-right"><i class="fa fa-check" aria-hidden="true"></i></div>
                 </a>
             </li>
         {{/groups}}
 
     </ul>
 </div>
+{{#js}}
+    require(
+    [
+        'report_lp/group_filter'
+    ],
+    function(groupFilter) {
+        groupFilter.init('#report-lp-group-filter-{{uniqid}}');
+    });
+{{/js}}
