@@ -45,7 +45,6 @@ use required_capability_exception;
 class report_configuration extends external_api {
 
     public static function move_item_parameters() {
-        //return new external_function_parameters([]);
         return new external_function_parameters(
             array(
                 'courseid' => new external_value(PARAM_INT, 'The course idenitifier'),
