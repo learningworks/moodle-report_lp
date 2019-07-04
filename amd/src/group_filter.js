@@ -44,6 +44,7 @@ define(
         var registerSelector = function(selector) {
             customEvents.define(selector, [customEvents.events.activate]);
             selector.on(customEvents.events.activate, SELECTORS.DESCENDANTS, function(e, data) {
+                var local = this;
                 var activeGroupNames = [];
                 var activeGroupIds = [];
                 var option = $(e.target);
@@ -68,11 +69,26 @@ define(
                     if (activeGroupNames.length) {
                         dropdownToggleText.html(activeGroupNames.join(', '));
                     } else {
-                        dropdownToggleText.html('None');
+                        dropdownToggleText.html('Filter groups'); // @todo Str.
                     }
                 }
-                // @todo Ajax.
+                Log.debug(activeGroupIds.join());
+                var request = {
+                    methodname: 'report_lp_set_group_filter',
+                    args: {
+                        courseid: listContainer.attr('data-course-id'),
+                        groupids: activeGroupIds.join()
+                    }
+                };
+                var promise = Ajax.call([request])[0];
+                promise.done(
+                    function(data){
+                        local.response = data;
+                    }
+                ).fail(Notification.exception);
                 data.originalEvent.preventDefault();
+                // Just for now. Until can build a view than can reload via PubSub.
+                window.location.replace(listContainer.attr('data-redirect-url'));
             });
         };
 

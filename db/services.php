@@ -17,18 +17,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 $functions = [
-    'report_lp_get_filtered_groups' => [
+    'report_lp_set_group_filter' => [
         'classname'    => 'report_lp\local\external\filters',
-        'methodname'   => 'get_filtered_groups',
-        'classpath'    => '',
-        'description'  => '',
-        'type'         => 'read',
-        'capabilities' => '',
-        'ajax'         => true
-    ],
-    'report_lp_set_filtered_groups' => [
-        'classname'    => 'report_lp\local\external\filters',
-        'methodname'   => 'set_filtered_groups',
+        'methodname'   => 'set_group_filter',
         'classpath'    => '',
         'description'  => '',
         'type'         => 'write',

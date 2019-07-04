@@ -116,6 +116,7 @@ $string['addgrouping'] = 'Add grouping item to the report';
 $string['addmeasure'] ='Add measure of item type {$a} to the report';
 
 $string['none'] = 'None';
+$string['filtergroups'] = 'Filter groups';
 $string['aria:filterdropdown'] = 'Filtering dropdown';
 $string['aria:none'] = 'aria:none';
 $string['aria:open'] = 'aria:open';

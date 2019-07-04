@@ -19,6 +19,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use context_course;
 use stdClass;
+use coding_exception;
 
 class course_group {
 
@@ -43,6 +44,45 @@ class course_group {
 
         $this->course = $course;
         $this->context = context_course::instance($course->id);
+    }
+
+    /**
+     * Return array of groups for group filter for a course.
+     *
+     * @param int $courseid
+     * @return array
+     */
+    public static function get_active_filter(int $courseid) : array {
+        global $SESSION;
+
+        if (!isset($SESSION->report_lp_filters)) {
+            $SESSION->report_lp_filters = [];
+            return [];
+        }
+        if (!isset($SESSION->report_lp_filters[$courseid]['group'])) {
+            return [];
+        }
+        $groups = $SESSION->report_lp_filters[$courseid]['group'];
+        if (is_array($groups)) {
+            return $groups;
+        }
+        return [];
+    }
+
+    /**
+     * Uses try use Cache to get group in a course.
+     *
+     * @param int $courseid
+     * @param int $groupid
+     * @return mixed
+     * @throws coding_exception
+     */
+    public static function get_group_from_id(int $courseid, int $groupid) {
+        $coursegroupdata = groups_get_course_data($courseid);
+        if (!isset($coursegroupdata->groups[$groupid])) {
+            throw new coding_exception('Invalid courseid');
+        }
+        return $coursegroupdata->groups[$groupid];
     }
 
     /**
