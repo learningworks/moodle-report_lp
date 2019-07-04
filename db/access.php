@@ -17,7 +17,7 @@
 /**
  * Capabilities.
  *
- * Defines capablities related to the report.
+ * Defines capabilities related to the report.
  *
  * @package     report_lp
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
