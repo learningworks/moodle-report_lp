@@ -129,3 +129,6 @@ $string['coursegroups'] = 'Groups';
 
 $string['noselectedcoursegroups'] = 'No course groups selected';
 $string['noselectedcoursegroups:description'] = 'Please use the course group filter dropdown to select groups of learners to filter date on';
+
+$string['cachedef_summarydata'] = 'The summary measure data for learners in a course';
+
