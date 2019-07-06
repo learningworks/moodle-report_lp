@@ -46,5 +46,5 @@ echo $renderer->render_group_filter($course);
 
 echo $renderer->render(new report_lp\output\summary_report($summary));
 
-print_object($SESSION);
+//print_object($SESSION);
 echo $OUTPUT->footer();

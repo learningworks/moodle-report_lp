@@ -48,11 +48,6 @@ class summary_report implements renderable, templatable {
         $this->summary = $summary;
     }
 
-    /**
-     *
-     * @param renderer_base $output
-     * @return array|stdClass
-     */
     public function export_for_template(renderer_base $output) {
         $data = new stdClass();
         $itemtree = $this->summary->get_item_tree();
@@ -65,7 +60,21 @@ class summary_report implements renderable, templatable {
         $secondaryheader->columns = $this->secondary_header_columns($output, $items);
         $data->secondaryheader = $secondaryheader;
 
+        $learnerlist = $this->summary->get_learner_list();
+        $learnerlist->fetch_all();
+
+        foreach ($learnerlist as $learner) {
+            $row = new stdClass();
+            $row->learner = $this->data_row_columns($output, $learner);
+            $data->rows[] = $row;
+        }
         return $data;
+    }
+
+    public function data_row_columns(renderer_base $output, $learner) {
+        $learner->fullname = fullname($learner);
+        $learner->enrolmentstatus = $learner->status;
+        return $learner;
     }
 
     public function primary_header_columns(renderer_base $output, array $items) {

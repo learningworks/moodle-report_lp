@@ -22,7 +22,7 @@
     Example context (json):
     {}
 }}
-
+<div class="container-fluid">
 <table class="summary-report">
     <thead class="">
     {{#primaryheader}}
@@ -41,10 +41,27 @@
     {{/secondaryheader}}
     </thead>
     <tbody>
-    <tr class="">
-    </tr>
+    {{#rows}}
+        <tr class="">
+            {{#learner}}
+                <td class="cell cell-learner">
+                    <img src="assets/defaultprofileimage.png" class="userpicture defaultuserpic"/>
+                    {{fullname}}
+                    {{#status}}
+                        <span class="badge badge-pill badge-danger" title="Withdrawn">W</span>
+                    {{/status}}
+                </td>
+                <td class="cell">
+                    <div class="cell-learner--action" title="Exclude learner from export"><i class="fa fa-user-times" aria-hidden="true"></i></div>
+                </td>
+                <td class="cell"><span class="">{{idnumber}}</span></td>
+                <td class="cell">19-2A</td>
+            {{/learner}}
+        </tr>
+    {{/rows}}
     </tbody>
 </table>
+</div>
 
 <br>
 <table class="summary-report">
@@ -87,8 +104,6 @@
             <img src="assets/defaultprofileimage.png" class="userpicture defaultuserpic"/>
             Lenny Learner
             <span class="badge badge-danger" title="Withdrawn">W</span>
-
-
         </td>
         <td class="cell"><div class="cell-learner--action" title="Exclude learner from export"><i class="fa fa-user-times" aria-hidden="true"></i></div></td>
         <td class="cell"><span class="">2018000</span></td>

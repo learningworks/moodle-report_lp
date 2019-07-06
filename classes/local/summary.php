@@ -58,6 +58,10 @@ class summary {
         return $this->itemtree;
     }
 
+    public function get_learner_list() : learner_list {
+        return $this->learnerlist;
+    }
+
     public function add_item_type_list(item_type_list $itemtypelist) {
         $this->itemtypelist = $itemtypelist;
         return $this;

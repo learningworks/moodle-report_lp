@@ -45,7 +45,7 @@ class learner_list extends user_list {
     }
 
     public function add_learner(stdClass $learner) {
-        $learner->coursegroups = course_group::get_groups_for_user($this->course->id, $learner->id);
+       //$learner->coursegroups = course_group::get_groups_for_user($this->course->id, $learner->id);
         $this->add_user($learner);
     }
 
