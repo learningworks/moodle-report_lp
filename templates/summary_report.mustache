@@ -25,16 +25,20 @@
 
 <table class="summary-report">
     <thead class="">
-    <tr>
-        {{#headeratdepth1}}
-            <th colspan="{{colspan}}" class="cell cell-grouping">{{label}}</th>
-        {{/headeratdepth1}}
-    </tr>
-    <tr>
-        {{#headeratdepth2}}
-            <td colspan="{{colspan}}" class="cell cell-grouping">{{#icon}}{{>core/pix_icon}}{{/icon}}{{label}}</td>
-        {{/headeratdepth2}}
-    </tr>
+    {{#primaryheader}}
+        <tr>
+            {{#columns}}
+                <th colspan="{{colspan}}" class="cell cell-grouping">{{label}}</th>
+            {{/columns}}
+        </tr>
+    {{/primaryheader}}
+    {{#secondaryheader}}
+        <tr>
+            {{#columns}}
+                <td colspan="{{colspan}}" class="cell cell-grouping">{{#icon}}{{>core/pix_icon}}{{/icon}}{{label}}</td>
+            {{/columns}}
+        </tr>
+    {{/secondaryheader}}
     </thead>
     <tbody>
     <tr class="">

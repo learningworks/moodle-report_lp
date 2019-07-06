@@ -57,17 +57,23 @@ class summary_report implements renderable, templatable {
         $data = new stdClass();
         $itemtree = $this->summary->get_item_tree();
         $items = $itemtree->get_flattened_tree();
-        $data->headeratdepth1 = $this->table_header_row_at_depth_one($output, $items);
-        $data->headeratdepth2 = $this->table_header_row_at_depth_two($output, $items);
+        $primaryheader = new stdClass();
+        $primaryheader->columns = $this->primary_header_columns($output, $items);
+        $data->primaryheader = $primaryheader;
+
+        $secondaryheader = new stdClass();
+        $secondaryheader->columns = $this->secondary_header_columns($output, $items);
+        $data->secondaryheader = $secondaryheader;
+
         return $data;
     }
 
-    public function table_header_row_at_depth_one(renderer_base $output, array $items) {
-        $header = [];
+    public function primary_header_columns(renderer_base $output, array $items) {
+        $columns = [];
         $th = new stdClass();
         $th->label = get_string('learner', 'report_lp');
         $th->colspan = 2 + count($this->learnerextrafields);
-        $header[] = $th;
+        $columns[] = $th;
         foreach ($items as $item) {
             $configuration = $item->get_configuration();
             if ($configuration->get('depth') != 2) {
@@ -80,19 +86,19 @@ class summary_report implements renderable, templatable {
                 $th->label = $item->get_label();
                 $th->colspan = $item->count();
             }
-            $header[] = $th;
+            $columns[] = $th;
         }
-        return $header;
+        return $columns;
     }
-    public function table_header_row_at_depth_two(renderer_base $output, array $items) {
-        $header = [];
+    public function secondary_header_columns(renderer_base $output, array $items) {
+        $columns = [];
         $th = new stdClass();
         $th->colspan = 2;
-        $header[] = $th;
+        $columns[] = $th;
         foreach ($this->learnerextrafields as $learnerextrafield) {
             $th = new stdClass();
             $th->label = get_string($learnerextrafield, 'report_lp');
-            $header[] = $th;
+            $columns[] = $th;
         }
         foreach ($items as $item) {
             /** @var item $item */
@@ -109,7 +115,7 @@ class summary_report implements renderable, templatable {
                        $icon = $child->get_icon();
                        $th->icon = $icon->export_for_template($output);
                    }
-                   $header[] = $th;
+                   $columns[] = $th;
                }
             } else {
                 $th = new stdClass();
@@ -118,10 +124,9 @@ class summary_report implements renderable, templatable {
                     $icon = $item->get_icon();
                     $th->icon = $icon->export_for_template($output);
                 }
-                $header[] = $th;
+                $columns[] = $th;
             }
         }
-        return $header;
-
+        return $columns;
     }
 }
