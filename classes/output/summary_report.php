@@ -27,6 +27,7 @@ use report_lp\local\item;
 use report_lp\local\item_tree;
 use report_lp\local\factories\url;
 use report_lp\local\summary;
+use coding_exception;
 use stdClass;
 use templatable;
 
@@ -41,7 +42,7 @@ class summary_report implements renderable, templatable {
 
     protected $summary;
 
-    protected $learnercolumns = ['fullname', 'actions', 'idnumber', 'coursegroups'];
+    protected $learnerextrafields = ['idnumber', 'coursegroups'];
 
     public function __construct(summary $summary) {
         $this->summary = $summary;
@@ -54,31 +55,73 @@ class summary_report implements renderable, templatable {
      */
     public function export_for_template(renderer_base $output) {
         $data = new stdClass();
-        $data->header = $this->table_header_row_at_level(2);
+        $itemtree = $this->summary->get_item_tree();
+        $items = $itemtree->get_flattened_tree();
+        $data->headeratdepth1 = $this->table_header_row_at_depth_one($output, $items);
+        $data->headeratdepth2 = $this->table_header_row_at_depth_two($output, $items);
         return $data;
     }
 
-    public function table_header_row_at_level($depth = 2) {
+    public function table_header_row_at_depth_one(renderer_base $output, array $items) {
         $header = [];
         $th = new stdClass();
         $th->label = get_string('learner', 'report_lp');
-        $th->colspan = count($this->learnercolumns);
+        $th->colspan = 2 + count($this->learnerextrafields);
         $header[] = $th;
-        $itemtree = $this->summary->get_item_tree();
-        $items = $itemtree->get_flattened_tree();
         foreach ($items as $item) {
             $configuration = $item->get_configuration();
-            if ($configuration->get('depth') != $depth) {
+            if ($configuration->get('depth') != 2) {
                 continue;
             }
             $th = new stdClass();
-            $th->label = $item->get_label();
+            $th->label = '';
             $th->colspan = 1;
             if ($item instanceof grouping) {
+                $th->label = $item->get_label();
                 $th->colspan = $item->count();
             }
             $header[] = $th;
         }
         return $header;
+    }
+    public function table_header_row_at_depth_two(renderer_base $output, array $items) {
+        $header = [];
+        $th = new stdClass();
+        $th->colspan = 2;
+        $header[] = $th;
+        foreach ($this->learnerextrafields as $learnerextrafield) {
+            $th = new stdClass();
+            $th->label = get_string($learnerextrafield, 'report_lp');
+            $header[] = $th;
+        }
+        foreach ($items as $item) {
+            /** @var item $item */
+            $configuration = $item->get_configuration();
+            if ($configuration->get('depth') != 2) {
+                continue;
+            }
+            if ($item instanceof grouping) {
+               $children = $item->get_children();
+               foreach ($children as $child) {
+                   $th = new stdClass();
+                   $th->label = $child->get_label();
+                   if ($child->has_icon()) {
+                       $icon = $child->get_icon();
+                       $th->icon = $icon->export_for_template($output);
+                   }
+                   $header[] = $th;
+               }
+            } else {
+                $th = new stdClass();
+                $th->label = $item->get_label();
+                if ($item->has_icon()) {
+                    $icon = $item->get_icon();
+                    $th->icon = $icon->export_for_template($output);
+                }
+                $header[] = $th;
+            }
+        }
+        return $header;
+
     }
 }

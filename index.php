@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 require_once(__DIR__ . '/../../config.php');
+require_once($CFG->dirroot . '/report/lp/lib.php');
+require_once($CFG->libdir . '/grouplib.php');
 
 $courseid = required_param('courseid', PARAM_INT);
 $course = get_course($courseid);
@@ -29,20 +31,20 @@ $PAGE->set_pagelayout('report');
 $css = new moodle_url('/report/lp/scss/styles.css');
 $PAGE->requires->css($css);
 
+$summary = new report_lp\local\summary($course);
+$itemtypelist = new report_lp\local\item_type_list(report_lp_get_supported_measures());
+$summary->add_item_type_list($itemtypelist);
+$learnerlist = new report_lp\local\learner_list($course);
+$filteredcoursegroups = report_lp\local\course_group::get_active_filter($course->id);
+$learnerlist->add_course_groups_filter($filteredcoursegroups);
+$summary->add_learner_list($learnerlist);
+
 $renderer = $PAGE->get_renderer('report_lp');
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('pluginname', 'report_lp'));
 echo $renderer->render_group_filter($course);
-echo '<div class="jumbotron jumbotron-fluid">
-    <div class="container">
-        <h1 class="display-5">Stuff</h1>
-        <p class="lead">more stuff</p>
-    </div>
-</div>';
-echo '<div class="jumbotron jumbotron-fluid">
-    <div class="container">
-        <h1 class="display-5">Stuff</h1>
-        <p class="lead">more stuff</p>
-    </div>
-</div>';
+
+echo $renderer->render(new report_lp\output\summary_report($summary));
+
+print_object($SESSION);
 echo $OUTPUT->footer();

@@ -124,3 +124,5 @@ $string['aria:closed'] = 'aria:closed';
 $string['aria:controls'] = 'aria:controls';
 
 $string['learner'] = 'Learner';
+$string['idnumber'] = 'ID';
+$string['coursegroups'] = 'Groups';
