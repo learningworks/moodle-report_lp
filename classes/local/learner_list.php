@@ -29,21 +29,19 @@ use report_lp\local\dml\utilities as dml_utilities;
 use stdClass;
 use coding_exception;
 
+/**
+ *
+ * @package     report_lp
+ * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class learner_list extends user_list {
 
-    public const PER_PAGE_DEFAULT = 10;
+    private $coursegroupids = [];
 
-    private $filters;
 
-    private $sortorder;
-
-    public function __construct(stdClass $course, array $filters = null, string $sortorder = null) {
+    public function __construct(stdClass $course) {
         parent::__construct($course);
-        $this->filters = $filters;
-        $this->sortorder = $sortorder;
-    }
-
-    public function add_filters(array $filters) {
     }
 
     public function add_learner(stdClass $learner) {
@@ -51,31 +49,48 @@ class learner_list extends user_list {
         $this->add_user($learner);
     }
 
+    public function add_course_groups_filter(array $coursegroupids) {
+        $coursegroupids = array_merge($this->coursegroupids, $coursegroupids);
+        $this->coursegroupids = array_values(array_unique($coursegroupids));
+        return $this;
+    }
+
+    public function get_sort_by() {
+        return 'u.firstname, u.lastname';
+    }
+
     /**
-     * @todo pagination.
      *
      * @throws \dml_exception
      * @throws coding_exception
      */
-    public function fetch() {
+    public function fetch_all() {
         global $DB;
 
         $defaultuserfields = static::get_default_user_fields();
         $sqluserfields = dml_utilities::alias($defaultuserfields, 'u');
         [$uesql, $ueparameters] = $this->get_user_enrolment_join('ue');
+        $gmsql = '';
+        $gmparameters = [];
+        if (!empty($this->coursegroupids)) {
+            [$gmsql, $gmparameters] = $this->get_course_group_membership_join($this->coursegroupids);
+        }
+        $sortorder = $this->get_sort_by();
 
-        $sql = "SELECT {$sqluserfields}, ue.status  
-                  FROM {user} u {$uesql}";
-        $parameters = array_merge($ueparameters);
+        $sql = "SELECT {$sqluserfields},
+                       ue.status
+                  FROM {user} u
+                  {$uesql}
+                  {$gmsql}
+              ORDER BY {$sortorder}";
+
+        $parameters = array_merge($ueparameters, $gmparameters);
         $rs = $DB->get_recordset_sql($sql, $parameters);
         foreach ($rs as $record) {
             $this->add_learner($record);
         }
         $rs->close();
-
     }
-
-
 
     /**
      * Make SQL that will get distinct learner enrolments within the course.
@@ -167,9 +182,16 @@ class learner_list extends user_list {
     public function total() {
         global $DB;
         [$uesql, $ueparameters] = $this->get_user_enrolment_join('ue');
+        $gmsql = '';
+        $gmparameters = [];
+        if (!empty($this->coursegroupids)) {
+            [$gmsql, $gmparameters] = $this->get_course_group_membership_join($this->coursegroupids);
+        }
         $sql = "SELECT COUNT(1)
-                  FROM {user} u {$uesql}";
-        $parameters = array_merge($ueparameters);
+                  FROM {user} u
+                  {$uesql}
+                  {$gmsql}";
+        $parameters = array_merge($ueparameters, $gmparameters);
         return $DB->count_records_sql($sql, $parameters);
     }
 
