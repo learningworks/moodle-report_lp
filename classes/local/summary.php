@@ -44,6 +44,10 @@ class summary {
         }
     }
 
+    public function get_course() : stdClass {
+        return $this->course;
+    }
+
     public function get_item_type_list() : item_type_list {
         return $this->itemtypelist;
     }

@@ -28,8 +28,10 @@ use report_lp\local\item_tree;
 use report_lp\local\factories\url;
 use report_lp\local\summary;
 use coding_exception;
+use report_lp\local\course_group;
 use stdClass;
 use templatable;
+use user_picture;
 
 /**
  *
@@ -39,6 +41,8 @@ use templatable;
  */
 
 class summary_report implements renderable, templatable {
+
+    private $rendererbase;
 
     protected $summary;
 
@@ -72,8 +76,23 @@ class summary_report implements renderable, templatable {
     }
 
     public function data_row_columns(renderer_base $output, $learner) {
+        global $PAGE;
         $learner->fullname = fullname($learner);
         $learner->enrolmentstatus = $learner->status;
+        $course = $this->summary->get_course();
+        $learnerscoursegroups = course_group::get_groups_for_user($course->id, $learner->id);
+        $groups = [];
+        foreach ($learnerscoursegroups as $learnerscoursegroup) {
+            $groups[] = $learnerscoursegroup->name;
+        }
+        $learner->coursegroups = implode(', ', $groups);
+        $profileimage = new user_picture($learner);
+        $profileimageeurl = $profileimage->get_url($PAGE, $output);
+        $learner->imageurl = $profileimageeurl->out();
+        if (empty($learner->imagealt)) {
+            $learner->imagealt = get_string('pictureof', '', $learner->fullname);
+        }
+
         return $learner;
     }
 

@@ -45,7 +45,7 @@
         <tr class="">
             {{#learner}}
                 <td class="cell cell-learner">
-                    <img src="assets/defaultprofileimage.png" class="userpicture defaultuserpic"/>
+                    <img src="{{imageurl}}" alt="{{imagealt}}" class="userpicture defaultuserpic"/>
                     {{fullname}}
                     {{#status}}
                         <span class="badge badge-pill badge-danger" title="Withdrawn">W</span>
@@ -55,7 +55,7 @@
                     <div class="cell-learner--action" title="Exclude learner from export"><i class="fa fa-user-times" aria-hidden="true"></i></div>
                 </td>
                 <td class="cell"><span class="">{{idnumber}}</span></td>
-                <td class="cell">19-2A</td>
+                <td class="cell">{{coursegroups}}</td>
             {{/learner}}
         </tr>
     {{/rows}}
