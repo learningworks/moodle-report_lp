@@ -54,6 +54,43 @@ li.list-group-item.depth-3 {
     padding-left: (1.25 * 2) + rem;
 }
 
+.cell-learner {
+    min-width: 200px;
+    width: 200px;
+    white-space: normal;
+    vertical-align: top;
+}
+
+.cell-learner-field {
+    min-width: 100px;
+    width: 100px;
+    white-space: normal;
+    vertical-align: top;
+}
+
+.cell-learner--action {
+    display: inline-block;
+    padding: 5px;
+}
+
+.cell {
+    border: 1px solid #ccc;
+
+    padding: 4px 5px;
+}
+
+.cell-no-header {
+    border-top-width: 0;
+    border-left-width: 0;
+    border-right-width: 0;
+}
+
+.cell-grouping {
+    background-color: #ececf6;
+
+}
+
+
 #page-report-lp-index div.moodle-actionmenu{margin-right:30px;}
 table.learner-progress div.achieved {background: #DFF0D8;}
 table.learner-progress div.not-achieved {background: #F2DEDE;}
