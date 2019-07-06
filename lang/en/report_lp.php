@@ -122,3 +122,5 @@ $string['aria:none'] = 'aria:none';
 $string['aria:open'] = 'aria:open';
 $string['aria:closed'] = 'aria:closed';
 $string['aria:controls'] = 'aria:controls';
+
+$string['learner'] = 'Learner';
