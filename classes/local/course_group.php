@@ -21,6 +21,12 @@ use context_course;
 use stdClass;
 use coding_exception;
 
+/**
+ *
+ * @package     report_lp
+ * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
 class course_group {
 
     /**
@@ -110,6 +116,8 @@ class course_group {
 
     /**
      * Get all available groups a user has access to in a course.
+     *
+     * @todo change to static.
      *
      * @param stdClass|null $user
      * @return array
