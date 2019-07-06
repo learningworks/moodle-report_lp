@@ -20,6 +20,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use coding_exception;
 use MoodleQuickForm;
+use pix_icon;
 use report_lp\local\contracts\has_own_configuration;
 use report_lp\local\measure;
 use report_lp\local\persistents\item_configuration;
@@ -153,6 +154,25 @@ class checklist_complete extends measure implements has_own_configuration {
             'id, name'
         );
         return $options;
+    }
+
+    /**
+     * Use checklist icon.
+     *
+     * @return pix_icon|null
+     * @throws coding_exception
+     */
+    public function get_icon() : ? pix_icon {
+        return new pix_icon('icon', get_string('pluginname', 'checklist'), 'mod_checklist');
+    }
+
+    /**
+     * Yes we do.
+     *
+     * @return bool
+     */
+    public function has_icon() : bool {
+        return true;
     }
 
     /**

@@ -18,6 +18,7 @@ namespace report_lp\local\measures;
 
 defined('MOODLE_INTERNAL') || die();
 
+use pix_icon;
 use stdClass;
 use MoodleQuickForm;
 use coding_exception;
@@ -153,6 +154,25 @@ class assignment_status extends measure implements has_own_configuration {
             'id, name'
         );
         return $options;
+    }
+
+    /**
+     * Use assignment icon.
+     *
+     * @return pix_icon|null
+     * @throws coding_exception
+     */
+    public function get_icon() : ? pix_icon {
+        return new pix_icon('icon', get_string('pluginname', 'assign'), 'mod_assign');
+    }
+
+    /**
+     * Yes we do.
+     *
+     * @return bool
+     */
+    public function has_icon() : bool {
+        return true;
     }
 
     /**

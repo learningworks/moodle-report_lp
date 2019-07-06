@@ -20,6 +20,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use coding_exception;
 use MoodleQuickForm;
+use pix_icon;
 use report_lp\local\contracts\has_own_configuration;
 use report_lp\local\measure;
 use report_lp\local\persistents\item_configuration;
@@ -157,6 +158,25 @@ class assignment_resubmit_count extends measure implements has_own_configuration
             'id, name'
         );
         return $options;
+    }
+
+    /**
+     * Use assignment icon.
+     *
+     * @return pix_icon|null
+     * @throws coding_exception
+     */
+    public function get_icon() : ? pix_icon {
+        return new pix_icon('icon', get_string('pluginname', 'assign'), 'mod_assign');
+    }
+
+    /**
+     * Yes we do.
+     *
+     * @return bool
+     */
+    public function has_icon() : bool {
+        return true;
     }
 
     /**
