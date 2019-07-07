@@ -52,6 +52,9 @@ class checklist_complete extends measure implements has_own_configuration {
             throw new coding_exception('Configuration must loaded');
         }
         $extraconfigurationdata = $configuration->get('extraconfigurationdata');
+        if (!isset($extraconfigurationdata->id)) {
+            throw new coding_exception('No valid extra configuration data found');
+        }
         return [];
     }
 
