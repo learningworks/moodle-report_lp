@@ -22,20 +22,20 @@
     Example context (json):
     {}
 }}
-<div class="container-fluid">
-<table class="summary-report">
+<div class="overflow-visible">
+<table class="report-lp-summary-report">
     <thead class="">
     {{#primaryheader}}
         <tr>
             {{#columns}}
-                <th colspan="{{colspan}}" class="cell cell-grouping">{{label}}</th>
+                <th colspan="{{colspan}}" class="cell cell-primary-header" scope="col"><span>{{label}}</span></th>
             {{/columns}}
         </tr>
     {{/primaryheader}}
     {{#secondaryheader}}
         <tr>
             {{#columns}}
-                <td colspan="{{colspan}}" class="cell cell-grouping">{{#icon}}{{>core/pix_icon}}{{/icon}}{{label}}</td>
+                <td colspan="{{colspan}}" class="cell cell-secondary-header" scope="col">{{#icon}}{{>core/pix_icon}}{{/icon}}<span>{{label}}</span></td>
             {{/columns}}
         </tr>
     {{/secondaryheader}}
@@ -44,18 +44,18 @@
     {{#rows}}
         <tr class="">
             {{#learner}}
-                <td class="cell cell-learner">
+                <td class="cell cell-lg" scope="col">
                     <img src="{{imageurl}}" alt="{{imagealt}}" class="userpicture defaultuserpic"/>
                     {{fullname}}
                     {{#status}}
                         <span class="badge badge-pill badge-danger" title="Withdrawn">W</span>
                     {{/status}}
                 </td>
-                <td class="cell">
+                <td class="cell" scope="col">
                     <div class="cell-learner--action" title="Exclude learner from export"><i class="fa fa-user-times" aria-hidden="true"></i></div>
                 </td>
-                <td class="cell"><span class="">{{idnumber}}</span></td>
-                <td class="cell">{{coursegroups}}</td>
+                <td class="cell" scope="col"><span class="">{{idnumber}}</span></td>
+                <td class="cell" scope="col">{{coursegroups}}</td>
             {{/learner}}
         </tr>
     {{/rows}}

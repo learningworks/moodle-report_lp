@@ -1,6 +1,4 @@
-.item-tree-configuration1 ul {
-    list-style-type: none;
-}
+@import "utilities";
 
 $lw-black: #333333;
 $lw-white: #FFFFFF;
@@ -54,41 +52,44 @@ li.list-group-item.depth-3 {
     padding-left: (1.25 * 2) + rem;
 }
 
-.cell-learner {
-    min-width: 200px;
-    white-space: normal;
-    vertical-align: top;
+table.report-lp-summary-report td {
+    white-space: nowrap;
 }
 
-.cell-learner-field {
-    min-width: 100px;
-    width: 100px;
+.cell {
+    border: 1px solid #ccc;
+    padding: 5px;
     white-space: normal;
-    vertical-align: top;
+    vertical-align: middle;
+}
+
+.cell-primary-header {
+    background-color: #ececf6;
+
+}
+
+.cell-secondary-header {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+.cell-sm {
+    max-width: 100px;
+}
+
+.cell-md {
+    max-width: 200px;
+}
+
+.cell-lg {
+    max-width: 300px;
 }
 
 .cell-learner--action {
     display: inline-block;
     padding: 5px;
 }
-
-.cell {
-    border: 1px solid #ccc;
-
-    padding: 4px 5px;
-}
-
-.cell-no-header {
-    border-top-width: 0;
-    border-left-width: 0;
-    border-right-width: 0;
-}
-
-.cell-grouping {
-    background-color: #ececf6;
-
-}
-
 
 #page-report-lp-index div.moodle-actionmenu{margin-right:30px;}
 table.learner-progress div.achieved {background: #DFF0D8;}
