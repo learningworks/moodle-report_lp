@@ -22,43 +22,57 @@
     Example context (json):
     {}
 }}
-<div class="overflow-visible">
-<table class="report-lp-summary-report">
-    <thead class="">
-    {{#primaryheader}}
-        <tr>
-            {{#columns}}
-                <th colspan="{{colspan}}" class="cell cell-primary-header" scope="col"><span>{{label}}</span></th>
-            {{/columns}}
-        </tr>
-    {{/primaryheader}}
-    {{#secondaryheader}}
-        <tr>
-            {{#columns}}
-                <td colspan="{{colspan}}" class="cell cell-secondary-header" scope="col">{{#icon}}{{>core/pix_icon}}{{/icon}}<span>{{label}}</span></td>
-            {{/columns}}
-        </tr>
-    {{/secondaryheader}}
-    </thead>
-    <tbody>
-    {{#rows}}
-        <tr class="">
-            {{#learner}}
-                <td class="cell cell-lg" scope="col">
-                    <img src="{{imageurl}}" alt="{{imagealt}}" class="userpicture defaultuserpic"/>
-                    {{fullname}}
-                    {{#status}}
-                        <span class="badge badge-pill badge-danger" title="Withdrawn">W</span>
-                    {{/status}}
-                </td>
-                <td class="cell" scope="col">
-                    <div class="cell-learner--action" title="Exclude learner from export"><i class="fa fa-user-times" aria-hidden="true"></i></div>
-                </td>
-                <td class="cell" scope="col"><span class="">{{idnumber}}</span></td>
-                <td class="cell" scope="col">{{coursegroups}}</td>
-            {{/learner}}
-        </tr>
-    {{/rows}}
-    </tbody>
-</table>
-</div>
+{{#nofilteredcoursegroups}}
+    <div class="container-fluid p-0">
+        <div class="text-xs-center text-center mt-3" data-region="empty-message">
+            <p class="text-muted mt-3">{{# str }} noselectedcoursegroups, report_lp {{/ str }}</p>
+            <img class="empty-placeholder-image-lg mt-1"
+                src="{{rowsimageurl}}"
+                alt="{{# str }} noselectedcoursegroups, report_lp {{/ str }}"
+                role="presentation">
+            <p class="text-muted mt-3">{{# str }} noselectedcoursegroups:description, report_lp {{/ str }}</p>
+        </div>
+    </div>
+{{/nofilteredcoursegroups}}
+{{^nofilteredcoursegroups}}
+    <div class="overflow-visible">
+        <table class="report-lp-summary-report">
+            <thead class="">
+            {{#primaryheader}}
+                <tr>
+                    {{#columns}}
+                        <th colspan="{{colspan}}" class="cell cell-primary-header" scope="col"><span>{{label}}</span></th>
+                    {{/columns}}
+                </tr>
+            {{/primaryheader}}
+            {{#secondaryheader}}
+                <tr>
+                    {{#columns}}
+                        <td colspan="{{colspan}}" class="cell cell-secondary-header" scope="col">{{#icon}}{{>core/pix_icon}}{{/icon}}<span>{{label}}</span></td>
+                    {{/columns}}
+                </tr>
+            {{/secondaryheader}}
+            </thead>
+            <tbody>
+            {{#rows}}
+                <tr class="">
+                    {{#learner}}
+                        <td class="cell cell-lg" scope="col">
+                            <img src="{{imageurl}}" alt="{{imagealt}}" class="userpicture defaultuserpic"/>
+                            {{fullname}}
+                            {{#status}}
+                                <span class="badge badge-pill badge-danger" title="Withdrawn">W</span>
+                            {{/status}}
+                        </td>
+                        <td class="cell" scope="col">
+                            <div class="cell-learner--action" title="Exclude learner from export"><i class="fa fa-user-times" aria-hidden="true"></i></div>
+                        </td>
+                        <td class="cell" scope="col"><span class="">{{idnumber}}</span></td>
+                        <td class="cell" scope="col">{{coursegroups}}</td>
+                    {{/learner}}
+                </tr>
+            {{/rows}}
+            </tbody>
+        </table>
+    </div>
+{{/nofilteredcoursegroups}}

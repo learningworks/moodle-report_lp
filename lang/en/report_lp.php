@@ -126,3 +126,6 @@ $string['aria:controls'] = 'aria:controls';
 $string['learner'] = 'Learner';
 $string['idnumber'] = 'ID';
 $string['coursegroups'] = 'Groups';
+
+$string['noselectedcoursegroups'] = 'No course groups selected';
+$string['noselectedcoursegroups:description'] = 'Please use the course group filter dropdown to select groups of learners to filter date on';

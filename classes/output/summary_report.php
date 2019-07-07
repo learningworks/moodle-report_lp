@@ -54,6 +54,15 @@ class summary_report implements renderable, templatable {
 
     public function export_for_template(renderer_base $output) {
         $data = new stdClass();
+
+        $learnerlist = $this->summary->get_learner_list();
+        if (empty($learnerlist->get_filtered_course_groups())) {
+            $nofilteredcoursegroups = new stdClass();
+            $nofilteredcoursegroups->rowsimageurl = $output->image_url('rows', 'report_lp')->out();
+            $data->nofilteredcoursegroups = $nofilteredcoursegroups;
+            return $data;
+        }
+
         $itemtree = $this->summary->get_item_tree();
         $items = $itemtree->get_flattened_tree();
         $primaryheader = new stdClass();
@@ -63,8 +72,6 @@ class summary_report implements renderable, templatable {
         $secondaryheader = new stdClass();
         $secondaryheader->columns = $this->secondary_header_columns($output, $items);
         $data->secondaryheader = $secondaryheader;
-
-        $learnerlist = $this->summary->get_learner_list();
         $learnerlist->fetch_all();
 
         foreach ($learnerlist as $learner) {

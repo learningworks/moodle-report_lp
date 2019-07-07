@@ -65,6 +65,15 @@ class learner_list extends user_list {
     }
 
     /**
+     * Return array of current filtered groups applied to list.
+     *
+     * @return array
+     */
+    public function get_filtered_course_groups() {
+        return $this->coursegroupids;
+    }
+
+    /**
      * Return SQL string for ORDER BY.
      *
      * @todo add other sort by options.

@@ -2,6 +2,10 @@
   overflow: visible;
 }
 
+.empty-placeholder-image-lg {
+  height: 15rem;
+}
+
 .list-item {
   position: relative;
   display: block;
@@ -106,3 +110,5 @@ table.learner-progress div.did-not-complete {
 table.learner-progress > tbody > tr {
   border-top: 1px solid #ccc;
 }
+
+/*# sourceMappingURL=styles.css.map */
