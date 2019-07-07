@@ -37,9 +37,9 @@ class grouping extends item implements Countable, IteratorAggregate {
     public const MAXIMUM_ITEMS = 999;
 
     /**
-     * @var array $items Store for child items.
+     * @var array $childitems Store for child items.
      */
-    protected $items = [];
+    protected $childitems = [];
 
     /**
      * Build default label.
@@ -87,26 +87,21 @@ class grouping extends item implements Countable, IteratorAggregate {
      * Add child item.
      *
      * @param item $item
-     * @param bool $keyed
      * @return $this
      * @throws coding_exception
      */
-    public function add_item(item $item, $keyed = true) {
-        if ($keyed) {
-            $key = $item->get_configuration()->get('id');
-            $this->items[$key] = $item;
-        } else {
-            array_push($this->items, $item);
-        }
+    public function add_item(item $item) {
+        $key = $item->get_configuration()->get('id');
+        $this->childitems[$key] = $item;
         return $this;
     }
 
     /**
-     * Has items in array.
+     * Has child items in array.
      *
      * @return bool
      */
-    public function has_items() {
+    public function has_child_items() {
         return (bool) $this->count();
     }
 
@@ -116,7 +111,7 @@ class grouping extends item implements Countable, IteratorAggregate {
      * @return bool
      */
     public function has_children() : bool {
-        return $this->has_items();
+        return (bool) $this->count();
     }
 
     /**
@@ -125,7 +120,7 @@ class grouping extends item implements Countable, IteratorAggregate {
      * @return int
      */
     public function count() : int {
-        return count($this->items);
+        return count($this->childitems);
     }
 
     /**
@@ -133,17 +128,17 @@ class grouping extends item implements Countable, IteratorAggregate {
      *
      * @return array
      */
-    public function get_items() {
-        return $this->items;
+    public function get_child_items() {
+        return $this->childitems;
     }
 
     /**
-     * Alias of get items.
+     * Alias of get child items.
      *
      * @return array
      */
     public function get_children() : array {
-        return $this->get_items();
+        return $this->get_child_items();
     }
 
     /**
@@ -152,7 +147,7 @@ class grouping extends item implements Countable, IteratorAggregate {
      * @return array|\Traversable
      */
     public function getIterator() {
-        return new ArrayIterator($this->items);
+        return new ArrayIterator($this->childitems);
     }
 
 }
