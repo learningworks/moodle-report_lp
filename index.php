@@ -43,8 +43,18 @@ $renderer = $PAGE->get_renderer('report_lp');
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('pluginname', 'report_lp'));
 echo $renderer->render_group_filter($course);
-
 echo $renderer->render(new report_lp\output\summary_report($summary));
-
+$tree = $summary->get_item_tree();
+foreach ($tree->get_measures() as $measure) {
+    /** @var /report_lp/local/measure $measure */
+    if ($measure::COMPONENT_NAME == 'assign') {
+        mtrace($measure->get_label(), '<br>');
+        $learnerlist->fetch_all();
+        $data = $measure->get_data_for_users($learnerlist);
+        foreach ($data as $item) {
+            print_object($item);
+        }
+    }
+}
 //print_object($SESSION);
 echo $OUTPUT->footer();
