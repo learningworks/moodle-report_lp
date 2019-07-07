@@ -30,6 +30,7 @@ use stdClass;
 use coding_exception;
 
 /**
+ * A list of learners.
  *
  * @package     report_lp
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
@@ -37,24 +38,39 @@ use coding_exception;
  */
 class learner_list extends user_list {
 
+    /**
+     * @var array $coursegroupids
+     */
     private $coursegroupids = [];
 
-
+    /**
+     * learner_list constructor.
+     *
+     * @param stdClass $course
+     */
     public function __construct(stdClass $course) {
         parent::__construct($course);
     }
 
-    public function add_learner(stdClass $learner) {
-       //$learner->coursegroups = course_group::get_groups_for_user($this->course->id, $learner->id);
-        $this->add_user($learner);
-    }
-
+    /**
+     * Course Groups to filter list on.
+     *
+     * @param array $coursegroupids
+     * @return $this
+     */
     public function add_course_groups_filter(array $coursegroupids) {
         $coursegroupids = array_merge($this->coursegroupids, $coursegroupids);
         $this->coursegroupids = array_values(array_unique($coursegroupids));
         return $this;
     }
 
+    /**
+     * Return SQL string for ORDER BY.
+     *
+     * @todo add other sort by options.
+     *
+     * @return string
+     */
     public function get_sort_by() {
         return 'u.firstname, u.lastname';
     }
@@ -87,7 +103,7 @@ class learner_list extends user_list {
         $parameters = array_merge($ueparameters, $gmparameters);
         $rs = $DB->get_recordset_sql($sql, $parameters);
         foreach ($rs as $record) {
-            $this->add_learner($record);
+            $this->add_user($record);
         }
         $rs->close();
     }
