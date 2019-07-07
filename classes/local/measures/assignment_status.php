@@ -18,6 +18,7 @@ namespace report_lp\local\measures;
 
 defined('MOODLE_INTERNAL') || die();
 
+use assign;
 use pix_icon;
 use stdClass;
 use MoodleQuickForm;
@@ -26,6 +27,7 @@ use report_lp\local\contracts\has_own_configuration;
 use report_lp\local\measure;
 use report_lp\local\user_list;
 use report_lp\local\persistents\item_configuration;
+use context_module;
 
 /**
  * Assignment status of learner for an assignment instance.
@@ -42,8 +44,59 @@ class assignment_status extends measure implements has_own_configuration {
     /** @var string COMPONENT_NAME Used to for name of core subsystem or plugin. Moodle frankenstyle. */
     public const COMPONENT_NAME = 'assign';
 
+    /**
+     * Get learner data for this measure.
+     *
+     * @param user_list $userlist
+     * @return array|null
+     * @throws \dml_exception
+     * @throws coding_exception
+     */
     public function get_data_for_users(user_list $userlist) : ? array {
-        return [];
+        global $CFG, $DB;
+        require_once($CFG->dirroot . '/mod/assign/lib.php');
+        require_once($CFG->dirroot . '/mod/assign/locallib.php');
+
+        // Array data keyed up on users identifier.
+        $data = [];
+
+        $configuration = $this->get_configuration();
+        if (is_null($configuration)) {
+            throw new coding_exception('Configuration must loaded');
+        }
+        $extraconfigurationdata = $configuration->get('extraconfigurationdata');
+        if (!isset($extraconfigurationdata->id)) {
+            throw new coding_exception('No valid extra configuration data found');
+        }
+        $course = $userlist->get_course();
+        $assign = $DB->get_record(
+            'assign',
+            ['id' => $extraconfigurationdata->id],
+            '*',
+            MUST_EXIST
+        );
+        $cm = get_coursemodule_from_instance('assign', $assign->id, $course->id, false, MUST_EXIST);
+        $modulecontext = context_module::instance($cm->id);
+        $assignment = new assign($modulecontext, null, null);
+        $assignment->set_instance($assign);
+        $gradeitem = $assignment->get_grade_item();
+        $displaytype = $gradeitem->get_displaytype();
+        foreach ($userlist as $user) {
+            $submission = $assignment->get_user_submission($user->id, true);
+            $record = new stdClass();
+            $record->assignmentid = $assignment->get_instance()->id;
+            $record->userid = $user->id;
+            $record->submissionid = $submission->id;
+            $record->submissionstatus = $submission->status;
+            $record->displaytype = $displaytype;
+            $record->passed = $gradeitem->get_grade($user->id)->is_passed($gradeitem);
+            $usergrade = $assignment->get_user_grade($user->id, true);
+            $record->submissiongraderaw = $usergrade->grade;
+            $record->attemptnumber = $usergrade->attemptnumber;
+            $record->stringstatus = get_string('submissionstatus_' . $submission->status, 'assign');
+            $data[$user->id] = $record;
+        }
+        return $data;
     }
 
     /**
