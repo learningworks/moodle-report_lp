@@ -23,7 +23,7 @@ use grade_category;
 use MoodleQuickForm;
 use report_lp\local\contracts\has_own_configuration;
 use report_lp\local\measure;
-use report_lp\local\userlist;
+use report_lp\local\user_list;
 use stdClass;
 
 
@@ -46,7 +46,7 @@ class grade_category_activity_completion extends measure implements has_own_conf
      * @param userlist $userlist
      * @return array|null
      */
-    public function get_data_for_users(userlist $userlist) : ? array {
+    public function get_data_for_users(user_list $userlist) : ? array {
         return [];
     }
 

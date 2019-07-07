@@ -24,7 +24,7 @@ use MoodleQuickForm;
 use coding_exception;
 use report_lp\local\contracts\has_own_configuration;
 use report_lp\local\measure;
-use report_lp\local\userlist;
+use report_lp\local\user_list;
 use report_lp\local\persistents\item_configuration;
 
 /**
@@ -42,7 +42,7 @@ class assignment_status extends measure implements has_own_configuration {
     /** @var string COMPONENT_NAME Used to for name of core subsystem or plugin. Moodle frankenstyle. */
     public const COMPONENT_NAME = 'assign';
 
-    public function get_data_for_users(userlist $userlist) : ? array {
+    public function get_data_for_users(user_list $userlist) : ? array {
         return [];
     }
 

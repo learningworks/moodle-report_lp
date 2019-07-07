@@ -24,7 +24,7 @@ use pix_icon;
 use report_lp\local\contracts\has_own_configuration;
 use report_lp\local\measure;
 use report_lp\local\persistents\item_configuration;
-use report_lp\local\userlist;
+use report_lp\local\user_list;
 use stdClass;
 
 /**
@@ -46,7 +46,7 @@ class attendance_sessions_summary extends measure implements has_own_configurati
      * @param userlist $userlist
      * @return array|null
      */
-    public function get_data_for_users(userlist $userlist) : ? array {
+    public function get_data_for_users(user_list $userlist) : ? array {
         return [];
     }
 

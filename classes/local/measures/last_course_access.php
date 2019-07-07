@@ -20,7 +20,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use coding_exception;
 use report_lp\local\measure;
-use report_lp\local\userlist;
+use report_lp\local\user_list;
 
 /**
  * The date and time learner last accessed a course instance.
@@ -37,7 +37,7 @@ class last_course_access extends measure {
     /** @var string COMPONENT_NAME Used to for name of core subsystem or plugin. Moodle frankenstyle. */
     public const COMPONENT_NAME = 'course';
 
-    public function get_data_for_users(userlist $userlist) : ? array {
+    public function get_data_for_users(user_list $userlist) : ? array {
         return [];
     }
 
