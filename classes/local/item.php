@@ -36,6 +36,9 @@ abstract class item {
     /** @var null SHORT_NAME Can be used to override unique short name. */
     protected const SHORT_NAME = null;
 
+    /** @var item|null The parent item of this item. If no item will return null. */
+    private $parentitem;
+
     /**
      * @var item_configuration $configuration Holds configuration information associated with this item.
      */
