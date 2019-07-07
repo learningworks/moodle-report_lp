@@ -61,6 +61,9 @@ class item {
             ['courseid' => $this->course->id, 'parentitemid' => 0]
         );
         if (!$rootconfiguration) {
+            if (!$create) {
+                throw new coding_exception('Root grouping configuration does not exist');
+            }
             $rootconfiguration = new item_configuration();
             $rootconfiguration->set('courseid', $this->course->id);
             $rootconfiguration->set('classname', grouping::get_class_name());
@@ -68,9 +71,7 @@ class item {
             $rootconfiguration->set('isgrouping', 1);
             $rootconfiguration->set('usecustomlabel', 1);
             $rootconfiguration->set('customlabel', format_text($this->course->fullname, FORMAT_PLAIN));
-            if ($create) {
-                $rootconfiguration->save();
-            }
+            $rootconfiguration->save();
         }
         return $this->get_grouping($rootconfiguration);
     }
