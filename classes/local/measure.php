@@ -28,9 +28,19 @@ defined('MOODLE_INTERNAL') || die();
 abstract class measure extends item {
 
     /**
+     * Get measure data for a single user.
+     *
+     * @param int $userid
+     * @return mixed
+     */
+    abstract public function get_data_for_user(int $userid);
+
+    /**
+     * Get measure data for a list of users.
+     *
      * @param user_list $userlist
      * @return array|null
      */
-    abstract public function get_data_for_users(user_list $userlist) : ? array;
+    abstract public function get_data_for_users(user_list $userlist) : array;
 
 }

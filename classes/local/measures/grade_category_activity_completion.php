@@ -42,11 +42,15 @@ class grade_category_activity_completion extends measure implements has_own_conf
     /** @var string COMPONENT_NAME Used to for name of core subsystem or plugin. Moodle frankenstyle. */
     public const COMPONENT_NAME = 'grades';
 
+    public function get_data_for_user(int $userid) {
+        return null;
+    }
+
     /**
      * @param userlist $userlist
      * @return array|null
      */
-    public function get_data_for_users(user_list $userlist) : ? array {
+    public function get_data_for_users(user_list $userlist) : array {
         return [];
     }
 

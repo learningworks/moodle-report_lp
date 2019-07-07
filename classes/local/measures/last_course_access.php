@@ -37,7 +37,11 @@ class last_course_access extends measure {
     /** @var string COMPONENT_NAME Used to for name of core subsystem or plugin. Moodle frankenstyle. */
     public const COMPONENT_NAME = 'course';
 
-    public function get_data_for_users(user_list $userlist) : ? array {
+    public function get_data_for_user(int $userid) {
+        return null;
+    }
+
+    public function get_data_for_users(user_list $userlist) : array {
         return [];
     }
 
