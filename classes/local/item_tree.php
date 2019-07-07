@@ -19,11 +19,10 @@ namespace report_lp\local;
 defined('MOODLE_INTERNAL') || die();
 
 use report_lp\local\factories\item as item_factory;
-use report_lp\local\persistents\item_configuration;
-use stdClass;
 use ArrayIterator;
 use Countable;
 use IteratorAggregate;
+use stdClass;
 
 /**
  * Simple tree, current only supports two levels of depth.
@@ -43,21 +42,25 @@ class item_tree implements Countable, IteratorAggregate {
     /** @var item_type_list $itemtypelist */
     protected $itemtypelist;
 
+    /** @var item $root */
+    protected $root;
+
     /** @var array $tree Structure for holding items. */
     protected $tree;
 
     /**
-     * item_tree Constructor.
+     * item_tree constructor.
      *
      * @param stdClass $course
      * @param item_type_list $itemtypelist
+     * @throws \ReflectionException
      * @throws \coding_exception
-     * @throws \dml_exception
      */
     public function __construct(stdClass $course, item_type_list $itemtypelist) {
         $this->course = $course;
         $this->itemtypelist = $itemtypelist;
         $this->itemfactory = new item_factory($course, $itemtypelist);
+        $this->root = $this->itemfactory->get_root_grouping();
     }
 
     /**
@@ -122,6 +125,23 @@ class item_tree implements Countable, IteratorAggregate {
             $configurations[] = $branch->get_configuration();
         }
         return $configurations;
+    }
+
+    /**
+     * @return array
+     * @throws \ReflectionException
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function get_measures() {
+        $measures = [];
+        foreach ($this->get_flattened_tree() as $item) {
+            if ($item instanceof measure) {
+                $id = $item->get_configuration()->get('id');
+                $measures[$id] = $item;
+            }
+        }
+        return $measures;
     }
 
     /**
