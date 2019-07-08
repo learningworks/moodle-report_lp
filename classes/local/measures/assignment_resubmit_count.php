@@ -18,7 +18,11 @@ namespace report_lp\local\measures;
 
 defined('MOODLE_INTERNAL') || die();
 
+use assign;
 use coding_exception;
+use context_module;
+use core_text;
+use html_writer;
 use MoodleQuickForm;
 use pix_icon;
 use report_lp\local\contracts\has_own_configuration;
@@ -42,20 +46,94 @@ class assignment_resubmit_count extends measure implements has_own_configuration
     /** @var string COMPONENT_NAME Used to for name of core subsystem or plugin. Moodle frankenstyle. */
     public const COMPONENT_NAME = 'assign';
 
+    /**
+     * Format measure data for cell.
+     *
+     * @param $data
+     * @param string $format
+     * @return string
+     */
     public function format_user_measure_data($data, $format = FORMAT_PLAIN) : string {
-        return '';
-    }
-
-    public function get_data_for_user(int $userid) {
-        return null;
+        $label = '';
+        if ($data->submissionattemptnumber) {
+            $label = $data->submissionattemptnumber;
+        }
+        $class = "measure";
+        if ($format == FORMAT_HTML) {
+            return html_writer::span($label, $class);
+        }
+        return $label;
     }
 
     /**
-     * @param userlist $userlist
+     * Build data for user. Uses the assign and gradeitem API classes.
+     *
+     * @param int $userid
+     * @return stdClass
+     * @throws \dml_exception
+     * @throws coding_exception
+     */
+    public function get_data_for_user(int $userid) {
+        global $CFG, $DB;
+
+        require_once($CFG->dirroot . '/mod/assign/lib.php');
+        require_once($CFG->dirroot . '/mod/assign/locallib.php');
+
+        /** @var assign $assignment Use a static to save resource on setting up assignment for multiple calls. */
+        static $assignment;
+
+        if (is_null($assignment)) {
+            $configuration = $this->get_configuration();
+            if (is_null($configuration)) {
+                throw new coding_exception('Configuration must loaded');
+            }
+            $extraconfigurationdata = $configuration->get('extraconfigurationdata');
+            if (!isset($extraconfigurationdata->id)) {
+                throw new coding_exception('No valid extra configuration data found');
+            }
+            $instance = $DB->get_record(
+                'assign',
+                ['id' => $extraconfigurationdata->id],
+                '*',
+                MUST_EXIST
+            );
+            $cm = get_coursemodule_from_instance(
+                'assign',
+                $instance->id,
+                $configuration->get('courseid'),
+                false,
+                MUST_EXIST
+            );
+            $modulecontext = context_module::instance($cm->id);
+            $assignment = new assign($modulecontext, null, null);
+            $assignment->set_instance($instance);
+        }
+        $submission = $assignment->get_user_submission($userid, true);
+        // Payload.
+        $data = new stdClass();
+        $data->userid = $userid;
+        $data->assignmentid = $assignment->get_instance()->id;
+        $data->submissionid = $submission->id;
+        $data->submissionattemptnumber = $submission->attemptnumber;
+
+        return $data;
+    }
+
+    /**
+     * Get learner data keyed up on user identifiers. For now we have to iterate list and call
+     * get_data_for_user.
+     *
+     * @param user_list $userlist
      * @return array|null
+     * @throws \dml_exception
+     * @throws coding_exception
      */
     public function get_data_for_users(user_list $userlist) : array {
-        return [];
+        $data = [];
+        foreach ($userlist as $user) {
+            $data[$user->id] = $this->get_data_for_user($user->id);
+        }
+        return $data;
     }
 
     /**
