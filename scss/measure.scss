@@ -1,0 +1,55 @@
+// Measures - Are badges
+
+$transition:                          color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out !default;
+
+$measure-font-size:                   75% !default;
+$measure-font-weight:                 700 !default;
+$measure-padding-y:                   .25em !default;
+$measure-padding-x:                   .4em !default;
+$measure-border-radius:               .25rem !default;
+
+.measure {
+    display: block;
+    padding: $measure-padding-y $measure-padding-x;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: $measure-border-radius;
+    &:hover,
+    &:focus {
+        text-decoration: none;
+    }
+    // Empty badges collapse automatically
+    &:empty {
+        display: none;
+    }
+}
+.measure--status-achieved, .measure--status-completed {
+    color: white;
+    background: #218838;
+}
+
+.measure--status-not-achieved {
+    color: white;
+    background: #bd2130;
+}
+
+.measure--status-submitted, .measure--status-draft {
+    color: black;
+    background: #ffc107;
+}
+
+
+.measure--status-reopened {
+    color: white;
+    background: #7abaff;
+}
+
+.measure--status-nosubmission {
+    color: black;
+}
+
+.card .measure {
+    min-width: 200px;
+}
