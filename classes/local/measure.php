@@ -28,6 +28,15 @@ defined('MOODLE_INTERNAL') || die();
 abstract class measure extends item {
 
     /**
+     * Formats user data from this measure.
+     *
+     * @param $data
+     * @param string $format
+     * @return string
+     */
+    abstract public function format_user_measure_data($data, $format = FORMAT_PLAIN) : string;
+
+    /**
      * Get measure data for a single user.
      *
      * @param int $userid

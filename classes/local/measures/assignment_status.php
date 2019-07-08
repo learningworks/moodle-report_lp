@@ -28,6 +28,8 @@ use report_lp\local\measure;
 use report_lp\local\user_list;
 use report_lp\local\persistents\item_configuration;
 use context_module;
+use core_text;
+use html_writer;
 
 /**
  * Assignment status of learner for an assignment instance.
@@ -43,6 +45,41 @@ class assignment_status extends measure implements has_own_configuration {
 
     /** @var string COMPONENT_NAME Used to for name of core subsystem or plugin. Moodle frankenstyle. */
     public const COMPONENT_NAME = 'assign';
+
+    /**
+     * Format measure data for cell.
+     *
+     * @param $data
+     * @param string $format
+     * @return string
+     * @throws coding_exception
+     */
+    public function format_user_measure_data($data, $format = FORMAT_PLAIN) : string {
+        $label = '';
+        $status = 'none';
+        switch ($data->submissionstatus) {
+            case 'new':
+            case 'draft':
+            case 'reopened':
+                $status = $data->submissionstatus;
+                $label = get_string('submissionstatus_' . $status, 'assign');
+                break;
+            case 'submitted':
+                if (is_null($data->gradepassed)) {
+                    $status = $data->submissionstatus;
+                    $label = get_string('submissionstatus_' . $status, 'assign');
+                } else {
+                    $label = $data->displaygrade;
+                    $status = preg_replace('/\s+/', '-', core_text::strtolower($label));
+                }
+                break;
+        }
+        $class = "measure measure--status-{$status}";
+        if ($format == FORMAT_HTML) {
+            return html_writer::span($label, $class);
+        }
+        return $label;
+    }
 
     /**
      * Build data for user. Uses the assign and gradeitem API classes.
@@ -90,13 +127,14 @@ class assignment_status extends measure implements has_own_configuration {
         $submission = $assignment->get_user_submission($userid, true);
         $submissiongrade = $assignment->get_user_grade($userid, true);
         $gradeitem = $assignment->get_grade_item();
+        $grade = $gradeitem->get_grade($userid);
         // Payload.
         $data = new stdClass();
         $data->userid = $userid;
         $data->assignmentid = $assignment->get_instance()->id;
         $data->submissionid = $submission->id;
         $data->submissionstatus = $submission->status;
-        $data->gradedisplaytype = $gradeitem->get_displaytype();
+        $data->displaygrade = grade_format_gradevalue($grade->finalgrade, $gradeitem, true);
         $data->gradepassed = $gradeitem->get_grade($userid)->is_passed($gradeitem);
         $data->submissionrawgrade = $submissiongrade->grade;
         return $data;

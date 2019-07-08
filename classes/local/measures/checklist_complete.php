@@ -42,6 +42,10 @@ class checklist_complete extends measure implements has_own_configuration {
     /** @var string COMPONENT_NAME Used to for name of core subsystem or plugin. Moodle frankenstyle. */
     public const COMPONENT_NAME = 'checklist';
 
+    public function format_user_measure_data($data, $format = FORMAT_PLAIN) : string {
+        return '';
+    }
+
     public function get_data_for_user(int $userid) {
         return null;
     }
