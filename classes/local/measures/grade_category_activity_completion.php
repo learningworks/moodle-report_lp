@@ -19,13 +19,14 @@ namespace report_lp\local\measures;
 defined('MOODLE_INTERNAL') || die();
 
 use coding_exception;
+use completion_info;
 use grade_category;
+use html_writer;
 use MoodleQuickForm;
 use report_lp\local\contracts\has_own_configuration;
 use report_lp\local\measure;
 use report_lp\local\user_list;
 use stdClass;
-
 
 /**
  * The progress percentage of activities completed in a grade book category.
@@ -42,22 +43,112 @@ class grade_category_activity_completion extends measure implements has_own_conf
     /** @var string COMPONENT_NAME Used to for name of core subsystem or plugin. Moodle frankenstyle. */
     public const COMPONENT_NAME = 'grades';
 
+    /**
+     * @param $data
+     * @param string $format
+     * @return string
+     */
     public function format_user_measure_data($data, $format = FORMAT_PLAIN) : string {
-        return '';
-    }
-
-    public function get_data_for_user(int $userid) {
-        return null;
+        $label = ' - ';
+        if (!empty($data)) {
+            $label = floor($data) . '%';
+        }
+        $class = "measure";
+        if ($format == FORMAT_HTML) {
+            return html_writer::span($label, $class);
+        }
+        return $label;
     }
 
     /**
-     * @param userlist $userlist
-     * @return array|null
+     * @param int $userid
+     * @return float|int|mixed|null
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     * @throws coding_exception
      */
-    public function get_data_for_users(user_list $userlist) : array {
-        return [];
+    public function get_data_for_user(int $userid) {
+        global $CFG;
+
+        require_once($CFG->libdir . '/gradelib.php');
+        require_once($CFG->libdir . '/completionlib.php');
+
+        static $activities;
+
+        static $gradecategory;
+
+        static $completion;
+
+        if (is_null($gradecategory) || is_null($completion) || is_null($activities)) {
+            $configuration = $this->get_configuration();
+            if (is_null($configuration)) {
+                throw new coding_exception('Configuration must loaded');
+            }
+            $extraconfigurationdata = $configuration->get('extraconfigurationdata');
+            if (!isset($extraconfigurationdata->id)) {
+                throw new coding_exception('No valid extra configuration data found');
+            }
+            $gradecategory = grade_category::fetch(['id' => $extraconfigurationdata->id]);
+            $gradecategorymods = [];
+            foreach ($gradecategory->get_children(false) as $child) {
+                /** @var \grade_item $child */
+                $gradeitem = $child['object'];
+                if (!$gradeitem->is_external_item()) {
+                    continue;
+                }
+                $key = $gradeitem->itemmodule . ':' . $gradeitem->iteminstance;
+                $gradecategorymods[$key] = $key;
+            }
+            $course = get_course($configuration->get('courseid'));
+            $completion = new completion_info($course);
+            $modinfo = get_fast_modinfo($course);
+            $activities = [];
+            foreach ($modinfo->get_cms() as $cm) {
+                if ($cm->completion != COMPLETION_TRACKING_NONE && !$cm->deletioninprogress) {
+                    $key = $cm->modname . ':' . $cm->instance;
+                    if (in_array($key, $gradecategorymods)) {
+                        $activities[$cm->id] = $cm;
+                    }
+                }
+            }
+        }
+
+        $count = count($activities);
+        if (!$count) {
+            return null;
+        }
+
+        // Get the number of modules that have been completed.
+        $completed = 0;
+        foreach ($activities as $activity) {
+            $data = $completion->get_data($activity, true, $userid);
+            $completed += $data->completionstate == COMPLETION_INCOMPLETE ? 0 : 1;
+        }
+
+        return ($completed / $count) * 100;
     }
 
+    /**
+     * @param user_list $userlist
+     *
+     * @return array
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     * @throws coding_exception
+     */
+    public function get_data_for_users(user_list $userlist) : array {
+        $data = [];
+        foreach ($userlist as $user) {
+            $data[$user->id] = $this->get_data_for_user($user->id);
+        }
+        return $data;
+    }
+
+    /**
+     * @param string $format
+     * @return string
+     * @throws coding_exception
+     */
     public function get_default_label($format = FORMAT_PLAIN): string {
         global $CFG;
         require_once($CFG->libdir . '/gradelib.php');
