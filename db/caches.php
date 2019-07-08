@@ -27,6 +27,8 @@ defined('MOODLE_INTERNAL') || die();
 $definitions = [
     'summarydata' => [
         'mode' => cache_store::MODE_APPLICATION,
-        'simplekeys' => true
+        'simplekeys' => true,
+        'simpledata' => true,
+        'ttl' => 3600 // Just in case.
     ]
 ];
