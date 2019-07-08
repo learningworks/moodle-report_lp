@@ -19,6 +19,7 @@ namespace report_lp\local\measures;
 defined('MOODLE_INTERNAL') || die();
 
 use coding_exception;
+use html_writer;
 use report_lp\local\measure;
 use report_lp\local\user_list;
 
@@ -37,16 +38,67 @@ class last_course_access extends measure {
     /** @var string COMPONENT_NAME Used to for name of core subsystem or plugin. Moodle frankenstyle. */
     public const COMPONENT_NAME = 'course';
 
+    /**
+     * @param $data
+     * @param string $format
+     * @return string
+     * @throws coding_exception
+     */
     public function format_user_measure_data($data, $format = FORMAT_PLAIN) : string {
-        return '';
+        if (is_null($data)) {
+            $label = get_string('never');
+            $title = $label;
+        } else {
+            $label = userdate($data->timeaccess, '%A %e %B, %H:%M');
+            $title = userdate($data->timeaccess);
+        }
+        $class = "measure";
+        if ($format == FORMAT_HTML) {
+            return html_writer::span($label, $class, ['title' => $title]);
+        }
+        return $label;
     }
 
+    /**
+     * @param int $userid
+     * @return mixed|null
+     * @throws \dml_exception
+     * @throws coding_exception
+     */
     public function get_data_for_user(int $userid) {
+        global $DB;
+
+        /** @var array $lastaccess Used as a static cache. */
+        static $lastaccess;
+
+        if (is_null($lastaccess)) {
+            $configuration = $this->get_configuration();
+            if (is_null($configuration)) {
+                throw new coding_exception('Configuration must loaded');
+            }
+            $sql = "SELECT la.userid, la.timeaccess
+                      FROM {user_lastaccess} la
+                     WHERE la.courseid = :courseid";
+            $lastaccess = $DB->get_records_sql($sql, ['courseid' => $configuration->get('courseid')]);
+        }
+        if (isset($lastaccess[$userid])) {
+            return $lastaccess[$userid];
+        }
         return null;
     }
 
+    /**
+     * @param user_list $userlist
+     * @return array
+     * @throws \dml_exception
+     * @throws coding_exception
+     */
     public function get_data_for_users(user_list $userlist) : array {
-        return [];
+        $data = [];
+        foreach ($userlist as $user) {
+            $data[$user->id] = $this->get_data_for_user($user->id);
+        }
+        return $data;
     }
 
     /**
