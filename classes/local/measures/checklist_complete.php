@@ -49,13 +49,22 @@ class checklist_complete extends measure implements has_own_configuration {
     /** @var string COMPONENT_NAME Used to for name of core subsystem or plugin. Moodle frankenstyle. */
     public const COMPONENT_NAME = 'checklist';
 
-    static $checklist;
+    /** @var stdClass $checklist Instance record for checklist */
+    protected $checklist;
 
-    /** @var checklist_class $checklist */
-    static $checklistclass;
+    /** @var array $checklistitems Checklist items. */
+    protected $checklistitems;
 
-    static $checklistitemstocount;
+    /** @var int $checklistitemstotal Total of items in checklist instance. */
+    protected $checklistitemstotal;
 
+    /**
+     * Format user measure data.
+     *
+     * @param $data
+     * @param string $format
+     * @return string
+     */
     public function format_user_measure_data($data, $format = FORMAT_PLAIN) : string {
         $label = ' - ';
         if (!empty($data)) {
@@ -68,10 +77,16 @@ class checklist_complete extends measure implements has_own_configuration {
         return $label;
     }
 
-    public function get_data_for_user(int $userid) {
+    /**
+     * Load all required checklist data.
+     *
+     * @throws \dml_exception
+     * @throws coding_exception
+     */
+    protected function load_checklist() {
         global $DB;
 
-        if (is_null(static::$checklist)) {
+        if (is_null($this->checklist)) {
             $configuration = $this->get_configuration();
             if (is_null($configuration)) {
                 throw new coding_exception('Configuration must loaded');
@@ -80,39 +95,46 @@ class checklist_complete extends measure implements has_own_configuration {
             if (!isset($extraconfigurationdata->id)) {
                 throw new coding_exception('No valid extra configuration data found');
             }
-            $instance = $DB->get_record(
+            $this->checklist = $DB->get_record(
                 'checklist',
                 ['id' => $extraconfigurationdata->id],
                 '*',
                 MUST_EXIST
             );
-            static::$checklist = $instance;
-            $cm = get_coursemodule_from_instance(
-                'checklist',
-                $instance->id,
-                $configuration->get('courseid'),
-                false,
-                MUST_EXIST
-            );
-            $course = get_course($configuration->get('courseid'));
-            //static::$checklistclass = new checklist_class($cm->id, 0, $instance, $cm, $course);
-            $items = checklist_item::fetch_all(['checklist' => $instance->id, 'userid' => 0], true);
-            $itemstocount = array();
+        }
+        if (is_null($this->checklistitems)) {
+            $items = checklist_item::fetch_all(['checklist' => $this->checklist->id, 'userid' => 0], true);
+            $checklistitems = [];
             foreach ($items as $item) {
                 if (!$item->hidden) {
                     if ($item->itemoptional == CHECKLIST_OPTIONAL_NO) {
-                        $itemstocount[] = $item->id;
+                        $checklistitems[$item->id] = $item;
                     }
                 }
             }
-            static::$checklistitemstocount = $itemstocount;
+            $this->checklistitems = $checklistitems;
         }
-        $checklist = static::$checklist;
-        $checklistitemstocount = static::$checklistitemstocount;
-        $checklisttotalitems = count($checklistitemstocount);
-        if ($checklisttotalitems) {
-            list($insql, $inparameters) = $DB->get_in_or_equal($checklistitemstocount, SQL_PARAMS_NAMED);
-            if ($checklist->teacheredit == CHECKLIST_MARKING_STUDENT) {
+        if (is_null($this->checklistitemstotal)) {
+            $this->checklistitemstotal = count($this->checklistitems);
+        }
+    }
+
+    /**
+     * Get percentage completed.
+     *
+     * @param int $userid
+     * @return float|int|mixed
+     * @throws \dml_exception
+     * @throws coding_exception
+     */
+    public function get_data_for_user(int $userid) {
+        global $DB;
+
+        $this->load_checklist();
+
+        if ($this->checklistitemstotal) {
+            list($insql, $inparameters) = $DB->get_in_or_equal(array_keys($this->checklistitems), SQL_PARAMS_NAMED);
+            if ($this->checklist->teacheredit == CHECKLIST_MARKING_STUDENT) {
                 $sql = "usertimestamp > 0 AND
                         item {$insql} AND 
                         userid = :userid ";
@@ -120,10 +142,10 @@ class checklist_complete extends measure implements has_own_configuration {
                 $sql = 'teachermark = ' . CHECKLIST_TEACHERMARK_YES .' AND item ' . $insql . ' AND userid = :userid ';
             }
         }
-        if ($checklisttotalitems) {
+        if ($this->checklistitemstotal) {
             $inparameters['userid'] = $userid;
             $tickeditems = $DB->count_records_select('checklist_check', $sql, $inparameters);
-            $percentcomplete = ($tickeditems * 100) / $checklisttotalitems;
+            $percentcomplete = ($tickeditems * 100) / $this->checklistitemstotal;
         } else {
             $percentcomplete = 0;
             $tickeditems = 0;
@@ -134,9 +156,13 @@ class checklist_complete extends measure implements has_own_configuration {
     /**
      * @param user_list $userlist
      * @return array
+     * @throws \dml_exception
      * @throws coding_exception
      */
     public function get_data_for_users(user_list $userlist) : array {
+
+        $this->load_checklist();
+
         $data = [];
         foreach ($userlist as $user) {
             $data[$user->id] = $this->get_data_for_user($user->id);
