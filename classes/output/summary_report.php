@@ -24,6 +24,7 @@ use renderable;
 use renderer_base;
 use report_lp\local\grouping;
 use report_lp\local\item;
+use report_lp\local\measure;
 use report_lp\local\item_tree;
 use report_lp\local\factories\url;
 use report_lp\local\summary;
@@ -74,15 +75,29 @@ class summary_report implements renderable, templatable {
         $data->secondaryheader = $secondaryheader;
         $learnerlist->fetch_all();
 
+        $measures = $itemtree->get_measures();
         foreach ($learnerlist as $learner) {
             $row = new stdClass();
-            $row->learner = $this->data_row_columns($output, $learner);
+            $row->learner = $this->data_row_user($output, $learner);
+            $row->measures = $this->measure_data_for_user($learner, $measures);
             $data->rows[] = $row;
         }
         return $data;
     }
 
-    public function data_row_columns(renderer_base $output, $learner) {
+    public function measure_data_for_user($learner, $measures) {
+        $row = [];
+        foreach ($measures as $measure) {
+            /** @var measure $measure */
+           $learnerdata = $measure->get_data_for_user($learner->id);
+           $data = new stdClass();
+           $data->value = $measure->format_user_measure_data($learnerdata, FORMAT_HTML);
+           $row[] = $data;
+        }
+        return $row;
+    }
+
+    public function data_row_user(renderer_base $output, $learner) {
         global $PAGE;
         $learner->fullname = fullname($learner);
         $learner->enrolmentstatus = $learner->status;
@@ -99,7 +114,6 @@ class summary_report implements renderable, templatable {
         if (empty($learner->imagealt)) {
             $learner->imagealt = get_string('pictureof', '', $learner->fullname);
         }
-
         return $learner;
     }
 
@@ -125,6 +139,7 @@ class summary_report implements renderable, templatable {
         }
         return $columns;
     }
+
     public function secondary_header_columns(renderer_base $output, array $items) {
         $columns = [];
         $th = new stdClass();
