@@ -18,6 +18,10 @@ namespace report_lp\local\measures;
 
 defined('MOODLE_INTERNAL') || die();
 
+global $CFG;
+require_once($CFG->dirroot . '/mod/checklist/lib.php');
+require_once($CFG->dirroot . '/mod/checklist/locallib.php');
+
 use coding_exception;
 use MoodleQuickForm;
 use pix_icon;
@@ -26,6 +30,9 @@ use report_lp\local\measure;
 use report_lp\local\persistents\item_configuration;
 use report_lp\local\user_list;
 use stdClass;
+use checklist_class;
+use mod_checklist\local\checklist_item;
+use html_writer;
 
 /**
  * Checklist completion status.
@@ -42,28 +49,99 @@ class checklist_complete extends measure implements has_own_configuration {
     /** @var string COMPONENT_NAME Used to for name of core subsystem or plugin. Moodle frankenstyle. */
     public const COMPONENT_NAME = 'checklist';
 
+    static $checklist;
+
+    /** @var checklist_class $checklist */
+    static $checklistclass;
+
+    static $checklistitemstocount;
+
     public function format_user_measure_data($data, $format = FORMAT_PLAIN) : string {
-        return '';
+        $label = ' - ';
+        if (!empty($data)) {
+            $label = floor($data) . '%';
+        }
+        $class = "measure";
+        if ($format == FORMAT_HTML) {
+            return html_writer::span($label, $class);
+        }
+        return $label;
     }
 
     public function get_data_for_user(int $userid) {
-        return null;
+        global $DB;
+
+        if (is_null(static::$checklist)) {
+            $configuration = $this->get_configuration();
+            if (is_null($configuration)) {
+                throw new coding_exception('Configuration must loaded');
+            }
+            $extraconfigurationdata = $configuration->get('extraconfigurationdata');
+            if (!isset($extraconfigurationdata->id)) {
+                throw new coding_exception('No valid extra configuration data found');
+            }
+            $instance = $DB->get_record(
+                'checklist',
+                ['id' => $extraconfigurationdata->id],
+                '*',
+                MUST_EXIST
+            );
+            static::$checklist = $instance;
+            $cm = get_coursemodule_from_instance(
+                'checklist',
+                $instance->id,
+                $configuration->get('courseid'),
+                false,
+                MUST_EXIST
+            );
+            $course = get_course($configuration->get('courseid'));
+            //static::$checklistclass = new checklist_class($cm->id, 0, $instance, $cm, $course);
+            $items = checklist_item::fetch_all(['checklist' => $instance->id, 'userid' => 0], true);
+            $itemstocount = array();
+            foreach ($items as $item) {
+                if (!$item->hidden) {
+                    if ($item->itemoptional == CHECKLIST_OPTIONAL_NO) {
+                        $itemstocount[] = $item->id;
+                    }
+                }
+            }
+            static::$checklistitemstocount = $itemstocount;
+        }
+        $checklist = static::$checklist;
+        $checklistitemstocount = static::$checklistitemstocount;
+        $checklisttotalitems = count($checklistitemstocount);
+        if ($checklisttotalitems) {
+            list($insql, $inparameters) = $DB->get_in_or_equal($checklistitemstocount, SQL_PARAMS_NAMED);
+            if ($checklist->teacheredit == CHECKLIST_MARKING_STUDENT) {
+                $sql = "usertimestamp > 0 AND
+                        item {$insql} AND 
+                        userid = :userid ";
+            } else {
+                $sql = 'teachermark = ' . CHECKLIST_TEACHERMARK_YES .' AND item ' . $insql . ' AND userid = :userid ';
+            }
+        }
+        if ($checklisttotalitems) {
+            $inparameters['userid'] = $userid;
+            $tickeditems = $DB->count_records_select('checklist_check', $sql, $inparameters);
+            $percentcomplete = ($tickeditems * 100) / $checklisttotalitems;
+        } else {
+            $percentcomplete = 0;
+            $tickeditems = 0;
+        }
+        return $percentcomplete;
     }
 
     /**
-     * @param userlist $userlist
-     * @return array|null
+     * @param user_list $userlist
+     * @return array
+     * @throws coding_exception
      */
     public function get_data_for_users(user_list $userlist) : array {
-        $configuration = $this->get_configuration();
-        if (is_null($configuration)) {
-            throw new coding_exception('Configuration must loaded');
+        $data = [];
+        foreach ($userlist as $user) {
+            $data[$user->id] = $this->get_data_for_user($user->id);
         }
-        $extraconfigurationdata = $configuration->get('extraconfigurationdata');
-        if (!isset($extraconfigurationdata->id)) {
-            throw new coding_exception('No valid extra configuration data found');
-        }
-        return [];
+        return $data;
     }
 
     /**
