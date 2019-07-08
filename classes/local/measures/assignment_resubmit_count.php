@@ -54,7 +54,7 @@ class assignment_resubmit_count extends measure implements has_own_configuration
      * @return string
      */
     public function format_user_measure_data($data, $format = FORMAT_PLAIN) : string {
-        $label = '';
+        $label = ' - ';
         if ($data->submissionattemptnumber) {
             $label = $data->submissionattemptnumber;
         }
