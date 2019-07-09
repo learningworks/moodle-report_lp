@@ -50,6 +50,38 @@
   min-width: 200px;
 }
 
+@media print {
+  @page {
+    size: A3 landscape;
+    margin: 0;
+    max-height: 100%;
+    max-width: 100%;
+  }
+  body {
+    height: 100%;
+    width: 100%;
+  }
+
+  table {
+    /*transform: scale(.8);
+    table-layout: fixed;*/
+    /*max-width: 100%;*/
+    /*max-width: 3508px;*/
+    page-break-inside: avoid;
+  }
+
+  header, aside, nav, footer {
+    display: none;
+  }
+
+  #page {
+    margin-top: 0;
+  }
+
+  .message-app.drawer, .nav-drawer {
+    display: none;
+  }
+}
 .list-item {
   position: relative;
   display: block;
