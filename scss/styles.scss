@@ -94,8 +94,32 @@ table.report-lp-summary-report td {
     padding: 5px;
 }
 
-#page-report-lp-index div.moodle-actionmenu{margin-right:30px;}
-table.learner-progress div.achieved {background: #DFF0D8;}
-table.learner-progress div.not-achieved {background: #F2DEDE;}
-table.learner-progress div.did-not-complete {background: #F2DEDE;}
-table.learner-progress > tbody > tr{border-top: 1px solid #ccc;}
+$button-body-color: $lw-black;
+$padding-y: .375rem;
+$padding-x: .75rem;
+.button {
+    display: inline-block;
+    color: $button-body-color;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+    background-color: transparent;
+    padding: $padding-y $padding-x;
+    &:hover {
+        color: $button-body-color;
+        text-decoration: none;
+    }
+    &:focus,
+    &.focus {
+        outline: 0;
+    }
+}
+
+span.excluded-learners{
+    //padding: $padding-y;
+    font-size: smaller;
+    font-weight: bold;
+
+}

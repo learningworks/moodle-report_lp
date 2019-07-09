@@ -18,7 +18,9 @@ namespace report_lp\local\external;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once("$CFG->libdir/externallib.php");
+global $CFG;
+require_once($CFG->libdir . '/externallib.php');
+require_once($CFG->dirroot . '/report/lp/lib.php');
 
 use context;
 use context_system;
@@ -68,8 +70,7 @@ class filters extends external_api {
      * @throws invalid_parameter_exception
      */
     public static function set_group_filter(int $courseid, string $groupids) {
-        global $CFG, $SESSION;
-        require_once("$CFG->dirroot/report/lp/lib.php");
+        global $SESSION;
 
         $params = self::validate_parameters(self::set_group_filter_parameters(),
             [
@@ -98,6 +99,92 @@ class filters extends external_api {
      * @return external_single_structure
      */
     public static function set_group_filter_returns() {
+        return new external_single_structure([]);
+    }
+
+    /**
+     * @return external_function_parameters
+     */
+    public static function exclude_learner_add_learner_parameters() {
+        return new external_function_parameters(
+            [
+                'courseid' => new external_value(PARAM_INT, 'The course identifier relates to report instance'),
+                'userid' => new external_value(PARAM_INT, 'The user identifier of learner to be exluded'),
+            ]
+        );
+    }
+
+    /**
+     * @param int $courseid
+     * @param int $userid
+     * @return |null
+     * @throws invalid_parameter_exception
+     */
+    public static function exclude_learner_add_learner(int $courseid, int $userid) {
+        global $SESSION;
+
+        $params = self::validate_parameters(self::exclude_learner_add_learner_parameters(),
+            [
+                'courseid' => $courseid,
+                'userid'   => $userid
+
+            ]
+        );
+        $courseid = $params['courseid'];
+        $userid = $params['$userid'];
+        if (!isset($SESSION->report_lp_filters)) {
+            $SESSION->report_lp_filters = [
+                $courseid => [
+                    'excludelearners' => []
+                ]
+            ];
+        }
+        $SESSION->report_lp_filters[$courseid]['excludelearners'][$userid] = $userid;
+        return null;
+    }
+
+    /**
+     * @return external_single_structure
+     */
+    public static function exclude_learner_add_learner_returns() {
+        return new external_single_structure([]);
+    }
+
+    /**
+     * @return external_function_parameters
+     */
+    public static function exclude_learner_reset_parameters() {
+        return new external_function_parameters(
+            [
+                'courseid' => new external_value(PARAM_INT, 'The course identifier relates to report instance')
+            ]
+        );
+    }
+
+    /**
+     * @param int $courseid
+     * @return |null
+     * @throws invalid_parameter_exception
+     */
+    public static function exclude_learner_reset(int $courseid) {
+        global $SESSION;
+        $params = self::validate_parameters(self::exclude_learner_reset_parameters(),
+            [
+                'courseid' => $courseid
+            ]
+        );
+        $courseid = $params['courseid'];
+
+        if (isset($SESSION->report_lp_filters[$courseid]['excludelearners'])) {
+            $SESSION->report_lp_filters[$courseid]['excludelearners'] = [];
+        }
+        return null;
+    }
+
+    /**
+     * @return external_single_structure
+     */
+    public static function exclude_learner_reset_returns() {
         return new external_single_structure([]);
     }
 }

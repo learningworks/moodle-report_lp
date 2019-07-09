@@ -35,8 +35,12 @@
     </div>
 {{/nofilteredcoursegroups}}
 {{^nofilteredcoursegroups}}
+    <div class="alert alert-secondary" role="alert" data-excluded="learners">
+        <a href="#" class="button" role="button"><i class="fa fa-trash" aria-hidden="true"></i></a>
+        <span class="excluded-learners">Clear learner exclusions Abhi Chandra, Alan Parker</span>
+    </div>
     <div class="overflow-visible">
-        <table class="report-lp-summary-report d-print-table">
+        <table id="report-lp-summary-report-{{uniqid}}" class="report-lp-summary-report d-print-table" data-learners >
             <thead class="">
             {{#primaryheader}}
                 <tr class="d-print-table-row">
@@ -59,27 +63,36 @@
             </thead>
             <tbody>
             {{#rows}}
-                <tr class="d-print-table-row">
-                    {{#learner}}
-                        <td class="cell cell-lg d-print-table-cell" scope="col">
-                            <img src="{{imageurl}}" alt="{{imagealt}}" class="userpicture defaultuserpic"/>
-                            {{fullname}}
-                            {{#status}}
-                                <span class="badge badge-pill badge-danger" title="Withdrawn">W</span>
-                            {{/status}}
-                        </td>
-                        <td class="cell d-print-table-cell" scope="col">
-                            <div class="cell-learner--action" title="Exclude learner from export"><i class="fa fa-user-times" aria-hidden="true"></i></div>
-                        </td>
-                        <td class="cell d-print-table-cell" scope="col"><span class="">{{idnumber}}</span></td>
-                        <td class="cell d-print-table-cell" scope="col">{{coursegroups}}</td>
-                    {{/learner}}
+                {{#learner}}
+                <tr class="d-print-table-row" data-learner-id="{{id}}" data-row>
+                    <td class="cell cell-lg d-print-table-cell" scope="col">
+                        <img src="{{imageurl}}" alt="{{imagealt}}" class="userpicture defaultuserpic"/>
+                        {{fullname}}
+                        {{#status}}
+                            <span class="badge badge-pill badge-danger" title="Withdrawn">W</span>
+                        {{/status}}
+                    </td>
+                    <td class="cell d-print-table-cell" scope="col">
+                        <a href="#" class="button" role="button" data-learner-id="{{id}}" data-filter="exclude-learner"><i class="fa fa-user-times" aria-hidden="true"></i></a>
+                    </td>
+                    <td class="cell d-print-table-cell" scope="col"><span class="">{{idnumber}}</span></td>
+                    <td class="cell d-print-table-cell" scope="col">{{coursegroups}}</td>
                     {{#measures}}
                         <td class="cell d-print-table-cell" scope="col"><span class="">{{{value}}}</span></td>
                     {{/measures}}
                 </tr>
+                {{/learner}}
             {{/rows}}
             </tbody>
         </table>
     </div>
 {{/nofilteredcoursegroups}}
+{{#js}}
+    require(
+    [
+    'report_lp/filter_exclude_learner'
+    ],
+    function(excludeLearnerFilter) {
+        excludeLearnerFilter.init('#report-lp-summary-report-{{uniqid}}');
+    });
+{{/js}}

@@ -17,6 +17,25 @@
 defined('MOODLE_INTERNAL') || die();
 
 $functions = [
+    'report_lp_filter_exclude_learner_add_learner' => [
+        'classname'    => 'report_lp\local\external\filters',
+        'methodname'   => 'exclude_learner_add_learner',
+        'classpath'    => '',
+        'description'  => '',
+        'type'         => 'write',
+        'capabilities' => '',
+        'ajax'         => true
+    ],
+    'report_lp_filter_exclude_learner_reset' => [
+        'classname'    => 'report_lp\local\external\filters',
+        'methodname'   => 'exclude_learner_reset',
+        'classpath'    => '',
+        'description'  => '',
+        'type'         => 'write',
+        'capabilities' => '',
+        'ajax'         => true
+
+    ],
     'report_lp_set_group_filter' => [
         'classname'    => 'report_lp\local\external\filters',
         'methodname'   => 'set_group_filter',
