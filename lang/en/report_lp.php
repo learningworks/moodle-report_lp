@@ -69,6 +69,7 @@ $string['grouping:measure:description'] = 'Grouping allows a set of measures to 
 $string['grouping'] = 'Grouping';
 $string['measures'] = 'Measures';
 $string['configurereportfor'] = 'Configure learner progress report for {$a}';
+$string['summaryreportfor'] = 'Learner progress summary report for {$a}';
 
 $string['usecustomlabel'] = 'Use custom label';
 $string['customlabel'] = 'Custom label';

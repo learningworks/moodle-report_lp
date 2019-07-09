@@ -23,7 +23,7 @@ $course = get_course($courseid);
 $systemcontext = context_system::instance();
 
 require_login($course);
-require_capability('report/lp:configure', $systemcontext);
+require_capability('report/lp:viewsummary', $systemcontext);
 
 $url = report_lp\local\factories\url::get_summary_url($course);
 $PAGE->set_url($url);
@@ -41,8 +41,7 @@ $summary->add_learner_list($learnerlist);
 
 $renderer = $PAGE->get_renderer('report_lp');
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('pluginname', 'report_lp'));
+echo $OUTPUT->heading(get_string('summaryreportfor', 'report_lp', $course->fullname));
 echo $renderer->render_group_filter($course);
 echo $renderer->render(new report_lp\output\summary_report($summary));
-//print_object($SESSION);
 echo $OUTPUT->footer();
