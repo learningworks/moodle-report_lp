@@ -20,10 +20,10 @@ require_once($CFG->libdir . '/grouplib.php');
 
 $courseid = required_param('courseid', PARAM_INT);
 $course = get_course($courseid);
-$systemcontext = context_system::instance();
+$coursecontext = context_course::instance($courseid);
 
 require_login($course);
-require_capability('report/lp:viewsummary', $systemcontext);
+require_capability('report/lp:viewsummary', $coursecontext);
 
 $url = report_lp\local\factories\url::get_summary_url($course);
 $PAGE->set_url($url);

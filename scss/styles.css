@@ -63,10 +63,6 @@
   }
 
   table {
-    /*transform: scale(.8);
-    table-layout: fixed;*/
-    /*max-width: 100%;*/
-    /*max-width: 3508px;*/
     page-break-inside: avoid;
   }
 

@@ -23,11 +23,11 @@ $action     = optional_param('action', '', PARAM_ALPHA);
 $confirmed  = optional_param('confirmed', 0, PARAM_INT);
 
 $course = get_course($courseid);
-$systemcontext = context_system::instance();
+$coursecontext = context_course::instance($courseid);
 
 $PAGE->set_context($systemcontext);
 require_login($course);
-require_capability('report/lp:configure', $systemcontext);
+require_capability('report/lp:configure', $coursecontext);
 $url = report_lp\local\factories\url::get_config_url($course);
 $PAGE->set_url($url);
 

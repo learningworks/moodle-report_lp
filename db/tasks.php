@@ -15,25 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Scheduled tasks.
- *
  * Defines scheduled tasks related to the report.
  *
- * @package   {{PLUGIN_NAME}} {@link https://docs.moodle.org/dev/Frankenstyle}
- * @copyright 2015 LearningWorks Ltd {@link http://www.learningworks.co.nz}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     report_lp
+ * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$tasks = array(
-    array(
-        'classname' => '\report_lp\task\fetch',
-        'blocking' => 0,
-        'minute' => '*/5',
-        'hour' => '*',
-        'day' => '*',
-        'dayofweek' => '*',
-        'month' => '*'
-    )
-);
+$tasks = [];
