@@ -97,7 +97,7 @@ abstract class item {
      * @return string
      * @throws \coding_exception
      */
-    public function get_default_label($format){
+    public function get_default_label($format = FORMAT_PLAIN){
         return $this->get_label($format);
     }
 
