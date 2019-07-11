@@ -171,7 +171,7 @@ class checklist_complete extends measure implements has_own_configuration {
     }
 
     /**
-     * Build default label. If has configuration use checklist name.
+     * Build label. If has configuration use checklist name or custom label.
      *
      * @param string $format
      * @return string
@@ -188,12 +188,22 @@ class checklist_complete extends measure implements has_own_configuration {
         if (empty($extraconfigurationdata)) {
             return get_string('checklistname', 'report_lp');
         }
-        $checklistname = $DB->get_field(
-            static::COMPONENT_NAME,
-            'name',
-            ['id' => $extraconfigurationdata->id]
-        );
-        return format_text($checklistname, $format);
+        if ($configuration->get('usecustomlabel')) {
+            $name = $configuration->get('customlabel');
+        } else {
+            $name = $DB->get_field(
+                static::COMPONENT_NAME,
+                'name',
+                ['id' => $extraconfigurationdata->id]
+            );
+        }
+        if ($format == FORMAT_HTML) {
+            $label = new stdClass();
+            $label->name = format_text($name, $format);
+            $label->title = $name;
+            return $label;
+        }
+        return format_text($name, $format);
     }
 
     /**
