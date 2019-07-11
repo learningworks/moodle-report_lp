@@ -52,6 +52,10 @@ $string['assignmentstatus:measure:description'] = 'Uses grade display type for s
 $string['attendancename'] = 'Attendance name';
 $string['attendancesessionssummary:measure:name'] = 'Attendance';
 $string['attendancesessionssummary:measure:description'] = 'Show how many sessions a learner has attended out of total number of sessions. For example 3/4 sessions attended.';
+$string['coursegrade:measure:label'] = 'Course grade (or final grade)';
+$string['coursegrade:measure:name'] = 'Course grade';
+$string['coursegrade:measure:description'] = 'The course grade calculated or based on aggregated grade items from the gradebook.';
+
 
 $string['checklistcompletion:measure:name'] = 'Checklist';
 $string['checklistcompletion:measure:description'] = 'Indicate if checklist is incompleted or completed.';

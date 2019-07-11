@@ -74,6 +74,7 @@ function report_lp_get_supported_measures() {
         new report_lp\local\measures\assignment_status(),
         new report_lp\local\measures\attendance_sessions_summary(),
         new report_lp\local\measures\checklist_complete(),
+        new report_lp\local\measures\course_grade(),
         new report_lp\local\measures\grade_category_activity_completion(),
         new report_lp\local\measures\last_course_access()
     ];
