@@ -160,7 +160,7 @@ class summary_report implements renderable, templatable {
                $children = $item->get_children();
                foreach ($children as $child) {
                    $th = new stdClass();
-                   $th->label = $child->get_label();
+                   $th->label = $child->get_label(FORMAT_HTML);
                    if ($child->has_icon()) {
                        $icon = $child->get_icon();
                        $th->icon = $icon->export_for_template($output);
@@ -169,7 +169,7 @@ class summary_report implements renderable, templatable {
                }
             } else {
                 $th = new stdClass();
-                $th->label = $item->get_label();
+                $th->label = $item->get_label(FORMAT_HTML);
                 if ($item->has_icon()) {
                     $icon = $item->get_icon();
                     $th->icon = $icon->export_for_template($output);

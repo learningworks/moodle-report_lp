@@ -149,7 +149,7 @@ class grade_category_activity_completion extends measure implements has_own_conf
      * @return string
      * @throws coding_exception
      */
-    public function get_default_label($format = FORMAT_PLAIN): string {
+    public function get_label($format = FORMAT_PLAIN) {
         global $CFG;
         require_once($CFG->libdir . '/gradelib.php');
         $configuration = $this->get_configuration();

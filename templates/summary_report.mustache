@@ -48,7 +48,9 @@
             {{#secondaryheader}}
                 <tr class="d-print-table-row">
                     {{#columns}}
-                        <td colspan="{{colspan}}" class="cell cell-secondary-header d-print-table-cell" scope="col">{{#icon}}{{>core/pix_icon}}{{/icon}}<span>{{label}}</span></td>
+                        <td colspan="{{colspan}}" class="cell cell-secondary-header d-print-table-cell" scope="col">
+                            {{#icon}}{{>core/pix_icon}}{{/icon}}{{#label}}{{#url}}<a href="{{href}}" title="{{title}}">{{name}}</a>{{/url}}{{^url}}<span>{{{name}}}</span>{{/url}}{{/label}}
+                        </td>
                     {{/columns}}
                 </tr>
             {{/secondaryheader}}

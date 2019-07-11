@@ -108,7 +108,7 @@ class last_course_access extends measure {
      * @return string
      * @throws coding_exception
      */
-    public function get_default_label($format = FORMAT_PLAIN): string {
+    public function get_label($format = FORMAT_PLAIN) {
         return format_text(get_string('lastcourseaccess:measure:label', 'report_lp'), $format);
     }
 

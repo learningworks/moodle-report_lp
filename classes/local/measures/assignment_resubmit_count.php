@@ -144,7 +144,7 @@ class assignment_resubmit_count extends measure implements has_own_configuration
      * @throws \dml_exception
      * @throws coding_exception
      */
-    public function get_default_label($format = FORMAT_PLAIN): string {
+    public function get_label($format = FORMAT_PLAIN): string {
         global $DB;
         $configuration = $this->get_configuration();
         if (is_null($configuration)) {

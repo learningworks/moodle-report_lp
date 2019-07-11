@@ -25,6 +25,7 @@ require_once($CFG->dirroot . '/mod/assign/locallib.php');
 
 use assign;
 use pix_icon;
+use moodle_url;
 use stdClass;
 use MoodleQuickForm;
 use coding_exception;
@@ -141,15 +142,14 @@ class assignment_status extends measure implements has_own_configuration {
     }
 
     /**
-     * Build default label. If has configuration use assignment name.
+     * Build label. If has configuration use assignment name check for custom label.
      *
      * @param string $format
      * @return string
      * @throws \dml_exception
      * @throws coding_exception
      */
-    public function get_default_label($format = FORMAT_PLAIN): string {
-        global $DB;
+    public function get_label($format = FORMAT_PLAIN){
         $configuration = $this->get_configuration();
         if (is_null($configuration)) {
             return get_string('defaultlabelassignmentstatus', 'report_lp');
@@ -158,15 +158,28 @@ class assignment_status extends measure implements has_own_configuration {
         if (empty($extraconfigurationdata)) {
             return get_string('defaultlabelassignmentstatus', 'report_lp');
         }
-        $assignmentname = $DB->get_field(
-            'assign',
-            'name',
-            ['id' => $extraconfigurationdata->id]
-        );
+        $assignment = $this->get_assignment();
+        if ($configuration->get('usecustomlabel')) {
+            $name = $configuration->get('customlabel');
+        } else {
+            $name = $assignment->get_course_module()->name;
+        }
+        if ($format == FORMAT_HTML) {
+            $label = new stdClass();
+            $label->name = format_text($name, $format);
+            if ($this->has_url()) {
+                $url = new stdClass();
+                $url->name = $name;
+                $url->title = $name;
+                $url->href = $this->get_url()->out(true);
+                $label->url = $url;
+            }
+            return $label;
+        }
         $defaultlabelconfigured = get_string(
             'defaultlabelassignmentstatusconfigured',
             'report_lp',
-            $assignmentname);
+            $name);
         return format_text($defaultlabelconfigured, $format);
     }
 
@@ -275,11 +288,31 @@ class assignment_status extends measure implements has_own_configuration {
     }
 
     /**
+     * Use assignment course module url.
+     *
+     * @return moodle_url
+     * @throws \dml_exception
+     * @throws coding_exception
+     */
+    public function get_url() : moodle_url {
+        return $this->get_assignment()->get_course_module()->url;
+    }
+
+    /**
      * Yes we do.
      *
      * @return bool
      */
     public function has_icon() : bool {
+        return true;
+    }
+
+    /**
+     * Yes we do.
+     *
+     * @return bool
+     */
+    public function has_url() : bool {
         return true;
     }
 

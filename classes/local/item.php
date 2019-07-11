@@ -73,7 +73,7 @@ abstract class item {
      * @param string $format
      * @return string
      */
-    abstract public function get_default_label($format = FORMAT_PLAIN) : string;
+    abstract public function get_label($format = FORMAT_PLAIN);
 
     /**
      * Get human friendly description of what this item does.
@@ -92,19 +92,13 @@ abstract class item {
     }
 
     /**
-     * Gets custom label if used or will get contretes default.
+     * Gets custom label if used or will get concretes default.
      *
      * @return string
      * @throws \coding_exception
      */
-    public function get_label() : string {
-        if (is_null($this->configuration)) {
-            return $this->get_default_label();
-        }
-        if ($this->configuration->get('usecustomlabel')) {
-            return $this->configuration->get('customlabel');
-        }
-        return $this->get_default_label();
+    public function get_default_label($format){
+        return $this->get_label($format);
     }
 
     /**
