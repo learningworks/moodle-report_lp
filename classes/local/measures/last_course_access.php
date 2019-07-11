@@ -22,6 +22,7 @@ use coding_exception;
 use html_writer;
 use report_lp\local\measure;
 use report_lp\local\user_list;
+use stdClass;
 
 /**
  * The date and time learner last accessed a course instance.
@@ -109,7 +110,20 @@ class last_course_access extends measure {
      * @throws coding_exception
      */
     public function get_label($format = FORMAT_PLAIN) {
-        return format_text(get_string('lastcourseaccess:measure:label', 'report_lp'), $format);
+        $name = get_string('lastcourseaccess:measure:label', 'report_lp');
+        $configuration = $this->get_configuration();
+        if (!is_null($configuration)) {
+            if ($configuration->get('usecustomlabel')) {
+                $name = $configuration->get('customlabel');
+            }
+        }
+        if ($format == FORMAT_HTML) {
+            $label = new stdClass();
+            $label->name = format_text($name, $format);
+            $label->title = $name;
+            return $label;
+        }
+        return format_text($name, $format);
     }
 
     /**
