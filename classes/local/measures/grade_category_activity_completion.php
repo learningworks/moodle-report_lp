@@ -18,6 +18,10 @@ namespace report_lp\local\measures;
 
 defined('MOODLE_INTERNAL') || die();
 
+global $CFG;
+require_once($CFG->libdir . '/gradelib.php');
+require_once($CFG->libdir . '/completionlib.php');
+
 use coding_exception;
 use completion_info;
 use grade_category;
@@ -68,10 +72,6 @@ class grade_category_activity_completion extends measure implements has_own_conf
      * @throws coding_exception
      */
     public function get_data_for_user(int $userid) {
-        global $CFG;
-
-        require_once($CFG->libdir . '/gradelib.php');
-        require_once($CFG->libdir . '/completionlib.php');
 
         static $activities;
 
@@ -145,13 +145,14 @@ class grade_category_activity_completion extends measure implements has_own_conf
     }
 
     /**
+     * Build label for
+     *
      * @param string $format
      * @return string
      * @throws coding_exception
      */
     public function get_label($format = FORMAT_PLAIN) {
-        global $CFG;
-        require_once($CFG->libdir . '/gradelib.php');
+
         $configuration = $this->get_configuration();
         if (is_null($configuration)) {
             return get_string('categoryname', static::COMPONENT_NAME);
@@ -160,14 +161,24 @@ class grade_category_activity_completion extends measure implements has_own_conf
         if (empty($extraconfigurationdata)) {
             return get_string('categoryname', static::COMPONENT_NAME);
         }
-        $gradecategory = grade_category::fetch(
-            ['id' => $extraconfigurationdata->id]
-        );
-        $defaultlabelconfigured = get_string(
-            'defaultlabelgradecategoryconfigured',
-            'report_lp',
-            $gradecategory->get_name());
-        return format_text($defaultlabelconfigured, $format);
+        if ($configuration->get('usecustomlabel')) {
+            $name = $configuration->get('customlabel');
+        } else {
+            $gradecategory = grade_category::fetch(
+                ['id' => $extraconfigurationdata->id]
+            );
+            $name = get_string(
+                'defaultlabelgradecategoryconfigured',
+                'report_lp',
+                $gradecategory->get_name());
+        }
+        if ($format == FORMAT_HTML) {
+            $label = new stdClass();
+            $label->name = format_text($name, $format);
+            $label->title = $name;
+            return $label;
+        }
+        return format_text($name, $format);
     }
 
     /**
