@@ -57,11 +57,14 @@ $string['coursegrade:measure:name'] = 'Course grade';
 $string['coursegrade:measure:description'] = 'The course grade calculated or based on aggregated grade items from the gradebook.';
 
 
+$string['coursesectionactivitycompletion:measure:label'] = 'Course section activity completion';
+$string['coursesectionactivitycompletion:measure:name'] = 'Course section activity completion';
+$string['coursesectionactivitycompletion:measure:description'] = 'The percentage of activities completed by a learner that reside in a grade book category.';
 $string['checklistcompletion:measure:name'] = 'Checklist';
 $string['checklistcompletion:measure:description'] = 'Indicate if checklist is incompleted or completed.';
 
 $string['gradecategoryactivitycompletion:measure:name'] = 'Grade category activity completion';
-$string['gradecategoryactivitycompletion:measure:description'] = 'The percentage of activities completed by a learner that reside in a grade book category.';
+$string['gradecategoryactivitycompletion:measure:description'] = 'The percentage of activities completed by a learner that reside in a course section.';
 
 $string['lastcourseaccess:measure:label'] = 'Last course access';
 $string['lastcourseaccess:measure:name'] = 'Last course access';
@@ -91,16 +94,19 @@ $string['defaultlabelassignmentresubmitcountconfigured'] = 'Resubmit total: {$a}
 $string['defaultlabelattendancesessionssummary'] = 'Sessions attended summary';
 $string['checklistname'] = 'Checklist name';
 $string['defaultlabelgradecategoryconfigured'] = 'Grade category completion: {$a}';
+$string['defaultlabelcoursesectionactivitycompletion'] = 'Course section activity completion';
 
 $string['parentgrouping'] = 'Parent grouping';
 $string['generalsettings'] = 'General settings';
 $string['specificsettings'] = 'Specific settings';
 
 $string['pleasechoose'] = 'Please choose an item from the list';
+$string['coursesection'] = 'Course section';
 
 $string['dotn'] = '...n';
 $string['noavailablemodules'] = 'No available {$a} modules. Either none in course or all are in use be this measure.';
 $string['nogradecategories'] = 'No available grade categories. Either none in course or all are in use be this measure.';
+$string['noavailablesections'] = 'No available course sections. Either none in course or all are in use be this measure.';
 $string['noitemsconfigured'] = 'No items configured';
 $string['noitemsconfigured:description'] = 'Use the grouping and measures controls to start configuring the learner progress report';
 
