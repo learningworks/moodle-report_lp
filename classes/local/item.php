@@ -36,6 +36,8 @@ abstract class item {
     /** @var null SHORT_NAME Can be used to override unique short name. */
     protected const SHORT_NAME = null;
 
+    private $course;
+
     /** @var item|null The parent item of this item. If no item will return null. */
     private $parentitem;
 
@@ -137,6 +139,23 @@ abstract class item {
             throw new coding_exception('Invalid short name in configuration');
         }
         $this->configuration = $configuration;
+    }
+
+    /**
+     * Get associated course ibject.
+     *
+     * @return \stdClass
+     * @throws \dml_exception
+     * @throws coding_exception
+     */
+    final public function get_course() {
+        if (is_null($this->course)) {
+            if (is_null($this->configuration)) {
+                throw new coding_exception('Configuration must loaded');
+            }
+            $this->course = get_course($this->configuration->get('courseid'));
+        }
+        return $this->course;
     }
 
     /**

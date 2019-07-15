@@ -19,6 +19,7 @@ namespace report_lp\local\measures;
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
+require_once($CFG->libdir . '/completionlib.php');
 
 use coding_exception;
 use completion_info;
@@ -37,30 +38,131 @@ class course_section_activity_completion extends measure implements has_own_conf
     /** @var string COMPONENT_NAME Used to for name of core subsystem or plugin. */
     public const COMPONENT_NAME = 'course';
 
-    public function format_user_measure_data($data, $format = FORMAT_PLAIN) : string {}
+    /** @var completion_info $coursecompletion Hold reference to completion info class. */
+    private $coursecompletion;
 
-    public function get_data_for_user(int $userid) {}
+    /**
+     * @var array $sectionactivities Modules in a course section with activity completion.
+     */
+    private $sectionactivities;
 
-    public function get_data_for_users(user_list $userlist) : array {}
+    /**
+     * @param $data
+     * @param string $format
+     * @return string
+     */
+    public function format_user_measure_data($data, $format = FORMAT_PLAIN) : string {
+        if (empty($data)) {
+            $label = ' - ';
+        } else {
+            $percentage = ($data->completed / $data->count) * 100;
+            $percentage = floor($percentage) . '%';;
+            $outof = "({$data->completed}/{$data->count})";
+            $label = "$percentage $outof";
+        }
+        $class = "measure";
+        if ($format == FORMAT_HTML) {
+            return html_writer::span($label, $class);
+        }
+        return $label;
+    }
 
+    /**
+     * @param int $userid
+     * @return mixed|object|stdClass|null
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     * @throws coding_exception
+     */
+    public function get_data_for_user(int $userid) {
+        $this->load_instance_data();
+        $sectionactivities = $this->sectionactivities;
+        $count = count($sectionactivities);
+        if (!$count) {
+            return null;
+        }
+        // Get the number of modules that have been completed.
+        $completed = 0;
+        foreach ($sectionactivities as $activity) {
+            $data = $this->coursecompletion->get_data($activity, true, $userid);
+            $completed += $data->completionstate == COMPLETION_INCOMPLETE ? 0 : 1;
+        }
+        $data = new stdClass();
+        $data->completed = $completed;
+        $data->count = $count;
+        return $data;
+    }
+
+    /**
+     * @param user_list $userlist
+     * @return array
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     * @throws coding_exception
+     */
+    public function get_data_for_users(user_list $userlist) : array {
+        $data = [];
+        foreach ($userlist as $user) {
+            $data[$user->id] = $this->get_data_for_user($user->id);
+        }
+        return $data;
+    }
+
+    /**
+     * Generate label.
+     *
+     * @param string $format
+     * @return string
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     * @throws coding_exception
+     */
     public function get_label($format = FORMAT_PLAIN) {
+        $defaultlabel = get_string(
+            'coursesectionactivitycompletion:measure:label',
+            'report_lp'
+        );
         $configuration = $this->get_configuration();
         if (is_null($configuration)) {
-            return get_string('defaultlabelcoursesectionactivitycompletion', 'report_lp');
+            return $defaultlabel;
         }
         $extraconfigurationdata = $configuration->get('extraconfigurationdata');
         if (empty($extraconfigurationdata)) {
-            return get_string('defaultlabelcoursesectionactivitycompletion', 'report_lp');
+            return $defaultlabel;
         }
-        return get_string('defaultlabelcoursesectionactivitycompletion', 'report_lp');
+        if ($configuration->get('usecustomlabel')) {
+            $name = $configuration->get('customlabel');
+        } else {
+            $course = get_course($configuration->get('courseid'));
+            $modinfo = get_fast_modinfo($course);
+            $sectionname = '';
+            foreach ($modinfo->get_section_info_all() as $section) {
+                if ($section->id == $extraconfigurationdata->id) {
+                    $sectionname = $section->name;
+                    break;
+                }
+            }
+            $name = get_string(
+                'coursesectionactivitycompletion:measure:label:configured',
+                'report_lp',
+                $sectionname
+            );
+        }
+        return format_text($name, $format);
     }
 
+    /**
+     * Options for form.
+     *
+     * @todo remove in use sections.
+     *
+     * @return array
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     * @throws coding_exception
+     */
     public function get_section_options() {
-        $configuration = $this->get_configuration();
-        if (is_null($configuration)) {
-            throw new coding_exception('Configuration must loaded');
-        }
-        $course = get_course($configuration->get('courseid'));
+        $course = $this->get_course();
         $modinfo = get_fast_modinfo($course);
         $options = [];
         foreach ($modinfo->get_section_info_all() as $section) {
@@ -89,6 +191,34 @@ class course_section_activity_completion extends measure implements has_own_conf
         return get_string('coursesectionactivitycompletion:measure:description', 'report_lp');
     }
 
+    /**
+     * Load completion info and modules from a course section. Attach to class properties as likely to
+     * be used multiple times over scope of call.
+     *
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     * @throws coding_exception
+     */
+    protected function load_instance_data() {
+        $course = $this->get_course();
+        if (is_null($this->coursecompletion)) {
+            $this->coursecompletion = new completion_info($course);
+        }
+        if (is_null($this->sectionactivities)) {
+            $modinfo = get_fast_modinfo($course);
+            $sectionactivities = [];
+            $extraconfigurationdata = $this->get_configuration()->get('extraconfigurationdata');
+            foreach ($modinfo->get_cms() as $cm) {
+                $correctsection = ($cm->section == $extraconfigurationdata->id);
+                $hascompletion = ($cm->completion != COMPLETION_TRACKING_NONE);
+                if ($correctsection && $hascompletion && !$cm->deletioninprogress) {
+                    $sectionactivities[$cm->id] = $cm;
+                }
+            }
+            $this->sectionactivities = $sectionactivities;
+        }
+    }
+
     public function moodlequickform_extend(MoodleQuickForm &$mform) {
         $sections = $this->get_section_options();
         if (empty($sections)) {
@@ -110,6 +240,10 @@ class course_section_activity_completion extends measure implements has_own_conf
         }
     }
 
+    /**
+     * @return array
+     * @throws coding_exception
+     */
     public function moodlequickform_get_extra_configuration_defaults() : array {
         $configuration = $this->get_configuration();
         $extraconfigurationdata = $configuration->get('extraconfigurationdata');
@@ -122,6 +256,11 @@ class course_section_activity_completion extends measure implements has_own_conf
         return $defaults;
     }
 
+    /**
+     * @param $data
+     * @return stdClass
+     * @throws coding_exception
+     */
     public function moodlequickform_get_extra_configuration_data($data) : stdClass {
         if (empty($data['coursesection'])) {
             throw new coding_exception('Something went horribly wrong');
@@ -131,6 +270,12 @@ class course_section_activity_completion extends measure implements has_own_conf
         return $object;
     }
 
+    /**
+     * @param $data
+     * @param $files
+     * @return array
+     * @throws coding_exception
+     */
     public function moodlequickform_validation($data, $files) : array {
         $errors = [];
         if ($data['coursesection'] == 0) {

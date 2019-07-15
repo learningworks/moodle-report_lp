@@ -56,20 +56,17 @@ $string['coursegrade:measure:label'] = 'Course grade (or final grade)';
 $string['coursegrade:measure:name'] = 'Course grade';
 $string['coursegrade:measure:description'] = 'The course grade calculated or based on aggregated grade items from the gradebook.';
 
-
-$string['coursesectionactivitycompletion:measure:label'] = 'Course section activity completion';
 $string['coursesectionactivitycompletion:measure:name'] = 'Course section activity completion';
-$string['coursesectionactivitycompletion:measure:description'] = 'The percentage of activities completed by a learner that reside in a grade book category.';
+$string['coursesectionactivitycompletion:measure:label'] = 'Course section activity completion';
+$string['coursesectionactivitycompletion:measure:label:configured'] = 'Course section activity completion: {$a}';
+$string['coursesectionactivitycompletion:measure:description'] = 'The percentage of activities completed by a learner that reside in a course section.';
 $string['checklistcompletion:measure:name'] = 'Checklist';
 $string['checklistcompletion:measure:description'] = 'Indicate if checklist is incompleted or completed.';
-
 $string['gradecategoryactivitycompletion:measure:name'] = 'Grade category activity completion';
-$string['gradecategoryactivitycompletion:measure:description'] = 'The percentage of activities completed by a learner that reside in a course section.';
-
+$string['gradecategoryactivitycompletion:measure:description'] = 'The percentage of activities completed by a learner that reside in a grade book category.';
 $string['lastcourseaccess:measure:label'] = 'Last course access';
 $string['lastcourseaccess:measure:name'] = 'Last course access';
 $string['lastcourseaccess:measure:description'] = 'The date and time the learner last accessed this course.';
-
 $string['grouping:measure:name'] = 'Grouping';
 $string['grouping:measure:description'] = 'Grouping allows a set of measures to be grouped together for display purposes.';
 
@@ -94,7 +91,6 @@ $string['defaultlabelassignmentresubmitcountconfigured'] = 'Resubmit total: {$a}
 $string['defaultlabelattendancesessionssummary'] = 'Sessions attended summary';
 $string['checklistname'] = 'Checklist name';
 $string['defaultlabelgradecategoryconfigured'] = 'Grade category completion: {$a}';
-$string['defaultlabelcoursesectionactivitycompletion'] = 'Course section activity completion';
 
 $string['parentgrouping'] = 'Parent grouping';
 $string['generalsettings'] = 'General settings';
