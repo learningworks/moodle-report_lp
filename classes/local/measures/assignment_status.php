@@ -165,16 +165,7 @@ class assignment_status extends measure implements has_own_configuration {
             $name = $assignment->get_course_module()->name;
         }
         if ($format == FORMAT_HTML) {
-            $label = new stdClass();
-            $label->name = format_text($name, $format);
-            if ($this->has_url()) {
-                $url = new stdClass();
-                $url->name = $name;
-                $url->title = $name;
-                $url->href = $this->get_url()->out(true);
-                $label->url = $url;
-            }
-            return $label;
+            return format_text($name, $format);
         }
         $defaultlabelconfigured = get_string(
             'defaultlabelassignmentstatusconfigured',

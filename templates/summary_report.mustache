@@ -41,7 +41,9 @@
             {{#primaryheader}}
                 <tr class="d-print-table-row">
                     {{#columns}}
-                        <th colspan="{{colspan}}" class="cell cell-primary-header d-print-table-cell" scope="col"><span>{{label}}</span></th>
+                        <th colspan="{{colspan}}" class="cell cell-primary-header d-print-table-cell" scope="col">
+                            {{>report_lp/summary_label}}
+                        </th>
                     {{/columns}}
                 </tr>
             {{/primaryheader}}
@@ -49,7 +51,7 @@
                 <tr class="d-print-table-row">
                     {{#columns}}
                         <td colspan="{{colspan}}" class="cell cell-secondary-header d-print-table-cell" scope="col">
-                            {{#icon}}{{>core/pix_icon}}{{/icon}}{{#label}}{{#url}}<a href="{{href}}" title="{{title}}">{{name}}</a>{{/url}}{{^url}}<span title="{{title}}">{{{name}}}</span>{{/url}}{{/label}}
+                            {{>report_lp/summary_label}}
                         </td>
                     {{/columns}}
                 </tr>

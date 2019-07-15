@@ -120,7 +120,8 @@ class summary_report implements renderable, templatable {
     public function primary_header_columns(renderer_base $output, array $items) {
         $columns = [];
         $th = new stdClass();
-        $th->label = get_string('learner', 'report_lp');
+        $label = new summary_label(get_string('learner', 'report_lp'));
+        $th->label = $label->export_for_template($output);
         $th->colspan = 2 + count($this->learnerextrafields);
         $columns[] = $th;
         foreach ($items as $item) {
@@ -132,8 +133,9 @@ class summary_report implements renderable, templatable {
             $th->label = '';
             $th->colspan = 1;
             if ($item instanceof grouping) {
-                $th->label = $item->get_label();
                 $th->colspan = $item->count();
+                $label = new summary_label($item->get_label());
+                $th->label = $label->export_for_template($output);
             }
             $columns[] = $th;
         }
@@ -147,7 +149,8 @@ class summary_report implements renderable, templatable {
         $columns[] = $th;
         foreach ($this->learnerextrafields as $learnerextrafield) {
             $th = new stdClass();
-            $th->label = get_string($learnerextrafield, 'report_lp');
+            $label = new summary_label(get_string($learnerextrafield, 'report_lp'));
+            $th->label = $label->export_for_template($output);
             $columns[] = $th;
         }
         foreach ($items as $item) {
@@ -160,20 +163,34 @@ class summary_report implements renderable, templatable {
                $children = $item->get_children();
                foreach ($children as $child) {
                    $th = new stdClass();
-                   $th->label = $child->get_label(FORMAT_HTML);
+                   $text = $child->get_label(FORMAT_HTML);
+                   $title = $text;
+                   $url = null;
+                   if ($child->has_url()) {
+                       $url = $child->get_url();
+                   }
+                   $icon = null;
                    if ($child->has_icon()) {
                        $icon = $child->get_icon();
-                       $th->icon = $icon->export_for_template($output);
                    }
+                   $label = new summary_label($text, $title, $url, $icon);
+                   $th->label = $label->export_for_template($output);
                    $columns[] = $th;
                }
             } else {
                 $th = new stdClass();
-                $th->label = $item->get_label(FORMAT_HTML);
+                $text = $item->get_label(FORMAT_HTML);
+                $title = $text;
+                $url = null;
+                if ($item->has_url()) {
+                    $url = $item->get_url();
+                }
+                $icon = null;
                 if ($item->has_icon()) {
                     $icon = $item->get_icon();
-                    $th->icon = $icon->export_for_template($output);
                 }
+                $label = new summary_label($text, $title, $url, $icon);
+                $th->label = $label->export_for_template($output);
                 $columns[] = $th;
             }
         }

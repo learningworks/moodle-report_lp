@@ -197,12 +197,6 @@ class checklist_complete extends measure implements has_own_configuration {
                 ['id' => $extraconfigurationdata->id]
             );
         }
-        if ($format == FORMAT_HTML) {
-            $label = new stdClass();
-            $label->name = format_text($name, $format);
-            $label->title = $name;
-            return $label;
-        }
         return format_text($name, $format);
     }
 

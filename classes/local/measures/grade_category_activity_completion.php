@@ -172,12 +172,6 @@ class grade_category_activity_completion extends measure implements has_own_conf
                 'report_lp',
                 $gradecategory->get_name());
         }
-        if ($format == FORMAT_HTML) {
-            $label = new stdClass();
-            $label->name = format_text($name, $format);
-            $label->title = $name;
-            return $label;
-        }
         return format_text($name, $format);
     }
 

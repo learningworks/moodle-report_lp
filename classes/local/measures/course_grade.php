@@ -112,12 +112,6 @@ class course_grade extends measure {
                 $name = $configuration->get('customlabel');
             }
         }
-        if ($format == FORMAT_HTML) {
-            $label = new stdClass();
-            $label->name = format_text($name, $format);
-            $label->title = $name;
-            return $label;
-        }
         return format_text($name, $format);
     }
 
