@@ -96,6 +96,7 @@ class item {
                 throw new coding_exception('Incorrect class for configuration');
             }
         }
+        $grouping->set_course($this->course);
         $grouping->set_configuration($configuration);
         return $grouping;
     }
@@ -130,6 +131,7 @@ class item {
             $configuration->set('classname', $measure::get_class_name());
             $configuration->set('shortname', $measure::get_short_name());
         }
+        $measure->set_course($this->course);
         $measure->set_configuration($configuration);
         return $measure;
     }
@@ -177,6 +179,7 @@ class item {
                 $item = $this->itemtypelist->find_measure_by_short_name($configuration->get('shortname'));
             }
         }
+        $item->set_course($this->course);
         $item->set_configuration($configuration);
         return $item;
     }
@@ -217,6 +220,7 @@ class item {
         foreach ($configurations as $configuration) {
             $classname = $configuration->get('classname');
             $item = new $classname;
+            $item->set_course($this->course);
             $item->set_configuration($configuration);
             if ($keyed) {
                 $items[$configuration->get('id')] = $item;

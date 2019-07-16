@@ -23,6 +23,7 @@ use moodle_url;
 use pix_icon;
 use report_lp\local\persistents\item_configuration;
 use ReflectionClass;
+use stdClass;
 
 /**
  * The base class that classes must extend.
@@ -36,6 +37,7 @@ abstract class item {
     /** @var null SHORT_NAME Can be used to override unique short name. */
     protected const SHORT_NAME = null;
 
+    /** @var stdClass $course The associated course object. */
     private $course;
 
     /** @var item|null The parent item of this item. If no item will return null. */
@@ -45,6 +47,24 @@ abstract class item {
      * @var item_configuration $configuration Holds configuration information associated with this item.
      */
     private $configuration;
+
+    /**
+     * item constructor.
+     *
+     * @param stdClass|null $course
+     * @param item_configuration|null $configuration
+     * @throws \ReflectionException
+     * @throws coding_exception
+     */
+    public function __construct(stdClass $course = null, item_configuration $configuration = null) {
+        if (!is_null($course)) {
+            $this->course = $course;
+        }
+        // Validate configuration.
+        if (!is_null($configuration)) {
+            $this->set_configuration($configuration);
+        }
+    }
 
     /**
      * Human readable name for item. For example, Grouping, Last course access.
@@ -58,6 +78,7 @@ abstract class item {
      *
      * @return string
      * @throws \ReflectionException
+     * @throws coding_exception
      */
     public static function get_short_name() : string {
         $item = new static();
@@ -99,7 +120,7 @@ abstract class item {
      * @return string
      * @throws \coding_exception
      */
-    public function get_default_label($format = FORMAT_PLAIN){
+    public function get_default_label($format = FORMAT_PLAIN) {
         return $this->get_label($format);
     }
 
@@ -129,7 +150,10 @@ abstract class item {
      * @throws coding_exception
      */
     final public function set_configuration(item_configuration $configuration) {
-        if ($configuration->get('courseid') <= 0) {
+        if (is_null($this->course)) {
+            throw new coding_exception('Course property must be set first');
+        }
+        if ($configuration->get('courseid') != $this->course->id) {
             throw new coding_exception('Invalid courseid in configuration');
         }
         if ($configuration->get('classname') != static::get_class_name()) {
@@ -142,26 +166,33 @@ abstract class item {
     }
 
     /**
-     * Get associated course ibject.
+     * Get associated course object.
      *
-     * @return \stdClass
-     * @throws \dml_exception
+     * @return mixed
      * @throws coding_exception
      */
-    final public function get_course() {
+    final public function get_course() : stdClass {
         if (is_null($this->course)) {
-            if (is_null($this->configuration)) {
-                throw new coding_exception('Configuration must loaded');
-            }
-            $this->course = get_course($this->configuration->get('courseid'));
+            throw new coding_exception('Course property not set');
         }
         return $this->course;
+    }
+
+    /**
+     * Set associated course object.
+     *
+     * @param stdClass $course
+     */
+    final public function set_course(stdClass $course) {
+        $this->course = $course;
     }
 
     /**
      * Relative class name.
      *
      * @return string
+     * @throws \ReflectionException
+     * @throws coding_exception
      */
     final public static function get_class_name() : string {
         return get_class(new static());
@@ -181,6 +212,11 @@ abstract class item {
         return $this->configuration->get('sortorder');
     }
 
+    /**
+     * @return bool|null
+     * @throws \ReflectionException
+     * @throws coding_exception
+     */
     public function is_root_item() {
         if (is_null($this->configuration)) {
             return null;
