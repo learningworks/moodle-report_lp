@@ -26,6 +26,7 @@ use report_lp\local\measure;
 use report_lp\local\persistents\item_configuration;
 use report_lp\local\user_list;
 use stdClass;
+use core_plugin_manager;
 
 /**
  * Sessions attended out of total sessions.
@@ -166,6 +167,20 @@ class attendance_sessions_summary extends measure implements has_own_configurati
      */
     public function has_icon() : bool {
         return true;
+    }
+
+    /**
+     * Is the attendance module available and enabled.
+     *
+     * @return bool|null
+     */
+    public function is_enabled() {
+        $pluginmanager = core_plugin_manager::instance();
+        $enabled = $pluginmanager->get_enabled_plugins(static::COMPONENT_TYPE);
+        if (!is_array($enabled)) {
+            return null;
+        }
+        return isset($enabled[static::COMPONENT_NAME]);
     }
 
     /**

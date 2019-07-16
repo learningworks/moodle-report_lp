@@ -233,6 +233,15 @@ class grade_category_activity_completion extends measure implements has_own_conf
     }
 
     /**
+     * Is core so enabled.
+     *
+     * @return bool|null
+     */
+    public function is_enabled() {
+        return true;
+    }
+
+    /**
      * @param MoodleQuickForm $mform
      * @return mixed|void
      * @throws coding_exception

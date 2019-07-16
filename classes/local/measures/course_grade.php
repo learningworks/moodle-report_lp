@@ -136,6 +136,15 @@ class course_grade extends measure {
     }
 
     /**
+     * Is core so enabled.
+     *
+     * @return bool|null
+     */
+    public function is_enabled() {
+        return true;
+    }
+
+    /**
      * @return \grade_item|grade_item
      * @throws coding_exception
      */

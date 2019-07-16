@@ -192,6 +192,15 @@ class course_section_activity_completion extends measure implements has_own_conf
     }
 
     /**
+     * Is core so enabled.
+     *
+     * @return bool|null
+     */
+    public function is_enabled() {
+        return true;
+    }
+
+    /**
      * Load completion info and modules from a course section. Attach to class properties as likely to
      * be used multiple times over scope of call.
      *

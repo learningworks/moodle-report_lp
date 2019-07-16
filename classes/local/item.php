@@ -37,6 +37,12 @@ abstract class item {
     /** @var null SHORT_NAME Can be used to override unique short name. */
     protected const SHORT_NAME = null;
 
+    /** @var string COMPONENT_TYPE Used to identify core or plugin type. */
+    public const COMPONENT_TYPE = null;
+
+    /** @var string COMPONENT_NAME Used to for name of core subsystem or plugin. */
+    public const COMPONENT_NAME = null;
+
     /** @var stdClass $course The associated course object. */
     private $course;
 
@@ -210,6 +216,20 @@ abstract class item {
             return null;
         }
         return $this->configuration->get('sortorder');
+    }
+
+    /**
+     * Items/Measures to override this method..
+     *
+     * Allow each item to determine if they are enabled. For modules the common
+     * practise is to use plugin manager to determine if enabled or not, however
+     * this method allows another level of control possibly disabling via a $CFG
+     * variable.
+     *
+     * @return bool|null
+     */
+    public function is_enabled() {
+        return false;
     }
 
     /**

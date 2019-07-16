@@ -35,6 +35,7 @@ use report_lp\local\measure;
 use report_lp\local\persistents\item_configuration;
 use report_lp\local\user_list;
 use stdClass;
+use core_plugin_manager;
 
 /**
  * Assignment resubmit count of a learner for an assignment instance.
@@ -53,7 +54,6 @@ class assignment_resubmit_count extends measure implements has_own_configuration
 
     /** @var assign $assignment Associated instance of assign based on configuration. */
     protected $assignment;
-
 
     /**
      * Format measure data for cell.
@@ -311,6 +311,20 @@ class assignment_resubmit_count extends measure implements has_own_configuration
      */
     public function has_url() : bool {
         return true;
+    }
+
+    /**
+     * Is the assignment module available and enabled.
+     *
+     * @return bool|null
+     */
+    public function is_enabled() {
+        $pluginmanager = core_plugin_manager::instance();
+        $enabled = $pluginmanager->get_enabled_plugins(static::COMPONENT_TYPE);
+        if (!is_array($enabled)) {
+            return null;
+        }
+        return isset($enabled[static::COMPONENT_NAME]);
     }
 
     /**

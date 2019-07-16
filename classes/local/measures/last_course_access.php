@@ -140,4 +140,13 @@ class last_course_access extends measure {
         return get_string('lastcourseaccess:measure:description', 'report_lp');
     }
 
+    /**
+     * Is core so enabled.
+     *
+     * @return bool|null
+     */
+    public function is_enabled() {
+        return true;
+    }
+
 }

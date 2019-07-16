@@ -120,6 +120,15 @@ class grouping extends item implements Countable, IteratorAggregate {
     }
 
     /**
+     * Always enabled.
+     *
+     * @return bool|null
+     */
+    public function is_enabled() {
+        return true;
+    }
+
+    /**
      * Count on items used by Countable interface.
      *
      * @return int

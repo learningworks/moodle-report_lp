@@ -65,11 +65,14 @@ class item_type_list implements Countable, IteratorAggregate {
      * @throws coding_exception
      */
     public function add_measures(array $measures) {
+        /** @var measure $measure */
         foreach ($measures as $measure) {
             if (!($measure instanceof measure)) {
                 throw new coding_exception('This is not a measure!');
             }
-            $this->add_measure($measure);
+            if ($measure->is_enabled()) {
+                $this->add_measure($measure);
+            }
         }
     }
 

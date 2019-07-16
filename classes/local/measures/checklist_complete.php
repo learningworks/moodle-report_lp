@@ -33,6 +33,7 @@ use stdClass;
 use checklist_class;
 use mod_checklist\local\checklist_item;
 use html_writer;
+use core_plugin_manager;
 
 /**
  * Checklist completion status.
@@ -297,6 +298,20 @@ class checklist_complete extends measure implements has_own_configuration {
      */
     public function has_icon() : bool {
         return true;
+    }
+
+    /**
+     * Is the checklist module available and enabled.
+     *
+     * @return bool|null
+     */
+    public function is_enabled() {
+        $pluginmanager = core_plugin_manager::instance();
+        $enabled = $pluginmanager->get_enabled_plugins(static::COMPONENT_TYPE);
+        if (!is_array($enabled)) {
+            return null;
+        }
+        return isset($enabled[static::COMPONENT_NAME]);
     }
 
     /**
