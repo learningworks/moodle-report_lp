@@ -139,3 +139,6 @@ $string['noselectedcoursegroups:description'] = 'Please use the course group fil
 
 $string['cachedef_summarydata'] = 'The summary measure data for learners in a course';
 
+$string['achieved'] = 'Achieved';
+$string['notachieved'] = 'Not achieved';
+
