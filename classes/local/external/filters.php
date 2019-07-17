@@ -36,7 +36,9 @@ use external_format_value;
 use external_single_structure;
 use external_multiple_structure;
 use invalid_parameter_exception;
+use report_lp\local\excluded_learner_list;
 use required_capability_exception;
+use stdClass;
 
 /**
  * Webservices for filter components.
@@ -117,7 +119,8 @@ class filters extends external_api {
     /**
      * @param int $courseid
      * @param int $userid
-     * @return |null
+     * @return stdClass
+     * @throws \dml_exception
      * @throws invalid_parameter_exception
      */
     public static function exclude_learner_add_learner(int $courseid, int $userid) {
@@ -127,11 +130,12 @@ class filters extends external_api {
             [
                 'courseid' => $courseid,
                 'userid'   => $userid
-
             ]
         );
+
         $courseid = $params['courseid'];
-        $userid = $params['$userid'];
+        $userid = $params['userid'];
+
         if (!isset($SESSION->report_lp_filters)) {
             $SESSION->report_lp_filters = [
                 $courseid => [
@@ -140,17 +144,38 @@ class filters extends external_api {
             ];
         }
         $SESSION->report_lp_filters[$courseid]['excludelearners'][$userid] = $userid;
-        return null;
+
+        $course = get_course($courseid);
+        $excludedlearners = new excluded_learner_list($course, true);
+        $response = [];
+        foreach ($excludedlearners as $excludedlearner) {
+            $data = new stdClass();
+            $data->userid = $excludedlearner->id;
+            $data->fullname = fullname($excludedlearner);
+            $response[] = $data;
+        }
+        return $response;
     }
 
     /**
-     * @return external_single_structure
+     * Return current list of excluded learners.
+     *
+     * @return external_multiple_structure
      */
     public static function exclude_learner_add_learner_returns() {
-        return new external_single_structure([]);
+        return new external_multiple_structure(
+            new external_single_structure(
+                [
+                    'userid' => new external_value(PARAM_INT, 'User ID'),
+                    'fullname' => new external_value(PARAM_TEXT, 'User full name')
+                ]
+            )
+        );
     }
 
     /**
+     * Accepts course id.
+     *
      * @return external_function_parameters
      */
     public static function exclude_learner_reset_parameters() {
@@ -162,8 +187,10 @@ class filters extends external_api {
     }
 
     /**
+     * Reset SESSION variable.
+     *
      * @param int $courseid
-     * @return |null
+     * @return array
      * @throws invalid_parameter_exception
      */
     public static function exclude_learner_reset(int $courseid) {
@@ -178,10 +205,12 @@ class filters extends external_api {
         if (isset($SESSION->report_lp_filters[$courseid]['excludelearners'])) {
             $SESSION->report_lp_filters[$courseid]['excludelearners'] = [];
         }
-        return null;
+        return [];
     }
 
     /**
+     * Returns empty array.
+     *
      * @return external_single_structure
      */
     public static function exclude_learner_reset_returns() {

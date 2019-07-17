@@ -43,8 +43,12 @@ use user_picture;
 
 class summary_report implements renderable, templatable {
 
+    /**
+     * @var renderer_base $rendererbase.
+     */
     private $rendererbase;
 
+    /** @var summary $summary. */
     protected $summary;
 
     protected $learnerextrafields = ['idnumber', 'coursegroups'];
@@ -54,7 +58,20 @@ class summary_report implements renderable, templatable {
     }
 
     public function export_for_template(renderer_base $output) {
+        $this->rendererbase = $output;
+
+        $course = $this->summary->get_course();
+        $excludedlist = $this->summary->get_excluded_list();
+        $excludedlearnernames = array_map(
+            function($learner) {
+                return fullname($learner);
+            },
+            iterator_to_array($excludedlist));
+
         $data = new stdClass();
+        $data->courseid = $course->id;
+        $data->hasexcludedlearners = ($excludedlist->count()) ? true : false;
+        $data->excludedlearnerlist = implode(', ', $excludedlearnernames);
 
         $learnerlist = $this->summary->get_learner_list();
         if (empty($learnerlist->get_filtered_course_groups())) {
@@ -76,7 +93,11 @@ class summary_report implements renderable, templatable {
         $learnerlist->fetch_all();
 
         $measures = $itemtree->get_measures();
+        $excludedlearnerids = $excludedlist->get_userids();
         foreach ($learnerlist as $learner) {
+            if (in_array($learner->id, $excludedlearnerids)) {
+                continue;
+            }
             $row = new stdClass();
             $row->learner = $this->data_row_user($output, $learner);
             $row->measures = $this->measure_data_for_user($learner, $measures);

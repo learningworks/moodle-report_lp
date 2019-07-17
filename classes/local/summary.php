@@ -66,6 +66,10 @@ class summary {
         return $this->learnerlist;
     }
 
+    public function get_excluded_list() : user_list {
+        return new excluded_learner_list($this->course, true);
+    }
+
     public function add_item_type_list(item_type_list $itemtypelist) {
         $this->itemtypelist = $itemtypelist;
         return $this;

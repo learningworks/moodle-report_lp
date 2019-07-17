@@ -29,27 +29,74 @@ define(
         Notification,
         Str,
         Log
-
     ) {
+
         var SELECTORS = {
-            LIST_CONTAINER: '[data-excluded]',
+            LIST_CONTAINER: '[data-container="learners"]',
+            EXCLUDED_LIST_CONTAINER: '[data-container="excluded"]',
+            EXCLUDED_LIST: '[data-list="excluded"]',
+            EXCLUDED_LIST_RESET: '[data-action="excluded-reset"]',
             ROW: '[data-row]',
-            DESCENDANTS: '[data-filter]',
-            ID_ATTRIBUTE_NAME: 'data-learner-id'
+            DESCENDANTS: '[data-filter="exclude-learner"]',
+            USER_ID: 'data-learner-id',
+            COURSE_ID: 'data-course-id'
         };
 
         var registerSelector = function(selector) {
+            var response = this;
             customEvents.define(selector, [customEvents.events.activate]);
             selector.on(
                 customEvents.events.activate,
                 SELECTORS.DESCENDANTS,
                 function(e, data) {
-                    var btn = $(e.target).closest(SELECTORS.DESCENDANTS);
-                    var userId = btn.attr(SELECTORS.ID_ATTRIBUTE_NAME);
-                    var datarow = btn.closest(SELECTORS.ROW);
-                    datarow.toggleClass('d-none');
+                    var row = $(e.target).closest(SELECTORS.ROW);
+                    var userId = row.attr(SELECTORS.USER_ID);
+                    var courseId = $(SELECTORS.LIST_CONTAINER).attr(SELECTORS.COURSE_ID);
+                    var request = {
+                        methodname: 'report_lp_filter_exclude_learner_add_learner',
+                        args: {
+                            courseid: courseId,
+                            userid: userId,
+                        }
+                    };
+                    var promise = Ajax.call([request])[0];
+                    promise.done(function(data){
+                        response.data = data;
+                        var fullnames = [];
+                        if (data !== undefined || data.length > 0) {
+                            fullnames = data.map(function(user){
+                                return user.fullname;
+                            });
+                        }
+                        $(SELECTORS.EXCLUDED_LIST).text(fullnames.join(", "));
+                        $(SELECTORS.EXCLUDED_LIST_CONTAINER).removeClass('d-none');
+                        row.addClass('d-none');
+                    });
+                    promise.fail(Notification.exception);
                     data.originalEvent.preventDefault();
             });
+            selector.on(
+                customEvents.events.activate,
+                SELECTORS.EXCLUDED_LIST_RESET,
+                function(e, data) {
+                    var excludedContainer = $(SELECTORS.EXCLUDED_LIST_CONTAINER);
+                    var courseId = excludedContainer.attr(SELECTORS.COURSE_ID);
+                    var request = {
+                        methodname: 'report_lp_filter_exclude_learner_reset',
+                        args: {
+                            courseid: courseId
+                        }
+                    };
+                    var promise = Ajax.call([request])[0];
+                    promise.done(function(data){
+                        response.data = data;
+                        document.location.reload();
+
+                    });
+                    promise.fail(Notification.exception);
+                    data.originalEvent.preventDefault();
+                }
+            );
         };
 
         /**

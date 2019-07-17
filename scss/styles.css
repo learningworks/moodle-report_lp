@@ -167,7 +167,6 @@ table.report-lp-summary-report td {
   display: inline-block;
   color: #333333;
   text-align: center;
-  vertical-align: middle;
   cursor: pointer;
   position: relative;
   user-select: none;
@@ -182,7 +181,10 @@ table.report-lp-summary-report td {
   outline: 0;
 }
 
-span.excluded-learners {
+.alert-excluded-learners {
   font-size: smaller;
   font-weight: bold;
+}
+.alert-excluded-learners .learner-list {
+  display: inline-block;
 }

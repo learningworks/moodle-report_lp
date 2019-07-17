@@ -101,7 +101,6 @@ $padding-x: .75rem;
     display: inline-block;
     color: $button-body-color;
     text-align: center;
-    vertical-align: middle;
     cursor: pointer;
     position: relative;
     user-select: none;
@@ -117,9 +116,13 @@ $padding-x: .75rem;
     }
 }
 
-span.excluded-learners{
+.alert-excluded-learners{
     //padding: $padding-y;
     font-size: smaller;
     font-weight: bold;
+    .learner-list {
+        display: inline-block;
+    }
+
 
 }

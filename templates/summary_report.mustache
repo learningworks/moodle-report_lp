@@ -35,56 +35,57 @@
     </div>
 {{/nofilteredcoursegroups}}
 {{^nofilteredcoursegroups}}
-    <div class="alert alert-secondary" role="alert" data-excluded="learners">
-        <a href="#" class="button" role="button"><i class="fa fa-trash" aria-hidden="true"></i></a>
-        <span class="excluded-learners">Clear learner exclusions Abhi Chandra, Alan Parker</span>
-    </div>
-    <div class="overflow-visible">
-        <table id="report-lp-summary-report-{{uniqid}}" class="report-lp-summary-report d-print-table" data-learners >
-            <thead class="">
-            {{#primaryheader}}
-                <tr class="d-print-table-row">
-                    {{#columns}}
-                        <th colspan="{{colspan}}" class="cell cell-primary-header d-print-table-cell" scope="col">
-                            {{>report_lp/summary_label}}
-                        </th>
-                    {{/columns}}
-                </tr>
-            {{/primaryheader}}
-            {{#secondaryheader}}
-                <tr class="d-print-table-row">
-                    {{#columns}}
-                        <td colspan="{{colspan}}" class="cell cell-secondary-header d-print-table-cell" scope="col">
-                            {{>report_lp/summary_label}}
-                        </td>
-                    {{/columns}}
-                </tr>
-            {{/secondaryheader}}
-            </thead>
-            <tbody>
-            {{#rows}}
-                {{#learner}}
-                <tr class="d-print-table-row" data-learner-id="{{id}}" data-row>
-                    <td class="cell cell-lg d-print-table-cell" scope="col">
-                        <img src="{{imageurl}}" alt="{{imagealt}}" class="userpicture defaultuserpic"/>
-                        {{fullname}}
-                        {{#status}}
-                            <span class="badge badge-pill badge-danger" title="Withdrawn">W</span>
-                        {{/status}}
-                    </td>
-                    <td class="cell d-print-table-cell" scope="col">
-                        <a href="#" class="button" role="button" data-learner-id="{{id}}" data-filter="exclude-learner"><i class="fa fa-user-times" aria-hidden="true"></i></a>
-                    </td>
-                    <td class="cell d-print-table-cell" scope="col"><span class="">{{idnumber}}</span></td>
-                    <td class="cell d-print-table-cell" scope="col">{{coursegroups}}</td>
-                    {{#measures}}
-                        <td class="cell d-print-table-cell" scope="col"><span class="">{{{value}}}</span></td>
-                    {{/measures}}
-                </tr>
-                {{/learner}}
-            {{/rows}}
-            </tbody>
-        </table>
+    <div id="report-lp-summary-report-{{uniqid}}" >
+        <div class="alert alert-secondary alert-excluded-learners {{^hasexcludedlearners}}d-none{{/hasexcludedlearners}}" role="alert" data-container="excluded" data-course-id="{{courseid}}">
+            <a href="#" class="button" role="button" data-action="excluded-reset"><i class="fa fa-trash" aria-hidden="true"></i></a>Clear exclusion filter: <div class="learner-list" data-list="excluded">{{{excludedlearnerlist}}}</div>
+        </div>
+        <div class="overflow-visible">
+            <table class="report-lp-summary-report d-print-table" data-container="learners" data-course-id="{{courseid}}">
+                <thead class="">
+                {{#primaryheader}}
+                    <tr class="d-print-table-row">
+                        {{#columns}}
+                            <th colspan="{{colspan}}" class="cell cell-primary-header d-print-table-cell" scope="col">
+                                {{>report_lp/summary_label}}
+                            </th>
+                        {{/columns}}
+                    </tr>
+                {{/primaryheader}}
+                {{#secondaryheader}}
+                    <tr class="d-print-table-row">
+                        {{#columns}}
+                            <td colspan="{{colspan}}" class="cell cell-secondary-header d-print-table-cell" scope="col">
+                                {{>report_lp/summary_label}}
+                            </td>
+                        {{/columns}}
+                    </tr>
+                {{/secondaryheader}}
+                </thead>
+                <tbody>
+                {{#rows}}
+                    {{#learner}}
+                        <tr class="d-print-table-row" data-row data-learner-id="{{id}}" data-learner-fullname="{{fullname}}">
+                            <td class="cell cell-lg d-print-table-cell" scope="col">
+                                <img src="{{imageurl}}" alt="{{imagealt}}" class="userpicture defaultuserpic"/>
+                                {{fullname}}
+                                {{#status}}
+                                    <span class="badge badge-pill badge-danger" title="Withdrawn">W</span>
+                                {{/status}}
+                            </td>
+                            <td class="cell d-print-table-cell" scope="col">
+                                <a href="#" class="button" role="button" data-learner-id="{{id}}" data-filter="exclude-learner"><i class="fa fa-user-times" aria-hidden="true"></i></a>
+                            </td>
+                            <td class="cell d-print-table-cell" scope="col"><span class="">{{idnumber}}</span></td>
+                            <td class="cell d-print-table-cell" scope="col">{{coursegroups}}</td>
+                            {{#measures}}
+                                <td class="cell d-print-table-cell" scope="col"><span class="">{{{value}}}</span></td>
+                            {{/measures}}
+                        </tr>
+                    {{/learner}}
+                {{/rows}}
+                </tbody>
+            </table>
+        </div>
     </div>
 {{/nofilteredcoursegroups}}
 {{#js}}
