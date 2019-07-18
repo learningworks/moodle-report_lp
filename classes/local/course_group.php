@@ -117,23 +117,23 @@ class course_group {
     /**
      * Get all available groups a user has access to in a course.
      *
-     * @todo change to static.
      *
      * @param stdClass|null $user
      * @return array
      * @throws \coding_exception
      */
-    public function get_available_groups(stdClass $user = null) : array {
+    public static function get_available_groups(stdClass $course, stdClass $user = null) : array {
         global $USER;
 
         if (is_null($user)) {
             $user = $USER;
         }
-        $accessallgroups = has_capability('moodle/site:accessallgroups', $this->context, $user);
-        if ($this->course->groupmode == VISIBLEGROUPS || $accessallgroups) {
-            $allowedgroups = groups_get_all_groups($this->course->id, 0);
+        $context = context_course::instance($course->id);
+        $accessallgroups = has_capability('moodle/site:accessallgroups', $context, $user);
+        if ($course->groupmode == VISIBLEGROUPS || $accessallgroups) {
+            $allowedgroups = groups_get_all_groups($course->id, 0);
         } else {
-            $allowedgroups = groups_get_all_groups($this->course->id, $user->id);
+            $allowedgroups = groups_get_all_groups($course->id, $user->id);
         }
         return $allowedgroups;
     }

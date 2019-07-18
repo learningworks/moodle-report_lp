@@ -57,8 +57,7 @@ class renderer extends plugin_renderer_base {
             }
         }
         $data->groups = [];
-        $coursegroup = new course_group($course);
-        $availablegroups = $coursegroup->get_available_groups();
+        $availablegroups = course_group::get_available_groups($course);
         foreach ($availablegroups as $availablegroup) {
             $group = new stdClass();
             $group->id = $availablegroup->id;
