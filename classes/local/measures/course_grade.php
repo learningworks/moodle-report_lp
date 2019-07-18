@@ -55,7 +55,7 @@ class course_grade extends measure {
     public function format_user_measure_data($data, $format = FORMAT_PLAIN) : string {
         $label = ' - ';
         $status = 'none';
-        if (!is_null($data->finalgrade)) {
+        if (isset($data->finalgrade) && !is_null($data->finalgrade)) {
             $passed = $this->coursegradeitem->get_grade($data->userid)->is_passed($this->coursegradeitem);
             if ($passed) {
                 $label = get_string('achieved', 'report_lp');
