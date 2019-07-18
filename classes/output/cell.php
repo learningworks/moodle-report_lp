@@ -32,39 +32,54 @@ use templatable;
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class summary_label implements renderable, templatable {
+class cell implements renderable, templatable {
 
-    protected $text;
-    protected $title;
-    protected $url;
-    protected $icon;
-
-    public function __construct($text, $title = '', moodle_url $url = null, pix_icon $icon = null) {
-        $this->text = $text;
-        $this->title = $title;
-        $this->url = $url;
-        $this->icon = $icon;
-    }
 
     /**
-     * @param renderer_base $output
-     * @return array|stdClass
+     * @var string Value to use for the id attribute of the cell.
      */
+    public $id;
+
+    /**
+     * @var string The contents of the cell.
+     */
+    public $contents;
+
+    /**
+     * @var int Number of columns this cell should span.
+     */
+    public $colspan;
+
+    /**
+     * @var int Number of rows this cell should span.
+     */
+    public $rowspan;
+
+    /**
+     * @var string Defines a way to associate header cells and data cells in a table.
+     */
+    public $scope;
+
+    /**
+     * @var bool Whether or not this cell is a header cell.
+     */
+    public $header;
+
+    /**
+     * @var string Value to use for the style attribute of the table cell
+     */
+    public $style;
+
+    /**
+     * @var array Attributes of additional HTML attributes for the <td> element
+     */
+    public $attributes = [];
+
+    public function __construct() {
+    }
+
     public function export_for_template(renderer_base $output) {
         $data = new stdClass();
-        $data->text = $this->text;
-        $data->title = $this->title;
-        if (!is_null($this->url)) {
-            $link = new stdClass();
-            $link->text = $data->text;
-            $link->alt = $data->title;
-            $link->src = $this->url->out();
-            $data->link = $link;
-
-        }
-        if (!is_null($this->icon)) {
-            $data->icon = $this->icon->export_for_template($output);
-        }
         return $data;
     }
 }
