@@ -188,3 +188,7 @@ table.report-lp-summary-report td {
 .alert-excluded-learners .learner-list {
   display: inline-block;
 }
+
+.report-lp-summary-report .icon {
+  margin-right: 0;
+}

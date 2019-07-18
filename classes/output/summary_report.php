@@ -184,7 +184,7 @@ class summary_report implements renderable, templatable {
                $children = $item->get_children();
                foreach ($children as $child) {
                    $th = new stdClass();
-                   $text = $child->get_label(FORMAT_HTML);
+                   $text = $child->get_label();
                    $title = $text;
                    $url = null;
                    if ($child->has_url()) {
@@ -200,7 +200,7 @@ class summary_report implements renderable, templatable {
                }
             } else {
                 $th = new stdClass();
-                $text = $item->get_label(FORMAT_HTML);
+                $text = $item->get_label();
                 $title = $text;
                 $url = null;
                 if ($item->has_url()) {
