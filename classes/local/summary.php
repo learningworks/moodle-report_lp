@@ -75,9 +75,29 @@ class summary {
         return $this;
     }
 
+    public function get_default_item_type_list() {
+        return new item_type_list(report_lp_get_supported_measures());
+    }
+
     public function add_learner_list(learner_list $learnerlist) {
         $this->learnerlist = $learnerlist;
         return $this;
+    }
+
+    public function build_data() {
+        if (is_null($this->itemtypelist)) {
+            $this->add_item_type_list($this->get_default_item_type_list());
+        }
+
+        if (is_null($this->learnerlist)) {
+            $this->add_learner_list(new learner_list($this->course));
+        }
+
+        $filteredcoursegroups = course_group::get_active_filter($this->course->id);
+        $this->learnerlist->add_course_groups_filter($filteredcoursegroups);
+
+
+
     }
 
 }
