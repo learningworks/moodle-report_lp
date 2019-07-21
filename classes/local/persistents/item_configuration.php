@@ -67,7 +67,7 @@ class item_configuration extends persistent {
             ],
             'path' => [
                 'type' => PARAM_TEXT,
-                'default' => '/'
+                'default' => ''
             ],
             'sortorder' => [
                 'type' => PARAM_INT,

@@ -35,7 +35,7 @@ use stdClass;
 abstract class item {
 
     /** @var null SHORT_NAME Can be used to override unique short name. */
-    protected const SHORT_NAME = null;
+    public const SHORT_NAME = null;
 
     /** @var string COMPONENT_TYPE Used to identify core or plugin type. */
     public const COMPONENT_TYPE = null;
@@ -47,7 +47,7 @@ abstract class item {
     private $course;
 
     /** @var item|null The parent item of this item. If no item will return null. */
-    private $parentitem;
+    private $parent;
 
     /**
      * @var item_configuration $configuration Holds configuration information associated with this item.
@@ -169,6 +169,10 @@ abstract class item {
             throw new coding_exception('Invalid short name in configuration');
         }
         $this->configuration = $configuration;
+    }
+
+    final public function set_parent(item $parent = null) {
+        $this->parent = $parent;
     }
 
     /**
