@@ -98,21 +98,15 @@ class course_grade extends measure {
     }
 
     /**
-     * Nothing fancy here just a language string.
+     * Default label for course grade.
      *
-     * @param string $format
      * @return string
      * @throws coding_exception
      */
-    public function get_label($format = FORMAT_PLAIN) {
-        $name = get_string('coursegrade:measure:label', 'report_lp');
-        $configuration = $this->get_configuration();
-        if (!is_null($configuration)) {
-            if ($configuration->get('usecustomlabel')) {
-                $name = $configuration->get('customlabel');
-            }
-        }
-        return format_text($name, $format);
+    public function get_default_label(): string {
+        return format_text(
+            get_string('coursegrade:measure:label', 'report_lp'), FORMAT_PLAIN
+        );
     }
 
     /**
