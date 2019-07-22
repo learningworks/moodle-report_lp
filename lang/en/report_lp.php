@@ -74,8 +74,10 @@ $string['gradecategoryactivitycompletion:measure:description'] = 'The percentage
 $string['lastcourseaccess:measure:label'] = 'Last course access';
 $string['lastcourseaccess:measure:name'] = 'Last course access';
 $string['lastcourseaccess:measure:description'] = 'The date and time the learner last accessed this course.';
-$string['grouping:measure:name'] = 'Grouping';
-$string['grouping:measure:description'] = 'Grouping allows a set of measures to be grouped together for display purposes.';
+$string['grouping::name'] = 'Grouping';
+$string['grouping::description'] = 'Grouping allows a set of measures to be grouped together for display purposes.';
+$string['learner::name'] = 'Learner';
+$string['learner::description'] = 'Standard learner information such as profile picture and fullname.';
 
 $string['grouping'] = 'Grouping';
 $string['measures'] = 'Measures';

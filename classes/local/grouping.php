@@ -71,7 +71,7 @@ class grouping extends item implements Countable, IteratorAggregate {
      * @throws coding_exception
      */
     public function get_name(): string {
-        return get_string('grouping:measure:name', 'report_lp');
+        return get_string('grouping:name', 'report_lp');
     }
 
     /**
@@ -81,7 +81,7 @@ class grouping extends item implements Countable, IteratorAggregate {
      * @throws coding_exception
      */
     public function get_description(): string {
-        return get_string('grouping:measure:description', 'report_lp');
+        return get_string('grouping:description', 'report_lp');
     }
 
     /**
