@@ -145,34 +145,26 @@ class grade_category_activity_completion extends measure implements has_own_conf
     }
 
     /**
-     * Build label for
+     * Default label for grade category activity completion.
      *
-     * @param string $format
      * @return string
      * @throws coding_exception
      */
-    public function get_label($format = FORMAT_PLAIN) {
-
+    public function get_default_label(): string {
         $configuration = $this->get_configuration();
         if (is_null($configuration)) {
-            return get_string('categoryname', static::COMPONENT_NAME);
+            return format_text(get_string('categoryname', 'grades'), FORMAT_PLAIN);
         }
         $extraconfigurationdata = $configuration->get('extraconfigurationdata');
-        if (empty($extraconfigurationdata)) {
-            return get_string('categoryname', static::COMPONENT_NAME);
-        }
-        if ($configuration->get('usecustomlabel')) {
-            $name = $configuration->get('customlabel');
-        } else {
-            $gradecategory = grade_category::fetch(
-                ['id' => $extraconfigurationdata->id]
-            );
-            $name = get_string(
-                'defaultlabelgradecategoryconfigured',
-                'report_lp',
-                $gradecategory->get_name());
-        }
-        return format_text($name, $format);
+        $gradecategory = grade_category::fetch(
+            ['id' => $extraconfigurationdata->id]
+        );
+        $label = get_string(
+            'defaultlabelgradecategoryconfigured',
+            'report_lp',
+            $gradecategory->get_name()
+        );
+        return format_text($label, FORMAT_PLAIN);
     }
 
     /**
