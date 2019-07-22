@@ -173,7 +173,7 @@ class item extends moodleform {
      */
     protected function get_grouping_options() {
         $options = [];
-        $itemfactory = new item_factory($this->course, new item_type_list(report_lp_get_supported_measures()));
+        $itemfactory = new item_factory($this->course, new item_type_list());
         foreach ($itemfactory->get_groupings() as $grouping) {
             $configuration = $grouping->get_configuration();
             $options[$configuration->get('id')] = $grouping->get_label();

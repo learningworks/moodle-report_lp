@@ -62,24 +62,6 @@ function report_lp_extend_navigation_course($navigation, $course, $context) {
     }
 }
 
-/**
- * The main source of truth for supported measures. This as where new measures must be
- * added if order for them to be used by the plugin.
- *
- * @return array
- */
-function report_lp_get_supported_measures() {
-    return [
-        new report_lp\local\measures\assignment_resubmit_count(),
-        new report_lp\local\measures\assignment_status(),
-        new report_lp\local\measures\attendance_sessions_summary(),
-        new report_lp\local\measures\checklist_complete(),
-        new report_lp\local\measures\course_grade(),
-        new report_lp\local\measures\course_section_activity_completion(),
-        new report_lp\local\measures\grade_category_activity_completion(),
-        new report_lp\local\measures\last_course_access()
-    ];
-}
 
 /**
  * Polyfill array_key_first() PHP 7 >= 7.3 method.

@@ -34,7 +34,7 @@ if ($id) {
 }
 $course = get_course($courseid);
 $systemcontext = context_system::instance();
-$itemtypelist = new report_lp\local\item_type_list(report_lp_get_supported_measures());
+$itemtypelist = new report_lp\local\item_type_list();
 $itemfactory = new report_lp\local\factories\item($course, $itemtypelist);
 if (isset($itemconfiguration)) {
     $item = $itemfactory->get_item($itemconfiguration);

@@ -76,7 +76,7 @@ class summary {
     }
 
     public function get_default_item_type_list() {
-        return new item_type_list(report_lp_get_supported_measures());
+        return new item_type_list();
     }
 
     public function add_learner_list(learner_list $learnerlist) {

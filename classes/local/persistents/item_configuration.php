@@ -260,7 +260,7 @@ class item_configuration extends persistent {
         }
         $courseid = $source->get('courseid');
         $course = get_course($courseid);
-        $itemtypelist = new item_type_list(report_lp_get_supported_measures());
+        $itemtypelist = new item_type_list();
         $tree = new item_tree($course, $itemtypelist);
         $items = $tree->get_flattened_configurations();
         if (!isset($items[$position])) {

@@ -32,7 +32,7 @@ $css = new moodle_url('/report/lp/scss/styles.css');
 $PAGE->requires->css($css);
 
 $summary = new report_lp\local\summary($course);
-$itemtypelist = new report_lp\local\item_type_list(report_lp_get_supported_measures());
+$itemtypelist = new report_lp\local\item_type_list();
 $summary->add_item_type_list($itemtypelist);
 $learnerlist = new report_lp\local\learner_list($course);
 $filteredcoursegroups = report_lp\local\course_group::get_active_filter($course->id);
