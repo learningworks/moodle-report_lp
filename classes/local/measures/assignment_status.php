@@ -143,36 +143,25 @@ class assignment_status extends measure implements has_own_configuration {
     }
 
     /**
-     * Build label. If has configuration use assignment name check for custom label.
+     * Default label for assignment status.
      *
-     * @param string $format
      * @return string
      * @throws \dml_exception
      * @throws coding_exception
      */
-    public function get_label($format = FORMAT_PLAIN){
+    public function get_default_label(): string {
         $configuration = $this->get_configuration();
         if (is_null($configuration)) {
-            return get_string('defaultlabelassignmentstatus', 'report_lp');
-        }
-        $extraconfigurationdata = $configuration->get('extraconfigurationdata');
-        if (empty($extraconfigurationdata)) {
-            return get_string('defaultlabelassignmentstatus', 'report_lp');
+            return get_string('assignmentstatus:measure:defaultlabel', 'report_lp');
         }
         $assignment = $this->get_assignment();
-        if ($configuration->get('usecustomlabel')) {
-            $name = $configuration->get('customlabel');
-        } else {
-            $name = $assignment->get_course_module()->name;
-        }
-        if ($format == FORMAT_HTML) {
-            return format_text($name, $format);
-        }
-        $defaultlabelconfigured = get_string(
-            'defaultlabelassignmentstatusconfigured',
+        $assignmentname = $assignment->get_course_module()->name;
+        $labelconfigured = get_string(
+            'assignmentstatus:measure:configuredlabel',
             'report_lp',
-            $name);
-        return format_text($defaultlabelconfigured, $format);
+            $assignmentname
+        );
+        return format_text($labelconfigured, FORMAT_PLAIN);
     }
 
     /**

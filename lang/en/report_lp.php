@@ -50,6 +50,8 @@ $string['assignmentresubmitcount:measure:configuredlabel'] = 'Resubmit total: {$
 
 $string['assignmentstatus:measure:name'] = 'Assignment status';
 $string['assignmentstatus:measure:description'] = 'Uses grade display type for submitted assignments for example "Achieved" or "Not achieved". Indicates not submitted type states such as "Draft", "No submission", and "Reopened".';
+$string['assignmentstatus:measure:defaultlabel'] = 'Status: Assignment name';
+$string['assignmentstatus:measure:configuredlabel'] = 'Status: {$a}';
 
 $string['attendancename'] = 'Attendance name';
 $string['attendancesessionssummary:measure:name'] = 'Attendance';
@@ -86,8 +88,7 @@ $string['visibletolearner'] = 'Display to learner';
 $string['configure'] = 'Configure {$a}';
 
 $string['defaultlabelgrouping'] = 'Grouping {$a}';
-$string['defaultlabelassignmentstatus'] = 'Assignment name';
-$string['defaultlabelassignmentstatusconfigured'] = 'Status: {$a}';
+
 
 $string['defaultlabelattendancesessionssummary'] = 'Sessions attended summary';
 $string['checklistname'] = 'Checklist name';
