@@ -54,4 +54,22 @@ class report_configuration extends persistent {
         ];
     }
 
+    /**
+     * Get full course object.
+     *
+     * @param int $strictness
+     * @return mixed
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function get_course($strictness = IGNORE_MISSING) {
+        global $DB;
+        return $DB->get_record(
+            'course',
+            ['id' => $this->raw_get('courseid')],
+            '*',
+            $strictness
+        );
+    }
+
 }
