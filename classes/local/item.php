@@ -49,9 +49,7 @@ abstract class item {
     /** @var item|null The parent item of this item. If no item will return null. */
     private $parent;
 
-    /**
-     * @var item_configuration $configuration Holds configuration information associated with this item.
-     */
+    /** @var item_configuration $configuration The associated persistent class. */
     private $configuration;
 
     /**
@@ -96,13 +94,11 @@ abstract class item {
     }
 
     /**
-     * The default text for heading or column heading for this item. This will likely be
-     * dependent on information stored in $configuration.
+     * The default text for heading or column heading for this item.
      *
-     * @param string $format
      * @return string
      */
-    abstract public function get_label($format = FORMAT_PLAIN);
+    abstract public function get_default_label() : string;
 
     /**
      * Get human friendly description of what this item does.
@@ -121,14 +117,23 @@ abstract class item {
     }
 
     /**
-     * Gets custom label if used or will get concretes default.
+     * Gets custom label if set else fall back to default label. To be called
+     * by reports not report configuration.
      *
      * @return string
-     * @throws \coding_exception
+     * @throws coding_exception
      */
-    public function get_default_label($format = FORMAT_PLAIN) {
-        return $this->get_label($format);
-    }
+    final public function get_label() : string {
+         $configuration = $this->get_configuration();
+         if (is_null($configuration)) {
+            throw new coding_exception("Configuration not loaded");
+         }
+         if ($configuration->get('usecustomlabel')) {
+             $label = $configuration->get('customlabel');
+             return format_text($label, FORMAT_PLAIN);
+         }
+         return $this->get_default_label();
+     }
 
     /**
      * Child class to overide if supports feature. Only call if has_url().
