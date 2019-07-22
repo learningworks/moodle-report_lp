@@ -68,7 +68,6 @@ class item {
             $rootconfiguration->set('courseid', $this->course->id);
             $rootconfiguration->set('classname', grouping::get_class_name());
             $rootconfiguration->set('shortname', grouping::get_short_name());
-            $rootconfiguration->set('isgrouping', 1);
             $rootconfiguration->set('usecustomlabel', 1);
             $rootconfiguration->set('customlabel', format_text($this->course->fullname, FORMAT_PLAIN));
             $rootconfiguration->save();
@@ -90,7 +89,6 @@ class item {
             $configuration->set('courseid', $this->course->id);
             $configuration->set('classname', $grouping::get_class_name());
             $configuration->set('shortname', $grouping::get_short_name());
-            $configuration->set('isgrouping', 1);
         } else {
             if ($grouping::get_short_name() != $configuration->get('shortname')) {
                 throw new coding_exception('Incorrect class for configuration');
@@ -165,7 +163,6 @@ class item {
                 $item = new grouping();
                 $configuration->set('classname', $item::get_class_name());
                 $configuration->set('shortname', $item::get_short_name());
-                $configuration->set('isgrouping', 1);
             } else {
                 $item = $this->itemtypelist->find_measure_by_short_name($shortname);
                 $configuration->set('classname', $item::get_class_name());

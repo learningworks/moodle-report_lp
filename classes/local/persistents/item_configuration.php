@@ -73,7 +73,7 @@ class item_configuration extends persistent {
                 'type' => PARAM_INT,
                 'default' => 0
             ],
-            'isgrouping' => [
+            'islocked' => [
                 'type' => PARAM_INT,
                 'default' => 0
             ],

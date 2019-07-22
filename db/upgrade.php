@@ -67,8 +67,38 @@ function xmldb_report_lp_upgrade($oldversion) {
 
         // Lp savepoint reached.
         upgrade_plugin_savepoint(true, 2019060700, 'report', 'lp');
+    }
 
+    // Ammendments to items table.
+    if ($oldversion < 2019072200) {
 
+        // Changing the default of field depth on table report_lp_items to 0.
+        $table = new xmldb_table('report_lp_items');
+        $field = new xmldb_field('depth', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
+
+        // Launch change of default for field depth.
+        $dbmanager->change_field_default($table, $field);
+
+        // Define field islocked to be added to report_lp_items.
+        $table = new xmldb_table('report_lp_items');
+        $field = new xmldb_field('islocked', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'sortorder');
+
+        // Conditionally launch add field islocked.
+        if (!$dbmanager->field_exists($table, $field)) {
+            $dbmanager->add_field($table, $field);
+        }
+
+        // Define field isgrouping to be dropped from report_lp_items.
+        $table = new xmldb_table('report_lp_items');
+        $field = new xmldb_field('isgrouping');
+
+        // Conditionally launch drop field isgrouping.
+        if ($dbmanager->field_exists($table, $field)) {
+            $dbmanager->drop_field($table, $field);
+        }
+
+        // Lp savepoint reached.
+        upgrade_plugin_savepoint(true, 2019072200, 'report', 'lp');
     }
 
     return true;
