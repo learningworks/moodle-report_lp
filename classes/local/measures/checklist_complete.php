@@ -172,33 +172,22 @@ class checklist_complete extends measure implements has_own_configuration {
     }
 
     /**
-     * Build label. If has configuration use checklist name or custom label.
+     * Default label for checklist complete.
      *
-     * @param string $format
      * @return string
      * @throws \dml_exception
      * @throws coding_exception
      */
-    public function get_label($format = FORMAT_PLAIN) {
-        global $DB;
+    public function get_default_label(): string {
         $configuration = $this->get_configuration();
         if (is_null($configuration)) {
-            return get_string('checklistname', 'report_lp');
-        }
-        $extraconfigurationdata = $configuration->get('extraconfigurationdata');
-        if (empty($extraconfigurationdata)) {
-            return get_string('checklistname', 'report_lp');
-        }
-        if ($configuration->get('usecustomlabel')) {
-            $name = $configuration->get('customlabel');
-        } else {
-            $name = $DB->get_field(
-                static::COMPONENT_NAME,
-                'name',
-                ['id' => $extraconfigurationdata->id]
+            return format_string(
+                get_string('checklistcomplete:measure:defaultlabel', 'report_lp'),
+                FORMAT_PLAIN
             );
         }
-        return format_text($name, $format);
+        $this->load_checklist();
+        return format_text($this->checklist->name, FORMAT_PLAIN);
     }
 
     /**

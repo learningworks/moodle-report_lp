@@ -64,8 +64,11 @@ $string['coursesectionactivitycompletion:measure:name'] = 'Course section activi
 $string['coursesectionactivitycompletion:measure:label'] = 'Course section activity completion';
 $string['coursesectionactivitycompletion:measure:label:configured'] = 'Course section activity completion: {$a}';
 $string['coursesectionactivitycompletion:measure:description'] = 'The percentage of activities completed by a learner that reside in a course section.';
-$string['checklistcompletion:measure:name'] = 'Checklist';
-$string['checklistcompletion:measure:description'] = 'Indicate if checklist is incompleted or completed.';
+
+$string['checklistcomplete:measure:name'] = 'Checklist';
+$string['checklistcomplete:measure:description'] = 'Indicate if checklist is incompleted or completed.';
+$string['checklistcomplete:measure:defaultlabel'] = 'Checklist name';
+
 $string['gradecategoryactivitycompletion:measure:name'] = 'Grade category activity completion';
 $string['gradecategoryactivitycompletion:measure:description'] = 'The percentage of activities completed by a learner that reside in a grade book category.';
 $string['lastcourseaccess:measure:label'] = 'Last course access';
@@ -91,7 +94,7 @@ $string['defaultlabelgrouping'] = 'Grouping {$a}';
 
 
 $string['defaultlabelattendancesessionssummary'] = 'Sessions attended summary';
-$string['checklistname'] = 'Checklist name';
+
 $string['defaultlabelgradecategoryconfigured'] = 'Grade category completion: {$a}';
 
 $string['parentgrouping'] = 'Parent grouping';
