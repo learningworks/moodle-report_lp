@@ -61,8 +61,8 @@ $string['coursegrade:measure:name'] = 'Course grade';
 $string['coursegrade:measure:description'] = 'The course grade calculated or based on aggregated grade items from the gradebook.';
 
 $string['coursesectionactivitycompletion:measure:name'] = 'Course section activity completion';
-$string['coursesectionactivitycompletion:measure:label'] = 'Course section activity completion';
-$string['coursesectionactivitycompletion:measure:label:configured'] = 'Course section activity completion: {$a}';
+$string['coursesectionactivitycompletion:measure:defaultlabel'] = 'Course section activity completion';
+$string['coursesectionactivitycompletion:measure:configuredlabel'] = 'Course section activity completion: {$a}';
 $string['coursesectionactivitycompletion:measure:description'] = 'The percentage of activities completed by a learner that reside in a course section.';
 
 $string['checklistcomplete:measure:name'] = 'Checklist';

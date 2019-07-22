@@ -109,46 +109,38 @@ class course_section_activity_completion extends measure implements has_own_conf
     }
 
     /**
-     * Generate label.
+     * Default label for course section activity completion.
      *
-     * @param string $format
      * @return string
      * @throws \dml_exception
      * @throws \moodle_exception
      * @throws coding_exception
      */
-    public function get_label($format = FORMAT_PLAIN) {
-        $defaultlabel = get_string(
-            'coursesectionactivitycompletion:measure:label',
-            'report_lp'
-        );
+    public function get_default_label(): string {
         $configuration = $this->get_configuration();
         if (is_null($configuration)) {
-            return $defaultlabel;
-        }
-        $extraconfigurationdata = $configuration->get('extraconfigurationdata');
-        if (empty($extraconfigurationdata)) {
-            return $defaultlabel;
-        }
-        if ($configuration->get('usecustomlabel')) {
-            $name = $configuration->get('customlabel');
-        } else {
-            $course = get_course($configuration->get('courseid'));
-            $modinfo = get_fast_modinfo($course);
-            $sectionname = '';
-            foreach ($modinfo->get_section_info_all() as $section) {
-                if ($section->id == $extraconfigurationdata->id) {
-                    $sectionname = $section->name;
-                    break;
-                }
-            }
-            $name = get_string(
-                'coursesectionactivitycompletion:measure:label:configured',
-                'report_lp',
-                $sectionname
+            return format_text(
+                get_string('coursesectionactivitycompletion:measure:defaultlabel', 'report_lp'),
+                FORMAT_PLAIN
             );
         }
-        return format_text($name, $format);
+        $course = get_course($configuration->get('courseid'));
+        $modinfo = get_fast_modinfo($course);
+        $sectionname = '';
+        $extraconfigurationdata = $configuration->get('extraconfigurationdata');
+        foreach ($modinfo->get_section_info_all() as $section) {
+            if ($section->id == $extraconfigurationdata->id) {
+                $sectionname = $section->name;
+                break;
+            }
+        }
+        return format_text(
+            get_string(
+            'coursesectionactivitycompletion:measure:label:configuredlabel',
+            'report_lp',
+            $sectionname),  FORMAT_PLAIN
+
+        );
     }
 
     /**
