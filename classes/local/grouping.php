@@ -43,13 +43,12 @@ class grouping extends item implements Countable, IteratorAggregate {
     private $children = [];
 
     /**
-     * Build grouping label.
+     * Default label for grouping.
      *
-     * @param string $format
      * @return string
      * @throws coding_exception
      */
-    public function get_label($format = FORMAT_PLAIN) {
+    public function get_default_label(): string {
         $configuration = $this->get_configuration();
         if (is_null($configuration)) {
             $id = 0;
@@ -61,12 +60,8 @@ class grouping extends item implements Countable, IteratorAggregate {
         } else {
             $number = get_string('dotn', 'report_lp');
         }
-        if ($configuration->get('usecustomlabel')) {
-            $name = $configuration->get('customlabel');
-        } else {
-            $name = get_string('defaultlabelgrouping', 'report_lp', $number);
-        }
-        return format_text($name, $format);
+        $label = get_string('defaultlabelgrouping', 'report_lp', $number);
+        return format_text($label, FORMAT_PLAIN);
     }
 
     /**
