@@ -197,7 +197,7 @@ class checklist_complete extends measure implements has_own_configuration {
      * @throws coding_exception
      */
     public function get_name(): string {
-        return get_string('checklistcompletion:measure:name', 'report_lp');
+        return get_string('checklistcomplete:measure:name', 'report_lp');
     }
 
     /**
@@ -207,7 +207,7 @@ class checklist_complete extends measure implements has_own_configuration {
      * @throws coding_exception
      */
     public function get_description(): string {
-        return get_string('checklistcompletion:measure:description', 'report_lp');
+        return get_string('checklistcomplete:measure:description', 'report_lp');
     }
 
     /**

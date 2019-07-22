@@ -136,7 +136,7 @@ class course_section_activity_completion extends measure implements has_own_conf
         }
         return format_text(
             get_string(
-            'coursesectionactivitycompletion:measure:label:configuredlabel',
+            'coursesectionactivitycompletion:measure:configuredlabel',
             'report_lp',
             $sectionname),  FORMAT_PLAIN
 
