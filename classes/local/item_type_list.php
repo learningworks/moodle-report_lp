@@ -25,7 +25,7 @@ use Traversable;
 use coding_exception;
 
 /**
- * List of types includes grouping type default. Valid measures are loaded in.
+ * List of types. Built in types are loaded via get_default_types().
  *
  * @package
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
@@ -33,85 +33,28 @@ use coding_exception;
  */
 class item_type_list implements Countable, IteratorAggregate {
 
-    /**
-     * @var array $measures Hold measures indexed on thier class names.
-     */
-    private $itemtypes = [];
-
-    /**
-     * @var array $measurenamekeys Measure referenced by human readable name.
-     */
-    private $measurenamekeys = [];
+    /** @var array $registereditemtypes Items indexed on class shortname. */
+    private $registereditemtypes = [];
 
     /**
      * item_type_list constructor.
      *
-     * @param array|null $measures
+     * @param array $itemtypes
      * @throws \ReflectionException
      * @throws coding_exception
      */
-    public function __construct(array $measures = null) {
-        $this->itemtypes[grouping::get_short_name()] = new grouping();
-        if (is_array($measures)) {
-            $this->add_measures($measures);
-        }
+    public function __construct(array $itemtypes = []) {
+        $this->register_types(static::get_default_types());
+        $this->register_types($itemtypes);
     }
 
     /**
-     * Add array of measures.
-     *
-     * @param array $measures
-     * @throws \ReflectionException
-     * @throws coding_exception
-     */
-    public function add_measures(array $measures) {
-        /** @var measure $measure */
-        foreach ($measures as $measure) {
-            if (!($measure instanceof measure)) {
-                throw new coding_exception('This is not a measure!');
-            }
-            if ($measure->is_enabled()) {
-                $this->add_measure($measure);
-            }
-        }
-    }
-
-    /**
-     * Add measure to list check type
-     *
-     * @param measure $measure
-     * @return $this
-     * @throws \ReflectionException
-     */
-    public function add_measure(measure $measure) {
-        $this->itemtypes[$measure::get_short_name()] = $measure;
-        $this->measurenamekeys[$measure->get_name()] = $measure::get_short_name();
-        return $this;
-    }
-
-    /**
-     * Count of available item types
+     * Count of registered item types.
      *
      * @return int
      */
     public function count() : int {
-        return count($this->itemtypes);
-    }
-
-    /**
-     * Search for measure based in human readable name.
-     *
-     * @param string $name
-     * @return measure
-     * @throws coding_exception
-     */
-    public function find_measure_by_name(string $name) : measure {
-        if (!isset($this->measurenamekeys[$name])) {
-            throw new coding_exception("Measure with {$name} does not exist");
-        }
-        $shortname = $this->measurenamekeys[$name];
-        return $this->find_by_short_name($shortname);
-
+        return count($this->registereditemtypes );
     }
 
     /**
@@ -125,7 +68,7 @@ class item_type_list implements Countable, IteratorAggregate {
         if (!$this->item_type_exists($shortname)) {
             throw new coding_exception("Item with {$shortname} does not exist");
         }
-        return $this->itemtypes[$shortname];
+        return $this->registereditemtypes[$shortname];
     }
 
     /**
@@ -144,16 +87,64 @@ class item_type_list implements Countable, IteratorAggregate {
     }
 
     /**
-     * Check if item type exists.
+     * Build in item types.
      *
-     * @param string $shortname
-     * @return bool
+     * @return array
+     * @throws \ReflectionException
+     * @throws coding_exception
      */
-    public function item_type_exists(string $shortname) : bool {
-        if (!isset($this->itemtypes[$shortname])) {
-            return false;
+    public static function get_default_types() {
+        return [
+            new grouping(),
+            new learner(),
+            new measures\assignment_resubmit_count(),
+            new measures\assignment_status(),
+            new measures\attendance_sessions_summary(),
+            new measures\checklist_complete(),
+            new measures\course_grade(),
+            new measures\course_section_activity_completion(),
+            new measures\grade_category_activity_completion(),
+            new measures\last_course_access()
+        ];
+    }
+
+    /**
+     * Return standard grouping class.
+     *
+     * @return grouping
+     * @throws \ReflectionException
+     * @throws coding_exception
+     */
+    public function get_grouping() : grouping {
+        $groupingshortname = grouping::get_short_name();
+        if (!$this->item_type_exists($groupingshortname)) {
+            throw new coding_exception("Grouping class does not exist");
         }
-        return true;
+        return $this->registereditemtypes[$groupingshortname];
+    }
+
+    /**
+     * Allow collection of measures to be iterated.
+     *
+     * @return ArrayIterator|Traversable
+     */
+    public function getIterator() {
+        return new ArrayIterator($this->registereditemtypes);
+    }
+
+    /**
+     * Return standard learner class.
+     *
+     * @return learner
+     * @throws \ReflectionException
+     * @throws coding_exception
+     */
+    public function get_learner() : learner {
+        $learnershortname = grouping::get_short_name();
+        if (!$this->item_type_exists($learnershortname)) {
+            throw new coding_exception("Learner class does not exist");
+        }
+        return $this->registereditemtypes[$learnershortname];
     }
 
     /**
@@ -163,7 +154,7 @@ class item_type_list implements Countable, IteratorAggregate {
      */
     public function get_measures() {
         $measures = [];
-        foreach ($this->itemtypes as $itemtype) {
+        foreach ($this->registereditemtypes as $itemtype) {
             if ($itemtype instanceof measure) {
                 array_push($measures, $itemtype);
             }
@@ -172,22 +163,43 @@ class item_type_list implements Countable, IteratorAggregate {
     }
 
     /**
-     * Return grouping class.
+     * Check if item type exists.
      *
-     * @return grouping
-     * @throws \ReflectionException
+     * @param string $shortname
+     * @return bool
      */
-    public function get_grouping() : grouping {
-        return $this->itemtypes[grouping::get_short_name()];
+    public function item_type_exists(string $shortname) : bool {
+        if (!isset($this->registereditemtypes[$shortname])) {
+            return false;
+        }
+        return true;
     }
-
 
     /**
-     * Allow collection of measures to be iterated.
-     *
-     * @return ArrayIterator|Traversable
+     * @param item $itemtype
+     * @return $this
+     * @throws \ReflectionException
+     * @throws coding_exception
      */
-    public function getIterator() {
-        return new ArrayIterator($this->itemtypes);
+    public function register_type(item $itemtype) {
+        $shortname = $itemtype::get_short_name();
+        if (!isset($this->registereditemtypes[$shortname])) {
+            $this->registereditemtypes[$shortname] = $itemtype;
+        }
+        return $this;
     }
+
+    /**
+     * @param array $itemtypes
+     * @return $this
+     * @throws \ReflectionException
+     * @throws coding_exception
+     */
+    public function register_types(array $itemtypes) {
+        foreach ($itemtypes as $itemtype) {
+            $this->register_type($itemtype);
+        }
+        return $this;
+    }
+
 }
