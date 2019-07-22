@@ -45,6 +45,8 @@ $string['lp:exportsummary'] = 'Export summary to file';
 
 $string['assignmentresubmitcount:measure:name'] = 'Assignment resubmits';
 $string['assignmentresubmitcount:measure:description'] = 'The number of resubmitted assignment attempts.';
+$string['assignmentresubmitcount:measure:defaultlabel'] = 'Assignment resubmits';
+$string['assignmentresubmitcount:measure:configuredlabel'] = 'Resubmit total: {$a}';
 
 $string['assignmentstatus:measure:name'] = 'Assignment status';
 $string['assignmentstatus:measure:description'] = 'Uses grade display type for submitted assignments for example "Achieved" or "Not achieved". Indicates not submitted type states such as "Draft", "No submission", and "Reopened".';
@@ -86,8 +88,7 @@ $string['configure'] = 'Configure {$a}';
 $string['defaultlabelgrouping'] = 'Grouping {$a}';
 $string['defaultlabelassignmentstatus'] = 'Assignment name';
 $string['defaultlabelassignmentstatusconfigured'] = 'Status: {$a}';
-$string['defaultlabelassignmentresubmitcount'] = 'Assignment name';
-$string['defaultlabelassignmentresubmitcountconfigured'] = 'Resubmit total: {$a}';
+
 $string['defaultlabelattendancesessionssummary'] = 'Sessions attended summary';
 $string['checklistname'] = 'Checklist name';
 $string['defaultlabelgradecategoryconfigured'] = 'Grade category completion: {$a}';
