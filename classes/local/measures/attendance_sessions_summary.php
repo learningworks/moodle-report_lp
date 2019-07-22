@@ -66,8 +66,8 @@ class attendance_sessions_summary extends measure implements has_own_configurati
      * @return string
      * @throws coding_exception
      */
-    public function get_label($format = FORMAT_PLAIN) {
-        return format_text(get_string('defaultlabelattendancesessionssummary', 'report_lp'), $format);
+    public function get_default_label() :string {
+        return format_text(get_string('defaultlabelattendancesessionssummary', 'report_lp'), FORMAT_PLAIN);
     }
 
     /**
