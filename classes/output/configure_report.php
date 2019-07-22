@@ -18,6 +18,7 @@ namespace report_lp\output;
 
 defined('MOODLE_INTERNAL') || die();
 
+use coding_exception;
 use moodle_url;
 use pix_icon;
 use renderable;
@@ -26,6 +27,8 @@ use report_lp\local\grouping;
 use report_lp\local\item;
 use report_lp\local\item_tree;
 use report_lp\local\factories\url;
+use report_lp\local\item_type_list;
+use report_lp\local\persistents\report_configuration;
 use stdClass;
 use templatable;
 
@@ -38,18 +41,62 @@ use templatable;
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class report_configuration implements renderable, templatable {
+class configure_report implements renderable, templatable {
 
-    protected $course;
+    /** @var mixed  */
+    private $course;
 
-    protected $itemtree;
+    /** @var report_configuration  */
+    private $configuration;
 
-    protected $itemtypelist;
+    /** @var  */
+    private $itemtree;
 
-    public function __construct(item_tree $itemtree) {
-        $this->itemtree = $itemtree;
-        $this->course = $itemtree->get_course();
-        $this->itemtypelist = $itemtree->get_item_type_list();
+    /** @var  */
+    private $itemtypelist;
+
+    /**
+     * configure_report constructor.
+     * @param $configuration
+     */
+    public function __construct($configuration) {
+        if ($configuration instanceof report_configuration) {
+            $this->configuration = $configuration;
+            $this->course = $configuration->get_course();
+        } else {
+            $this->configuration = new report_configuration();
+        }
+    }
+
+    /**
+     * Private method to setup and return item_type_list.
+     *
+     * @return item_type_list
+     * @throws \ReflectionException
+     * @throws coding_exception
+     */
+    private function get_item_type_list() {
+        if (is_null($this->itemtypelist)) {
+            $this->itemtypelist = new item_type_list();
+        }
+        return $this->itemtypelist;
+    }
+
+    /**
+     * Private method to setup and return item_tree.
+     *
+     * @return item_tree
+     * @throws \ReflectionException
+     * @throws coding_exception
+     */
+    private function get_item_tree() {
+        if (is_null($this->itemtree)) {
+            if (empty($this->course)) {
+                throw new coding_exception("Valid course property required");
+            }
+            $this->itemtree = new item_tree($this->course, $this->get_item_type_list());
+        }
+        return $this->itemtree;
     }
 
     /**
@@ -112,18 +159,24 @@ class report_configuration implements renderable, templatable {
      */
     public function export_for_template(renderer_base $output) {
         $data = new stdClass();
-        $data->courseid = $this->course->id;
-        $data->coursestartdate = $this->course->startdate;
-        $lineitems = [];
-        // Flatten the tree of items.
-        foreach ($this->itemtree as $item) {
-            if ($item instanceof grouping) {
-                $groupinglineitems = static::process_grouping($item);
-                $lineitems = array_merge($lineitems, $groupinglineitems);
+        $data->initialised = false;
+        // Need to check for a valid course and configuration.
+        if ($this->course instanceof stdClass && ($this->configuration->get('id') > 0)) {
+            $data->initialised = true;
+            $data->enabled = $this->configuration->get('enabled');
+            $data->courseid = $this->course->id;
+            $data->coursestartdate = $this->course->startdate;
+            $data->itemtypemenu = $this->build_item_type_menu();
+            $lineitems = [];
+            // Flatten the tree of items.
+            foreach ($this->get_item_tree() as $item) {
+                if ($item instanceof grouping) {
+                    $groupinglineitems = static::process_grouping($item);
+                    $lineitems = array_merge($lineitems, $groupinglineitems);
+                }
             }
+            $data->lineitems = $lineitems;
         }
-        $data->itemtypemenu = $this->build_item_type_menu();
-        $data->lineitems = $lineitems;
         return $data;
     }
 
@@ -143,7 +196,7 @@ class report_configuration implements renderable, templatable {
         $creategroupingurl = url::get_create_item_url($this->course, grouping::get_short_name());
         $data->creategroupingurl = $creategroupingurl->out(false);
         $data->measuresmenu = [];
-        foreach ($this->itemtypelist->get_measures() as $measure) {
+        foreach ($this->get_item_type_list()->get_measures() as $measure) {
             $item = new stdClass();
             $item->measurename = $measure->get_name();
             $item->measuretitle = get_string('addmeasure', 'report_lp', $measure->get_name());
