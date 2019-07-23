@@ -222,6 +222,15 @@ abstract class item {
         return $this->parent; //@todo;
     }
 
+    protected function set_parent(item $parent = null) {
+//        if ($this->get_id()) {
+//            if ($parent->get_id() != $this->get_parentitemid()) {
+//                throw new coding_exception("Failed adoption");
+//            }
+//        }
+        $this->parent = $parent;
+    }
+
     /**
      * Get associated course object.
      *
