@@ -34,11 +34,6 @@ $PAGE->set_url($url);
 $css = new moodle_url('/report/lp/scss/styles.css');
 $PAGE->requires->css($css);
 $PAGE->requires->js_call_amd('report_lp/move', 'init', ['list-configured-items', 'move']);
-
-$itemtypelist = new report_lp\local\item_type_list(report_lp_get_supported_measures());
-$learnerprogress = new report_lp\local\learner_progress($course, $itemtypelist);
-$itemfactory = $learnerprogress->get_item_factory();
-$itemtree = new report_lp\local\item_tree($course, $itemtypelist);
 $renderer = $PAGE->get_renderer('report_lp');
 switch ($action) {
     case 'moveup':
@@ -62,7 +57,8 @@ switch ($action) {
             if (empty($itemid)) {
                 throw new moodle_exception('Empty itemid');
             }
-            $item = $itemfactory->create_item(new report_lp\local\persistents\item_configuration($itemid));
+            $itemfactory = new report_lp\local\factories\item($course, new report_lp\local\item_type_list());
+            $item = $itemfactory->get_item_from_persistent(new report_lp\local\persistents\item_configuration($itemid));
             if ($confirmed) {
                 $configuration = $item->get_configuration();
                 if ($item instanceof report_lp\local\grouping) {
@@ -93,5 +89,5 @@ switch ($action) {
 }
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('configurereportfor', 'report_lp', $course->fullname));
-echo $renderer->render(new report_lp\output\report_configuration($itemtree));
+echo $renderer->render(new report_lp\output\configure_report($course));
 echo $OUTPUT->footer();
