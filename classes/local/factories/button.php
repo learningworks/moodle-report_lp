@@ -32,14 +32,12 @@ use report_lp\local\item;
  */
 class button {
 
-    public static function create_instantiate_button(int $courseid) {
+    public static function create_initialise_button(int $courseid) {
         return html_writer::link(
             url::get_instantiate_url($courseid),
-            get_string('instantiate', 'report_lp'),
+            get_string('initialise', 'report_lp'),
             ['class' => 'btn btn-primary btn-lg', 'role' => 'button']
-
         );
-
     }
 
 }
