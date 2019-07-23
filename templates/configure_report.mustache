@@ -14,59 +14,69 @@
     You should have received a copy of the GNU General Public License
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
-<div class="row">
-    <div class="col-3">
-        {{#itemtypemenu}}
-            <ul class="list-group">
-                <li class="list-group-item header">
-                    {{# str }} addmeasurestoreport, report_lp {{/ str }}
-                </li>
-                <li class="list-group-item">
+{{^initialised}}
+    <div class="jumbotron">
+        <p class="lead">{{# str }} noreportconfiguration, report_lp {{/ str }}</p>
+        <hr class="my-4">
+        {{{initialisebutton}}}
+    </div>
+{{/initialised}}
+{{#initialised}}
+    <div class="row">
+        <div class="col-3">
+            {{#itemtypemenu}}
+                <ul class="list-group">
+                    <li class="list-group-item header">
+                        {{# str }} addmeasurestoreport, report_lp {{/ str }}
+                    </li>
+                    <li class="list-group-item">
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1">{{groupingname}}</h5>
                             <a href="{{creategroupingurl}}" title="{{groupingtitle}}" role="button"><i class="fa fa-plus-circle" aria-hidden="true"></i></a>
                         </div>
                         <small class="text-muted">{{groupingdescription}}</small>
-                </li>
-                {{#measuresmenu}}
-                    <li class="list-group-item">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">{{measurename}}</h5>
-                            <a href="{{createmeasureurl}}" title="{{measuretitle}}" role="button"><i class="fa fa-plus-circle" aria-hidden="true"></i></a>
-                        </div>
-                        <small class="text-muted">{{measuredescription}}</small>
                     </li>
-                {{/measuresmenu}}
-            </ul>
-        {{/itemtypemenu}}
-    </div>
-    <div class="col-9">
-        <div>
-            <ul id="list-configured-items" class="list-group" data-course-id="{{courseid}}">
-                {{#lineitems}}
-                    {{#isroot}}
-                        <li class="list-group-item header">
-                            {{label}}
-                            <div class="float-right">
-                                <span class="badge badge-primary badge-pill">{{#userdate}} {{coursestartdate}}, %B %Y {{/userdate}} </span>
+                    {{#measuresmenu}}
+                        <li class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{{measurename}}</h5>
+                                <a href="{{createmeasureurl}}" title="{{measuretitle}}" role="button"><i class="fa fa-plus-circle" aria-hidden="true"></i></a>
                             </div>
+                            <small class="text-muted">{{measuredescription}}</small>
                         </li>
-                    {{/isroot}}
-                   {{^isroot}}
-                       <li class="list-group-item depth-{{depth}} draggable" data-name="{{label}}" data-depth="{{depth}}" data-item-id="{{id}}" >
+                    {{/measuresmenu}}
+                </ul>
+            {{/itemtypemenu}}
+        </div>
+        <div class="col-9">
+            <div>
+                <ul id="list-configured-items" class="list-group" data-course-id="{{courseid}}">
+                    {{#lineitems}}
+                        {{#isroot}}
+                            <li class="list-group-item header">
+                                {{label}}
+                                <div class="float-right">
+                                    <span class="badge badge-primary badge-pill">{{#userdate}} {{coursestartdate}}, %B %Y {{/userdate}} </span>
+                                </div>
+                            </li>
+                        {{/isroot}}
+                        {{^isroot}}
+                            <li class="list-group-item depth-{{depth}} draggable" data-name="{{label}}" data-depth="{{depth}}" data-item-id="{{id}}" >
                             <span data-action="move">
                                 <span tabindex="0" role="button" aria-haspopup="true" data-drag-type="move" title="Move item">
                                     <i class="icon fa fa-arrows fa-fw " aria-hidden="true"></i>
                                 </span>
                             </span>
-                           {{label}}
-                           {{>report_lp/item_tree_configuration_actions}}
-                       </li>
-                   {{/isroot}}
+                                {{label}}
+                                {{>report_lp/item_tree_configuration_actions}}
+                            </li>
+                        {{/isroot}}
 
-                {{/lineitems}}
-            </ul>
+                    {{/lineitems}}
+                </ul>
+            </div>
         </div>
     </div>
-</div>
+{{/initialised}}
+
 

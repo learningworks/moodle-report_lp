@@ -150,3 +150,9 @@ $string['achieved'] = 'Achieved';
 $string['notachieved'] = 'Not achieved';
 $string['addmeasurestoreport'] = 'Add measures to report';
 
+
+$string['noreportconfiguration'] = '
+Learner progress report configuration does not exist for this course.
+<br><br>
+Would you like to initialise a new learner progress report configuration for this course?';
+$string['initialise'] = 'Initialise...';

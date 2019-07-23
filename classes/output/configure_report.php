@@ -57,15 +57,16 @@ class configure_report implements renderable, templatable {
 
     /**
      * configure_report constructor.
-     * @param $configuration
+     *
+     * @param stdClass $course
      */
-    public function __construct($configuration) {
-        if ($configuration instanceof report_configuration) {
-            $this->configuration = $configuration;
-            $this->course = $configuration->get_course();
-        } else {
-            $this->configuration = new report_configuration();
+    public function __construct(stdClass $course) {
+        $this->course = $course;
+        $configuration = report_configuration::get_record(['courseid' => $course->id]);
+        if (!$configuration) {
+            $configuration = new report_configuration();
         }
+        $this->configuration = $configuration;
     }
 
     /**
@@ -109,10 +110,10 @@ class configure_report implements renderable, templatable {
     protected static function build_line_item(item $item) {
         $lineitem = new stdClass();
         $lineitem->id = $item->get_configuration()->get('id');
-        $lineitem->isroot = $item->is_root_item();
+        $lineitem->isroot = $item->is_root();
         $lineitem->label = $item->get_label();
         $lineitem->depth = $item->get_depth();
-        $lineitem->sortorder = $item->get_sort_order();
+        $lineitem->sortorder = $item->get_sortorder();
         $lineitem->actions = [];
         return $lineitem;
     }
@@ -176,6 +177,8 @@ class configure_report implements renderable, templatable {
                 }
             }
             $data->lineitems = $lineitems;
+        } else {
+            $data->initialisebutton = \report_lp\local\factories\button::create_initialise_button($this->course->id);
         }
         return $data;
     }
