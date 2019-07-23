@@ -26,19 +26,6 @@ use stdClass;
 
 class renderer extends plugin_renderer_base {
 
-    public function render_jumbotron($heading, $paragraphtop, $paragraphbottom = null, $button = null) {
-        $data = new stdClass();
-        $data->heading = $heading;
-        $data->paragraphtop = $paragraphtop;
-        $data->diaplayhr = 0;
-        if (!is_null($paragraphbottom) || !is_null($button)) {
-            $data->diaplayhr = 1;
-        }
-        $data->paragraphbottom = $paragraphbottom;
-        $data->button = $button;
-        return parent::render_from_template('report_lp/jumbotron', $data);
-    }
-
     public function render_group_filter(stdClass $course) {
         $data = new stdClass;
         $data->courseid = $course->id;
@@ -71,13 +58,4 @@ class renderer extends plugin_renderer_base {
         return parent::render_from_template("report_lp/group_filter", $data);
     }
 
-    public function item_tree_configuration(item_tree $itemtree) {
-        $data = $itemtree->export_for_template($this);
-        return parent::render_from_template('report_lp/report_configuration', $data);
-    }
-
-    public function no_items_configured(no_items_configured $thing) {
-        $data = $thing->export_for_template($this);
-        return parent::render_from_template('report_lp/no_items_configured', $data);
-    }
 }
