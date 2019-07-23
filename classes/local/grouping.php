@@ -49,11 +49,10 @@ class grouping extends item implements Countable, IteratorAggregate {
      * @throws coding_exception
      */
     public function get_default_label(): string {
-        $configuration = $this->get_configuration();
-        if (is_null($configuration)) {
+        if (is_null($this->get_id())) {
             $id = 0;
         } else {
-            $id = $configuration->get('id');
+            $id = $this->get_id();
         }
         if ($id > 0) {
             $number = $id;
@@ -91,16 +90,18 @@ class grouping extends item implements Countable, IteratorAggregate {
      * @return $this
      * @throws coding_exception
      */
-    public function add_item(item $item) {
-        $configuration = $item->get_configuration();
-        if (is_null($configuration)) {
-            throw new coding_exception("Configuration required");
+    public function add_item(item $item) {;
+        if (is_null($item->get_id())) {
+            throw new coding_exception("Configuration must be loaded");
         }
-        $id = $configuration->get('id');
+        $id = $item->get_id();
         if ($id <= 0) {
             throw new coding_exception("ID is required");
         }
         $this->children[$id] = $item;
+        if (!$this->is_root()) {
+            $this->set_parent($this);
+        }
         return $this;
     }
 
