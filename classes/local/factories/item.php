@@ -35,17 +35,36 @@ use report_lp\local\persistents\item_configuration;
  */
 class item {
 
-    /**
-     * @var stdClass $course Associated course.
-     */
+    /** @var stdClass $course Associated course. */
     protected $course;
 
     /** @var item_type_list $itemtypelist */
     protected $itemtypelist;
 
+    /**
+     * item constructor.
+     *
+     * @param stdClass $course
+     * @param item_type_list $itemtypelist
+     */
     public function __construct(stdClass $course, item_type_list $itemtypelist) {
         $this->course = $course;
         $this->itemtypelist = $itemtypelist;
+    }
+
+    /**
+     * Gets an item from an item persistent. Gets class from configuration then
+     * sets properties from configuration.
+     *
+     * @param item_configuration $itemconfiguration
+     * @return \report_lp\local\item
+     * @throws coding_exception
+     */
+    public function get_item_from_persistent(item_configuration $itemconfiguration) {
+        $classname = $itemconfiguration->get('shortname');
+        $item = $this->itemtypelist->find_by_short_name($classname);
+        $item->load_configuration($itemconfiguration);
+        return $item;
     }
 
     /**
@@ -94,8 +113,7 @@ class item {
                 throw new coding_exception('Incorrect class for configuration');
             }
         }
-        $grouping->set_course($this->course);
-        $grouping->set_configuration($configuration);
+        $grouping->load_configuration($configuration);
         return $grouping;
     }
 
@@ -129,8 +147,7 @@ class item {
             $configuration->set('classname', $measure::get_class_name());
             $configuration->set('shortname', $measure::get_short_name());
         }
-        $measure->set_course($this->course);
-        $measure->set_configuration($configuration);
+        $measure->load_configuration($configuration);
         return $measure;
     }
 
@@ -176,8 +193,7 @@ class item {
                 $item = $this->itemtypelist->find_measure_by_short_name($configuration->get('shortname'));
             }
         }
-        $item->set_course($this->course);
-        $item->set_configuration($configuration);
+        $item->load_configuration($configuration);
         return $item;
     }
 
@@ -217,8 +233,7 @@ class item {
         foreach ($configurations as $configuration) {
             $classname = $configuration->get('classname');
             $item = new $classname;
-            $item->set_course($this->course);
-            $item->set_configuration($configuration);
+            $item->load_configuration($configuration);
             if ($keyed) {
                 $items[$configuration->get('id')] = $item;
             } else {
