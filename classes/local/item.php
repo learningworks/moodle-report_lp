@@ -52,22 +52,89 @@ abstract class item {
     /** @var item_configuration $configuration The associated persistent class. */
     private $configuration;
 
+    /** @var int $id */
+    protected $id;
+
+    /** @var int $courseid */
+    protected $courseid;
+
+    /** @var int $usecustomlabel */
+    protected $usecustomlabel;
+
+    /** @var string $customlabel */
+    protected $customlabel;
+
+    /** @var int $parentitemid */
+    protected $parentitemid;
+
+    /** @var int $depth */
+    protected $depth;
+
+    /** @var string $path Forward slashed list is hierarchy of record id's. */
+    protected $path;
+
+    /** @var int $sortorder */
+    protected $sortorder;
+
+    /** @var int $islocked */
+    protected $islocked;
+
+    /** @var int $visibletosummary */
+    protected $visibletosummary;
+
+    /** @var int $visibletoinstance */
+    protected $visibletoinstance;
+
+    /** @var int $visibletolearner */
+    protected $visibletolearner;
+
+    /** @var string $extraconfigurationdata JSON structure defined by each child class. */
+    protected $extraconfigurationdata;
+
     /**
      * item constructor.
      *
      * @param stdClass|null $course
-     * @param item_configuration|null $configuration
-     * @throws \ReflectionException
-     * @throws coding_exception
      */
-    public function __construct(stdClass $course = null, item_configuration $configuration = null) {
-        if (!is_null($course)) {
-            $this->course = $course;
-        }
-        // Validate configuration.
-        if (!is_null($configuration)) {
-            $this->set_configuration($configuration);
-        }
+    public function __construct(stdClass $course = null) {
+        $this->course = $course;
+    }
+
+    public function get_id() {
+        return $this->id;
+    }
+
+    public function get_courseid() {
+        return $this->courseid;
+    }
+
+    public function get_usecustomlabel() {
+        return $this->usecustomlabel;
+    }
+
+    public function get_customlabel() {
+        return $this->customlabel;
+    }
+
+    public function get_parentitemid() {
+        return $this->parentitemid;
+    }
+
+    public function get_depth() {
+        return $this->depth;
+    }
+
+    public function get_path() {
+        return $this->path;
+
+    }
+
+    public function get_sortorder() {
+        return $this->sortorder;
+    }
+
+    public function get_extraconfigurationdata() {
+        return $this->extraconfigurationdata;
     }
 
     /**
@@ -124,13 +191,11 @@ abstract class item {
      * @throws coding_exception
      */
     final public function get_label() : string {
-         $configuration = $this->get_configuration();
-         if (is_null($configuration)) {
+         if (is_null($this->id)) {
             throw new coding_exception("Configuration not loaded");
          }
-         if ($configuration->get('usecustomlabel')) {
-             $label = $configuration->get('customlabel');
-             return format_text($label, FORMAT_PLAIN);
+         if ($this->usecustomlabel) {
+             return format_text($this->customlabel, FORMAT_PLAIN);
          }
          return $this->get_default_label();
      }
@@ -150,56 +215,26 @@ abstract class item {
      * @return item_configuration
      */
     final public function get_configuration() : item_configuration {
-        return $this->configuration ;
+        return $this->configuration;
     }
 
-    /**
-     * Validate and set the associated configuration persistent for item.
-     *
-     * @param item_configuration $configuration
-     * @throws \ReflectionException
-     * @throws coding_exception
-     */
-    final public function set_configuration(item_configuration $configuration) {
-        if (is_null($this->course)) {
-            throw new coding_exception('Course property must be set first');
-        }
-        if ($configuration->get('courseid') != $this->course->id) {
-            throw new coding_exception('Invalid courseid in configuration');
-        }
-        if ($configuration->get('classname') != static::get_class_name()) {
-            throw new coding_exception('Invalid class name in configuration');
-        }
-        if ($configuration->get('shortname') != static::get_short_name()) {
-            throw new coding_exception('Invalid short name in configuration');
-        }
-        $this->configuration = $configuration;
-    }
-
-    final public function set_parent(item $parent = null) {
-        $this->parent = $parent;
+    public function get_parent() {
+        return $this->parent; //@todo;
     }
 
     /**
      * Get associated course object.
      *
-     * @return mixed
-     * @throws coding_exception
+     * @return stdClass
+     * @throws \dml_exception
      */
-    final public function get_course() : stdClass {
+    public function get_course() : stdClass {
         if (is_null($this->course)) {
-            throw new coding_exception('Course property not set');
+            if ($this->courseid) {
+                $this->course = get_course($this->courseid);
+            }
         }
         return $this->course;
-    }
-
-    /**
-     * Set associated course object.
-     *
-     * @param stdClass $course
-     */
-    final public function set_course(stdClass $course) {
-        $this->course = $course;
     }
 
     /**
@@ -211,53 +246,6 @@ abstract class item {
      */
     final public static function get_class_name() : string {
         return get_class(new static());
-    }
-
-    public function get_depth() {
-        if (is_null($this->configuration)) {
-            return null;
-        }
-        return $this->configuration->get('depth');
-    }
-
-    public function get_sort_order() {
-        if (is_null($this->configuration)) {
-            return null;
-        }
-        return $this->configuration->get('sortorder');
-    }
-
-    /**
-     * Items/Measures to override this method..
-     *
-     * Allow each item to determine if they are enabled. For modules the common
-     * practise is to use plugin manager to determine if enabled or not, however
-     * this method allows another level of control possibly disabling via a $CFG
-     * variable.
-     *
-     * @return bool|null
-     */
-    public function is_enabled() {
-        return false;
-    }
-
-    /**
-     * @return bool|null
-     * @throws \ReflectionException
-     * @throws coding_exception
-     */
-    public function is_root_item() {
-        if (is_null($this->configuration)) {
-            return null;
-        }
-        $isgrouping = ($this->configuration->get('shortname') != grouping::get_short_name()) ? false : true;
-        $firstleveldepth = ($this->configuration->get('depth') != 1) ? false : true;
-        $noparent = ($this->configuration->get('parentitemid') != 0) ? false : true;
-        $isfirstpath = ($this->configuration->get('id') != $this->configuration->get('path')) ? false : true;
-        if ($isgrouping && $firstleveldepth && $noparent && $isfirstpath) {
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -276,6 +264,69 @@ abstract class item {
      */
     public function has_url() : bool {
         return false;
+    }
+
+    /**
+     * Is a child.
+     *
+     * @return bool
+     */
+    public function is_child() {
+        return ($this->get_parentitemid() != 0);
+    }
+
+    /**
+     * Items/Measures to override this method..
+     *
+     * Allow each item to determine if they are enabled. For modules the common
+     * practise is to use plugin manager to determine if enabled or not, however
+     * this method allows another level of control possibly disabling via a $CFG
+     * variable.
+     *
+     * @return bool|null
+     */
+    public function is_enabled() {
+        return false;
+    }
+
+    public function is_locked() {
+        return ($this->islocked) ? true : false;
+    }
+
+    /**
+     * Is the root of the tree. Top dog.
+     *
+     * @return bool
+     */
+    public function is_root() {
+        return ($this->get_parentitemid() == 0);
+    }
+
+    public function is_visible_in_summary() {
+        return ($this->visibletosummary) ? true : false;
+    }
+
+    public function is_visible_in_instance() {
+        return ($this->visibletoinstance) ? true : false;
+    }
+
+    public function is_visible_to_learner() {
+        return ($this->visibletolearner) ? true : false;
+    }
+
+    /**
+     * Load properties from configuration persistent.
+     *
+     * @param item_configuration $configuration
+     * @throws coding_exception
+     */
+    public function load_configuration(item_configuration $configuration) {
+        unset($this->course);
+        $properties = $configuration::properties_definition();
+        foreach ($properties as $property => $propertyinformation) {
+            $this->{$property} = $configuration->get($property);
+        }
+        $this->configuration = $configuration;
     }
 
 }
