@@ -100,7 +100,6 @@ class grouping extends item implements Countable, IteratorAggregate {
         if ($id <= 0) {
             throw new coding_exception("ID is required");
         }
-        $item->set_parent($this);
         $this->children[$id] = $item;
         return $this;
     }
