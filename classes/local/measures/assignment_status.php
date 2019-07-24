@@ -150,8 +150,7 @@ class assignment_status extends measure implements has_own_configuration {
      * @throws coding_exception
      */
     public function get_default_label(): string {
-        $configuration = $this->get_configuration();
-        if (is_null($configuration)) {
+        if (is_null( $this->get_id()) || $this->get_id() <= 0) {
             return get_string('assignmentstatus:measure:defaultlabel', 'report_lp');
         }
         $assignment = $this->get_assignment();
