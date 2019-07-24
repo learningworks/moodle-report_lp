@@ -100,8 +100,9 @@ class grouping extends item implements Countable, IteratorAggregate {
         }
         $this->children[$id] = $item;
         if (!$this->is_root()) {
-            $this->set_parent($this);
-        }
+            // Set this item as parent on item we are adding as a child.
+            $item->set_parent($this);
+       }
         return $this;
     }
 
