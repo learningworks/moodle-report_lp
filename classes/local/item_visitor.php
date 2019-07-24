@@ -14,7 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace report_lp\local;
+
 /**
+ * Item visitor class inteface.
+ *
+ * https://github.com/domnikl/DesignPatternsPHP/tree/master/Behavioral/Visitor
  *
  * @package
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
