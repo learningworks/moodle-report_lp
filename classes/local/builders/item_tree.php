@@ -28,7 +28,7 @@ use report_lp\local\persistents\item_configuration;
 use stdClass;
 
 /**
- * Simple tree.
+ * Simple tree builder.
  *
  * @package     report_lp
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
@@ -36,31 +36,55 @@ use stdClass;
  */
 class item_tree {
 
+    /**
+     * @var stdClass $course Course object.
+     */
     private $course;
 
+    /** @var array $items One dimensional array of all items. */
+    private $items;
+
+    /** @var item_factory $itemfactory Builds items based on configuration. */
+    private $itemfactory;
+
+    /** @var grouping $tree Tree struction, parents and children. */
     private $tree;
 
+    /**
+     * item_tree constructor.
+     *
+     * @param stdClass $course
+     * @throws \ReflectionException
+     * @throws \coding_exception
+     */
     public function __construct(stdClass $course) {
         $this->course = $course;
+        $this->itemfactory = new item_factory($this->course, new item_type_list());
     }
 
-    public function build() {
-        $items = [];
-        $itemtypelist = new item_type_list();
-        $itemfactory = new item_factory($this->course, $itemtypelist);
+    /**
+     * Build the tree based on a ordered collection of item configurations.
+     *
+     * @return grouping|null
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public function build_from_item_configurations() : ? grouping {
         $itemconfigurations = item_configuration::get_ordered_items($this->course->id);
         foreach ($itemconfigurations as $itemconfiguration) {
-            $item = $itemfactory->get_item_from_persistent($itemconfiguration);
-            $items[$item->get_id()] = $item;
+            $item = $this->itemfactory->get_item_from_persistent($itemconfiguration);
+            $this->items[$item->get_id()] = $item;
         }
-        foreach ($items as $item) {
+        foreach ($this->items as $item) {
             if ($item->is_root()) {
                 $this->tree = $item;
             } else {
-                $parentitem = $items[$item->get_parentitemid()];
+                $parentitem = $this->items[$item->get_parentitemid()];
                 /** @var grouping $parentitem */
                 $parentitem->add_item($item);
             }
         }
+        return $this->tree;
     }
+
 }
