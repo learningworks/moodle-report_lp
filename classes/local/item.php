@@ -100,40 +100,50 @@ abstract class item {
         $this->course = $course;
     }
 
-    public function get_id() {
+    /**
+     *
+     *
+     * @param visitor $visitor
+     * @return mixed
+     */
+    public function accept(visitor $visitor) {
+        return $visitor->visit($this);
+    }
+
+    final public function get_id() {
         return $this->id;
     }
 
-    public function get_courseid() {
+    final public function get_courseid() {
         return $this->courseid;
     }
 
-    public function get_usecustomlabel() {
+    final public function get_usecustomlabel() {
         return $this->usecustomlabel;
     }
 
-    public function get_customlabel() {
+    final public function get_customlabel() {
         return $this->customlabel;
     }
 
-    public function get_parentitemid() {
+    final public function get_parentitemid() {
         return $this->parentitemid;
     }
 
-    public function get_depth() {
+    final public function get_depth() {
         return $this->depth;
     }
 
-    public function get_path() {
+    final public function get_path() {
         return $this->path;
 
     }
 
-    public function get_sortorder() {
+    final public function get_sortorder() {
         return $this->sortorder;
     }
 
-    public function get_extraconfigurationdata() {
+    final public function get_extraconfigurationdata() {
         return $this->extraconfigurationdata;
     }
 
@@ -218,16 +228,27 @@ abstract class item {
         return $this->configuration;
     }
 
-    public function get_parent() {
-        return $this->parent; //@todo;
+    /**
+     * Get parent item.
+     *
+     * @return item|null
+     */
+    final public function get_parent() {
+        return $this->parent;
     }
 
-    protected function set_parent(item $parent = null) {
-//        if ($this->get_id()) {
-//            if ($parent->get_id() != $this->get_parentitemid()) {
-//                throw new coding_exception("Failed adoption");
-//            }
-//        }
+    /**
+     * Set parent item, must match if id has been set.
+     *
+     * @param item|null $parent
+     * @throws coding_exception
+     */
+    final protected function set_parent(item $parent = null) {
+        if ($this->get_id()) {
+            if ($parent->get_id() != $this->get_parentitemid()) {
+                throw new coding_exception("Failed adoption");
+            }
+        }
         $this->parent = $parent;
     }
 
@@ -237,7 +258,7 @@ abstract class item {
      * @return stdClass
      * @throws \dml_exception
      */
-    public function get_course() : stdClass {
+    final public function get_course() : stdClass {
         if (is_null($this->course)) {
             if ($this->courseid) {
                 $this->course = get_course($this->courseid);
@@ -250,8 +271,6 @@ abstract class item {
      * Relative class name.
      *
      * @return string
-     * @throws \ReflectionException
-     * @throws coding_exception
      */
     final public static function get_class_name() : string {
         return get_class(new static());
@@ -298,7 +317,10 @@ abstract class item {
         return false;
     }
 
-    public function is_locked() {
+    /**
+     * @return bool
+     */
+    final public function is_locked() {
         return ($this->islocked) ? true : false;
     }
 
