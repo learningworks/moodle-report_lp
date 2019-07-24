@@ -156,3 +156,10 @@ Learner progress report configuration does not exist for this course.
 <br><br>
 Would you like to initialise a new learner progress report configuration for this course?';
 $string['initialise'] = 'Initialise...';
+$string['coursegroups:learnerfield:description'] = 'Displays any groups memberships the learner has within the course.';
+$string['coursegroups:learnerfield:name'] = 'Course groups';
+$string['coursegroups:learnerfield:label'] = 'Groups';
+
+$string['idnumber:learnerfield:description'] = 'Displays learners ID number attached to user record.';
+$string['idnumber:learnerfield:name'] = 'Learner ID number';
+$string['idnumber:learnerfield:label'] = 'ID';
