@@ -117,17 +117,16 @@ class course_section_activity_completion extends measure implements has_own_conf
      * @throws coding_exception
      */
     public function get_default_label(): string {
-        $configuration = $this->get_configuration();
-        if (is_null($configuration)) {
+        if (empty($this->get_id())) {
             return format_text(
                 get_string('coursesectionactivitycompletion:measure:defaultlabel', 'report_lp'),
                 FORMAT_PLAIN
             );
         }
-        $course = get_course($configuration->get('courseid'));
+        $course = get_course($this->get_courseid());
         $modinfo = get_fast_modinfo($course);
         $sectionname = '';
-        $extraconfigurationdata = $configuration->get('extraconfigurationdata');
+        $extraconfigurationdata = $this->get_extraconfigurationdata();
         foreach ($modinfo->get_section_info_all() as $section) {
             if ($section->id == $extraconfigurationdata->id) {
                 $sectionname = $section->name;
