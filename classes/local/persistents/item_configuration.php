@@ -126,8 +126,12 @@ class item_configuration extends persistent {
         $depth = 0;
         if (!empty($path)) {
             $pathitems = explode('/', $path);
-            if ($pathitems) {
-                $depth = count($pathitems);
+            $parentitemid = $this->raw_get('parentitemid');
+            if ($parentitemid > 0) {
+                unset($pathitems[$parentitemid]);
+                if ($pathitems) {
+                    $depth = count($pathitems);
+                }
             }
         }
         return $depth;
@@ -154,6 +158,8 @@ class item_configuration extends persistent {
 
     /**
      * Get children items of current item.
+     *
+     * @todo remove, currently in configure page.
      *
      * @return persistent[]
      * @throws coding_exception
