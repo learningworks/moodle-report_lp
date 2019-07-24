@@ -62,7 +62,8 @@ class item {
      */
     public function get_item_from_persistent(item_configuration $itemconfiguration) {
         $classname = $itemconfiguration->get('shortname');
-        $item = $this->itemtypelist->find_by_short_name($classname);
+        $class = $this->itemtypelist->find_by_short_name($classname);
+        $item = clone($class);
         $item->load_configuration($itemconfiguration);
         return $item;
     }
