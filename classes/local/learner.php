@@ -28,15 +28,15 @@ defined('MOODLE_INTERNAL') || die();
 class learner extends item {
 
     public function get_description(): string {
-        return get_string('grouping:description', 'report_lp');
+        return get_string('learner:description', 'report_lp');
     }
 
     public function get_default_label() : string {
-        return '';
+        return get_string('learner:label', 'report_lp');
     }
 
     public function get_name(): string {
-        return get_string('grouping:name', 'report_lp');
+        return get_string('learner:name', 'report_lp');
     }
 
 }
