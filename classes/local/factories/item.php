@@ -61,11 +61,22 @@ class item {
      * @throws coding_exception
      */
     public function get_item_from_persistent(item_configuration $itemconfiguration) {
-        $classname = $itemconfiguration->get('shortname');
-        $class = $this->itemtypelist->find_by_short_name($classname);
-        $item = clone($class);
+        $shortname = $itemconfiguration->get('shortname');
+        $item = $this->get_class_instance_from_list($shortname);
         $item->load_configuration($itemconfiguration);
         return $item;
+    }
+
+    /**
+     * Find and return a clone.
+     *
+     * @param string $shortname
+     * @return \report_lp\local\item
+     * @throws coding_exception
+     */
+    public function get_class_instance_from_list(string $shortname) {
+        $class = $this->itemtypelist->find_by_short_name($shortname);
+        return clone($class);
     }
 
     /**
@@ -77,6 +88,7 @@ class item {
      * @throws coding_exception
      */
     public function get_root_grouping(bool $create = true) : grouping {
+        $grouping = $this->get_class_instance_from_list('grouping');
         $rootconfiguration = item_configuration::get_record(
             ['courseid' => $this->course->id, 'parentitemid' => 0]
         );
@@ -92,7 +104,8 @@ class item {
             $rootconfiguration->set('customlabel', format_text($this->course->fullname, FORMAT_PLAIN));
             $rootconfiguration->save();
         }
-        return $this->get_grouping($rootconfiguration);
+        $grouping->load_configuration($rootconfiguration);
+        return $grouping;
     }
 
     /**
