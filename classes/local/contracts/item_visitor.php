@@ -14,7 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace report_lp\local;
+namespace report_lp\local\contracts;
+
+use report_lp\local\item;
 
 /**
  * Item visitor class inteface.
@@ -25,7 +27,6 @@ namespace report_lp\local;
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 interface item_visitor {
 
     /**

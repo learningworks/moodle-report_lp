@@ -20,7 +20,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use report_lp\local\grouping;
 use report_lp\local\item;
-use report_lp\local\item_visitor;
+use report_lp\local\contracts\item_visitor;
 
 class grouping_item_visitor implements item_visitor {
 
