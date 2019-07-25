@@ -27,7 +27,7 @@ use coding_exception;
 /**
  * List of types. Built in types are loaded via get_default_types().
  *
- * @package
+ * @package     report_lp
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
