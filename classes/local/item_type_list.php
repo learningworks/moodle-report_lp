@@ -141,7 +141,7 @@ class item_type_list implements Countable, IteratorAggregate {
      * @throws coding_exception
      */
     public function get_learner() : learner {
-        $learnershortname = grouping::get_short_name();
+        $learnershortname = learner::get_short_name();
         if (!$this->item_type_exists($learnershortname)) {
             throw new coding_exception("Learner class does not exist");
         }
