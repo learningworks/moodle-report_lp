@@ -39,4 +39,8 @@ class learner extends item {
         return get_string('learner:name', 'report_lp');
     }
 
+    public function is_locked() {
+        return true;
+    }
+
 }
