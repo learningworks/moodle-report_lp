@@ -320,7 +320,7 @@ abstract class item {
     /**
      * @return bool
      */
-    final public function is_locked() {
+    public function is_locked() {
         return ($this->islocked) ? true : false;
     }
 
