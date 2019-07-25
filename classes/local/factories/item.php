@@ -21,7 +21,6 @@ defined('MOODLE_INTERNAL') || die();
 use report_lp\local\learner_information_grouping;
 use stdClass;
 use coding_exception;
-use moodle_exception;
 use report_lp\local\grouping;
 use report_lp\local\item_type_list;
 use report_lp\local\learner;
@@ -167,6 +166,8 @@ class item {
     }
 
     /**
+     * Create a learner field.
+     *
      * @param $shortname
      * @param int $parentitemid
      * @return learner_field
@@ -190,6 +191,8 @@ class item {
     }
 
     /**
+     * Create the main learner grouping item.
+     *
      * @param int $parentitemid
      * @return learner_information_grouping
      * @throws \ReflectionException
@@ -213,111 +216,27 @@ class item {
     }
 
     /**
-     * Get a grouping based on configuration.
+     * Get a new item based on shortname.
      *
-     * @param item_configuration $configuration
-     * @return grouping
+     * @param string $shortname
+     * @param int $parentitemid
+     * @return \report_lp\local\item
      * @throws \ReflectionException
      * @throws coding_exception
      */
-    public function get_grouping(item_configuration $configuration) : grouping {
-        $grouping = new grouping();
-        if ($configuration->get('id') <= 0) {
-            $configuration->set('courseid', $this->course->id);
-            $configuration->set('classname', $grouping::get_class_name());
-            $configuration->set('shortname', $grouping::get_short_name());
-        } else {
-            if ($grouping::get_short_name() != $configuration->get('shortname')) {
-                throw new coding_exception('Incorrect class for configuration');
-            }
-        }
-        $grouping->load_configuration($configuration);
-        return $grouping;
-    }
-
-    /**
-     * Helper used to direct to correct method.
-     *
-     * @param item_configuration $configuration
-     * @return grouping|measure
-     * @throws \ReflectionException
-     * @throws coding_exception
-     */
-    public function get_item(item_configuration $configuration) {
-        if (grouping::get_short_name() == $configuration->get('shortname')) {
-            return $this->get_grouping($configuration);
-        }
-        return $this->get_measure($configuration);
-    }
-
-    /**
-     * Get a measure based on configuration. Will throw exception if no shortname set.
-     *
-     * @param item_configuration $configuration
-     * @return measure
-     * @throws \ReflectionException
-     * @throws coding_exception
-     */
-    public function get_measure(item_configuration $configuration) : measure {
-        $measure = $this->itemtypelist->find_measure_by_short_name($configuration->get('shortname'));
-        if ($configuration->get('id') <= 0) {
-            $configuration->set('courseid', $this->course->id);
-            $configuration->set('classname', $measure::get_class_name());
-            $configuration->set('shortname', $measure::get_short_name());
-        }
-        $measure->load_configuration($configuration);
-        return $measure;
-    }
-
-    public function get_from_shortname(string $shortname) {
-        if (!$this->itemtypelist->item_type_exists($shortname)) {
-            throw new coding_exception("{$shortname} is not a registered item type.");
-        }
+    public function get_item_from_shortname(string $shortname, int $parentitemid = 0) {
+        $item = $this->get_class_instance_from_list($shortname);
         $configuration = new item_configuration();
-        $configuration->set('shortname', $shortname);
-        return $this->get_item($configuration);
-    }
-
-    /**
-     * Build new or existing grouping or measure.
-     *
-     * @param item_configuration $configuration
-     * @param string|null $shortname
-     * @return grouping|measure
-     * @throws \ReflectionException
-     * @throws coding_exception
-     */
-    public function create_item(item_configuration $configuration, string $shortname = null)  {
-        if ($configuration->get('id') <= 0) {
-            if (is_null($shortname)) {
-                throw new coding_exception("Valid shortname required when creating a brand new item");
-            }
-            $configuration->set('courseid', $this->course->id);
-            // Grouping or measure supported.
-            if ($shortname == grouping::get_short_name()) {
-                $item = new grouping();
-                $configuration->set('classname', $item::get_class_name());
-                $configuration->set('shortname', $item::get_short_name());
-            } else {
-                $item = $this->itemtypelist->find_measure_by_short_name($shortname);
-                $configuration->set('classname', $item::get_class_name());
-                $configuration->set('shortname', $item::get_short_name());
-            }
-        } else {
-            // Load existing grouping or measure.
-            if ($configuration->get('shortname') == grouping::get_short_name()) {
-                $item = new grouping();
-            } else {
-                $item = $this->itemtypelist->find_measure_by_short_name($configuration->get('shortname'));
-            }
-        }
+        $configuration->set('courseid', $this->course->id);
+        $configuration->set('classname', $item::get_class_name());
+        $configuration->set('shortname', $item::get_short_name());
+        $configuration->set('parentitemid', $parentitemid);
         $item->load_configuration($configuration);
         return $item;
     }
 
-
     /**
-     * Get all groupings for the course.
+     * Get all groupings for the course uses item configurations.
      *
      * @return array
      * @throws coding_exception
