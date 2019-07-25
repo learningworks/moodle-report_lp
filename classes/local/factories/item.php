@@ -29,7 +29,7 @@ use report_lp\local\measure;
 use report_lp\local\persistents\item_configuration;
 
 /**
- * Simple factory item class resonsible for creating/loading groupings and measures.
+ * Simple factory item class.
  *
  * @package     report_lp
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
