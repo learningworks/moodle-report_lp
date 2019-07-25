@@ -37,12 +37,9 @@ $systemcontext = context_system::instance();
 $itemtypelist = new report_lp\local\item_type_list();
 $itemfactory = new report_lp\local\factories\item($course, $itemtypelist);
 if (isset($itemconfiguration)) {
-    $item = $itemfactory->get_item($itemconfiguration);
+    $item = $itemfactory->get_item_from_persistent($itemconfiguration);
 } else if (!is_null($shortname)){
-    if (!$itemtypelist->item_type_exists($shortname)) {
-        throw new moodle_exception("{$shortname} is not a reqistered item type");
-    }
-    $item = $itemfactory->get_from_shortname($shortname);
+    $item = $itemfactory->get_item_from_shortname($shortname);
 } else {
     throw new moodle_exception("Could not load item");
 }
