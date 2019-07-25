@@ -113,7 +113,8 @@ class item_configuration extends persistent {
     }
 
     /**
-     * Construct depth based of path.
+     * Construct depth based of path. Depth is count of items in list minus
+     * one for the root item.
      *
      * @param string|null $path
      * @return int
@@ -126,11 +127,11 @@ class item_configuration extends persistent {
         $depth = 0;
         if (!empty($path)) {
             $pathitems = explode('/', $path);
+            $pathitemscount = count($pathitems);
             $parentitemid = $this->raw_get('parentitemid');
             if ($parentitemid > 0) {
-                unset($pathitems[$parentitemid]);
-                if ($pathitems) {
-                    $depth = count($pathitems);
+                if ($pathitemscount > 1) {
+                    $depth = $pathitemscount - 1;
                 }
             }
         }
