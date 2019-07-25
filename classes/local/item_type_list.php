@@ -54,7 +54,7 @@ class item_type_list implements Countable, IteratorAggregate {
      * @return int
      */
     public function count() : int {
-        return count($this->registereditemtypes );
+        return count($this->registereditemtypes);
     }
 
     /**
