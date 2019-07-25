@@ -34,6 +34,10 @@ class item extends moodleform {
 
     protected $item;
 
+    protected $rootitem;
+
+    protected $itemfactory;
+
     /**
      * Override parent constructor.
      *
@@ -44,7 +48,8 @@ class item extends moodleform {
      * @param null $attributes
      * @param bool $editable
      * @param null $ajaxformdata
-     * @throws \coding_exception
+     * @throws \ReflectionException
+     * @throws coding_exception
      */
     public function __construct($action = null,
                                 $customdata = null,
@@ -74,13 +79,18 @@ class item extends moodleform {
             throw new coding_exception("The variable 'item' must be of subclass of item class.");
         }
         $this->item = $item;
+        $this->itemfactory = new item_factory($this->course, new item_type_list());
+        $this->rootitem = $this->itemfactory->get_root_grouping();
         parent::__construct($action, $customdata, $method, $target, $attributes, $editable, $ajaxformdata);
         $this->set_data($this->get_default_values());
     }
 
+    /**
+     * Form element definition.
+     *
+     * @throws coding_exception
+     */
     protected function definition() {
-        global $DB;
-
         $mform = $this->_form;
 
         $mform->addElement('header', 'general', get_string('generalsettings', 'report_lp'));
@@ -148,13 +158,9 @@ class item extends moodleform {
             'visibletoinstance' => $data->visibletoinstance,
             'visibletolearner' => $data->visibletolearner,
         ];
-        // Grouping always have a parentitemid of the root configuraions as only depth of 2 levels supported.
+        // Grouping always have a parentitemid of the root configurations as only depth of 2 levels supported.
         if ($this->item instanceof grouping) {
-            $rootitem = item_configuration::get_root_configuration($data->courseid);
-            if (!$rootitem) {
-                throw new coding_exception('Invalid root configuration item');
-            }
-            $defaults['parentitemid'] = $rootitem->get('id');
+            $defaults['parentitemid'] = $this->rootitem->get_id();
         }
         // Include custom defaults for item with own configuration.
         if ($this->item instanceof has_own_configuration) {
@@ -168,15 +174,13 @@ class item extends moodleform {
      * Make a menu of groupings.
      *
      * @return array
-     * @throws \ReflectionException
      * @throws coding_exception
      */
     protected function get_grouping_options() {
         $options = [];
-        $itemfactory = new item_factory($this->course, new item_type_list());
-        foreach ($itemfactory->get_groupings() as $grouping) {
-            $configuration = $grouping->get_configuration();
-            $options[$configuration->get('id')] = $grouping->get_label();
+        $groupings = $this->itemfactory->get_grouping_from_item_configurations();
+        foreach ($groupings as $grouping) {
+            $options[$grouping->get_id()] = $grouping->get_label();
         }
         return $options;
     }
