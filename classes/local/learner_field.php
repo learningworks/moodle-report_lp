@@ -28,4 +28,3 @@ defined('MOODLE_INTERNAL') || die();
 abstract class learner_field extends item {
 
 }
-
