@@ -77,6 +77,7 @@ $string['lastcourseaccess:measure:description'] = 'The date and time the learner
 $string['grouping:name'] = 'Grouping';
 $string['grouping:description'] = 'Grouping allows a set of measures to be grouped together for display purposes.';
 $string['learner:name'] = 'Learner';
+$string['learner:label'] = 'Learner basic profile and actions';
 $string['learner:description'] = 'Standard learner information such as profile picture and fullname.';
 
 $string['grouping'] = 'Grouping';
@@ -163,3 +164,4 @@ $string['coursegroups:learnerfield:label'] = 'Groups';
 $string['idnumber:learnerfield:description'] = 'Displays learners ID number attached to user record.';
 $string['idnumber:learnerfield:name'] = 'Learner ID number';
 $string['idnumber:learnerfield:label'] = 'ID';
+$string['learnerinformation'] = 'Learner information';
