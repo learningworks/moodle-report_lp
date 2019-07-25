@@ -102,6 +102,7 @@ class grouping extends item implements Countable, IteratorAggregate {
         if (!$this->is_root()) {
             // Set this item as parent on item we are adding as a child.
             $item->set_parent($this);
+            // @TODO increment order maybe.
        }
         return $this;
     }
