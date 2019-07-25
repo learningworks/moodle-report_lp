@@ -121,7 +121,7 @@
   color: #FF0000;
 }
 
-li.list-group-item.depth-3 {
+li.list-group-item.depth-2 {
   padding-left: 2.5rem;
 }
 
@@ -191,4 +191,8 @@ table.report-lp-summary-report td {
 
 .report-lp-summary-report .icon {
   margin-right: 0;
+}
+.report-lp-summary-report tr:hover {
+  background-color: #c0df81;
+  background-color: #e4f1fd;
 }
