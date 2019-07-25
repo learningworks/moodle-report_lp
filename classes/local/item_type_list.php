@@ -90,13 +90,14 @@ class item_type_list implements Countable, IteratorAggregate {
      * Build in item types.
      *
      * @return array
-     * @throws \ReflectionException
-     * @throws coding_exception
      */
     public static function get_default_types() {
         return [
             new grouping(),
             new learner(),
+            new learner_information_grouping(),
+            new fields\course_groups_learner_field(),
+            new fields\idnumber_learner_field(),
             new measures\assignment_resubmit_count(),
             new measures\assignment_status(),
             new measures\attendance_sessions_summary(),
