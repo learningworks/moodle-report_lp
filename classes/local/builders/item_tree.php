@@ -54,12 +54,16 @@ class item_tree {
      * item_tree constructor.
      *
      * @param stdClass $course
+     * @param item_type_list|null $itemtypelist
      * @throws \ReflectionException
      * @throws \coding_exception
      */
-    public function __construct(stdClass $course) {
+    public function __construct(stdClass $course, item_type_list $itemtypelist = null) {
         $this->course = $course;
-        $this->itemfactory = new item_factory($this->course, new item_type_list());
+        if (is_null($itemtypelist)) {
+            $itemtypelist = new item_type_list();
+        }
+        $this->itemfactory = new item_factory($this->course, $itemtypelist);
     }
 
     /**
