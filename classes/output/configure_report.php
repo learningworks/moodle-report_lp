@@ -27,6 +27,7 @@ use report_lp\local\grouping;
 use report_lp\local\item;
 use report_lp\local\item_tree;
 use report_lp\local\factories\url;
+use report_lp\local\factories\button;
 use report_lp\local\item_type_list;
 use report_lp\local\persistents\report_configuration;
 use stdClass;
@@ -178,7 +179,7 @@ class configure_report implements renderable, templatable {
             }
             $data->lineitems = $lineitems;
         } else {
-            $data->initialisebutton = \report_lp\local\factories\button::create_initialise_button($this->course->id);
+            $data->initialisebutton = button::create_initialise_button($this->course->id);
         }
         return $data;
     }

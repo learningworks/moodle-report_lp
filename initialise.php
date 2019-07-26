@@ -14,30 +14,23 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace report_lp\local\factories;
+require_once(__DIR__ . '/../../config.php');
+require_once($CFG->dirroot . '/report/lp/lib.php');
 
-defined('MOODLE_INTERNAL') || die();
+$courseid = required_param('courseid', PARAM_INT);
+$course = get_course($courseid);
+$context = context_course::instance($courseid);
 
-use html_writer;
-use moodle_url;
-use stdClass;
-use report_lp\local\item;
+require_login($course);
+require_capability('report/lp:configure', $context);
 
-/**
- * Factory for buttons.
- *
- * @package     report_lp
- * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-class button {
+$pageurl = report_lp\local\factories\url::get_initialise_url($course->id);
+$redirecturl = report_lp\local\factories\url::get_config_url($course);
 
-    public static function create_initialise_button(int $courseid) {
-        return html_writer::link(
-            url::get_initialise_url($courseid),
-            get_string('initialise', 'report_lp'),
-            ['class' => 'btn btn-primary btn-lg', 'role' => 'button']
-        );
-    }
+$PAGE->set_url($pageurl);
+$PAGE->set_context($context);
 
+if (!report_lp\local\report::course_instance_exists($course)) {
+    report_lp\local\report::create_course_instance($course);
 }
+redirect($redirecturl);

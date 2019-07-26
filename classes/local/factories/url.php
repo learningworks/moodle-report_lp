@@ -112,7 +112,7 @@ class url {
         return $url;
     }
 
-    public static function get_instantiate_url(int $courseid) : moodle_url {
-        return new moodle_url('/report/lp/instantiate.php', ['courseid' => $courseid]);
+    public static function get_initialise_url(int $courseid) : moodle_url {
+        return new moodle_url('/report/lp/initialise.php', ['courseid' => $courseid]);
     }
 }
