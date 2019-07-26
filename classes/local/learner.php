@@ -18,6 +18,12 @@ namespace report_lp\local;
 
 defined('MOODLE_INTERNAL') || die();
 
+use report_lp\local\contracts\data_provider;
+use report_lp\local\user_list;
+use report_lp\output\cell;
+use stdClass;
+use user_picture;
+
 /**
  * Learner class.
  *
@@ -25,7 +31,17 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class learner extends item {
+class learner extends item implements data_provider {
+
+    private $renderer;
+
+    private function get_renderer() {
+        global $PAGE;
+        if (is_null($this->renderer)) {
+            $this->renderer = $PAGE->get_renderer('core');
+        }
+        return $this->renderer;
+    }
 
     public function get_description(): string {
         return get_string('learner:description', 'report_lp');
@@ -43,4 +59,27 @@ class learner extends item {
         return true;
     }
 
+    public function get_cell(stdClass $data) : cell {
+
+    }
+
+    public function get_data_for_user(stdClass $user) : stdClass {
+        global $PAGE;
+        $user->fullname = fullname($user);
+        $profileimage = new user_picture($user);
+        $profileimageeurl = $profileimage->get_url($PAGE, $this->get_renderer());
+        $user->imageurl = $profileimageeurl->out();
+        if (empty($user->imagealt)) {
+            $user->imagealt = get_string('pictureof', '', $user->fullname);
+        }
+        return $user;
+    }
+
+    public function get_data_for_users(user_list $userlist) : array {
+
+    }
+
+    public function get_text(stdClass $data) : string {
+
+    }
 }

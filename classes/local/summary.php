@@ -20,6 +20,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use coding_exception;
 use stdClass;
+use report_lp\local\builders\item_tree;
 
 /**
  *
@@ -39,8 +40,8 @@ class summary {
 
     public function __construct(stdClass $course, item_type_list $itemtypelist = null) {
         $this->course = $course;
-        if (!is_null($itemtypelist)) {
-            $this->set_item_type_list($itemtypelist);
+        if (is_null($itemtypelist)) {
+            $this->itemtypelist = $this->get_default_item_type_list();
         }
     }
 
@@ -95,8 +96,15 @@ class summary {
 
         $filteredcoursegroups = course_group::get_active_filter($this->course->id);
         $this->learnerlist->add_course_groups_filter($filteredcoursegroups);
+        $tree = new item_tree($this->course, $this->itemtypelist);
+        $root = $tree->build_from_item_configurations();
 
-
+        print_object($tree->get_current_depth());
+        print_object($root->get_label());
+        print_object($root->count());
+        foreach ($root->get_children() as $child) {
+            mtrace($child->get_label());
+        }
 
     }
 
