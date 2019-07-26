@@ -18,6 +18,8 @@ namespace report_lp\local;
 
 defined('MOODLE_INTERNAL') || die();
 
+use report_lp\local\builders\item_tree;
+use report_lp\local\visitors\component_item_visitor;
 use stdClass;
 use report_lp\local\persistents\report_configuration;
 
@@ -30,6 +32,16 @@ use report_lp\local\persistents\report_configuration;
  */
 class report {
 
+    /**
+     * Create instance of report for course. This includes setting up learner grouping, learner and
+     * learner fields.
+     *
+     * @param stdClass $course
+     * @return report_configuration
+     * @throws \ReflectionException
+     * @throws \coding_exception
+     * @throws \core\invalid_persistent_exception
+     */
     public static function create_course_instance(stdClass $course) {
         $itemfactory = new factories\item($course, new item_type_list());
         $root = $itemfactory->get_root_grouping(true);
@@ -46,10 +58,55 @@ class report {
         return $reportconfiguration;
     }
 
+    /**
+     * Check if instance of report for course exists.
+     *
+     * @param stdClass $course
+     * @return bool
+     */
+    public static function course_instance_exists(stdClass $course) {
+        return report_configuration::record_exists_select(
+            "courseid = :courseid",
+            ['courseid' => $course->id]
+        );
+    }
+
+    /**
+     * Delete instance of report for a course.
+     *
+     * @param stdClass $course
+     * @throws \dml_exception
+     */
     public static function delete_course_instance(stdClass $course) {
         global $DB;
         $DB->delete_records('report_lp', ['courseid' => $course->id]);
         $DB->delete_records('report_lp_items', ['courseid' => $course->id]);
+    }
+
+    /**
+     * Clean up items attached to a deleted course module.
+     *
+     * @param int $courseid
+     * @param string $modulename
+     * @param int $instanceid
+     * @throws \ReflectionException
+     * @throws \coding_exception
+     * @throws \dml_exception
+     */
+    public static function handle_course_module_deletion(int $courseid, string $modulename, int $instanceid) {
+        $course = get_course($courseid);
+        $treebuilder = new item_tree($course);
+        $root = $treebuilder->build_from_item_configurations();
+        $visitor = new component_item_visitor('mod', $modulename);
+        /** @var item $item */
+        $items = $root->accept($visitor);
+        foreach ($items as $item) {
+            $extraconfiguration = $item->get_extraconfigurationdata();
+            // @TODO at this stage we are assuming id isset and is id in plugins table.
+            if ($extraconfiguration->id == $instanceid) {
+                $item->get_configuration()->delete();
+            }
+        }
     }
 
 }
