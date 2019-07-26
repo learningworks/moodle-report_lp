@@ -25,19 +25,17 @@ use report_lp\local\contracts\item_visitor;
 class grouping_item_visitor implements item_visitor {
 
     public function visit(item $item) {
-        $items = [];
+        $items = [$item];
         if ($item instanceof grouping) {
-            $items[] = $item;
-        }
-        foreach ($item->getChildren() as $child) {
-            if ($item instanceof grouping) {
-                $item = array_merge(
+            foreach ($item->get_children() as $child) {
+                $items = array_merge(
                     $items,
                     $child->accept($this)
                 );
+
             }
+            return $items;
         }
-        return $items;
     }
 
 }
