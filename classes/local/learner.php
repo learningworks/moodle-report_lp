@@ -23,6 +23,9 @@ use report_lp\local\user_list;
 use report_lp\output\cell;
 use stdClass;
 use user_picture;
+use moodle_url;
+use coding_exception;
+use core_user;
 
 /**
  * Learner class.
@@ -33,7 +36,18 @@ use user_picture;
  */
 class learner extends item implements data_provider {
 
+    private $allnames;
+
+    private $enrolmentstatuses;
+
     private $renderer;
+
+    private function get_all_names() {
+        if (is_null($this->allnames)) {
+            $this->allnames = get_all_user_name_fields();
+        }
+        return $this->allnames;
+    }
 
     private function get_renderer() {
         global $PAGE;
@@ -41,6 +55,21 @@ class learner extends item implements data_provider {
             $this->renderer = $PAGE->get_renderer('core');
         }
         return $this->renderer;
+    }
+
+    private function get_enrolment_status(int $userid) {
+        global $DB;
+        if (is_null($this->enrolmentstatuses)) {
+            $sql = "SELECT ua.*
+                      FROM {user_enrolments} ua
+                      JOIN {mdl_enrol} e ON e.id = ua.enrolid
+                     WHERE e.courseid = :courseid";
+            $this->enrolmentstatuses = $DB->get_records_sql($sql, ['courseid' => $this->get_courseid()]);
+        }
+        if (isset($this->enrolmentstatuses[$userid])) {
+            throw new coding_exception('User is not enrolled in this course');
+        }
+        return $this->enrolmentstatuses[$userid];
     }
 
     public function get_description(): string {
@@ -60,17 +89,32 @@ class learner extends item implements data_provider {
     }
 
     public function get_cell(stdClass $data) : cell {
-
     }
 
     public function get_data_for_user(stdClass $user) : stdClass {
         global $PAGE;
+        if (!isset($user->id)) {
+            throw new coding_exception('Invalid user record');
+        }
+        foreach ($this->get_all_names() as $allname) {
+            if (!property_exists($user, $allname)) {
+                $user = core_user::get_user($user->id);
+                break;
+            }
+        }
         $user->fullname = fullname($user);
         $profileimage = new user_picture($user);
-        $profileimageeurl = $profileimage->get_url($PAGE, $this->get_renderer());
-        $user->imageurl = $profileimageeurl->out();
+        $profileimageurl = $profileimage->get_url($PAGE, $this->get_renderer());
+        $user->profileimageurl = $profileimageurl->out();
         if (empty($user->imagealt)) {
-            $user->imagealt = get_string('pictureof', '', $user->fullname);
+            $user->profileimagealt = get_string('pictureof', '', $user->fullname);
+        } else {
+            $user->profileimagealt = $user->imagealt;
+        }
+        $profilelinkurl = new moodle_url('/user/view.php', ['id' => $user->id, 'course' => $this->get_courseid()]);
+        $user->profilelinkurl = $profilelinkurl->out();
+        if (!isset($user->enrolmentstatus)) {
+            $user->enrolmentstatus = $this->get_enrolment_status($user->id);
         }
         return $user;
     }
