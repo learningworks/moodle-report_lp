@@ -14,19 +14,22 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
 /**
- * Plugin version and other meta-data are defined here.
+ * Events the plugin needs to observe and handle.
  *
  * @package     report_lp
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
-
-$plugin->version   = 2019072202;
-$plugin->requires  = 2019052000;                    // See http://docs.moodle.org/dev/Moodle_Version
-$plugin->component = 'report_lp';                   // Full name of the plugin (used for diagnostics)
-$plugin->release   = 'v3.7.0-alpha1';               // Human-friendly version name.
-$plugin->maturity  = MATURITY_ALPHA;                // This version's maturity level.
-$plugin->dependencies = [];
+$observers = [
+    [
+        'eventname' => '\core\event\course_deleted',
+        'callback' => '\report_lp\event\observer::course_deleted'
+    ],
+    [
+        'eventname' => '\core\event\course_module_deleted',
+        'callback' => '\report_lp\event\observer::course_module_deleted'
+    ]
+];
