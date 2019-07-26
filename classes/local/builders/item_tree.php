@@ -36,6 +36,8 @@ use stdClass;
  */
 class item_tree {
 
+    private $depth = 0;
+
     /**
      * @var stdClass $course Course object.
      */
@@ -86,9 +88,21 @@ class item_tree {
                 $parentitem = $this->items[$item->get_parentitemid()];
                 /** @var grouping $parentitem */
                 $parentitem->add_item($item);
+                if ($item->get_depth() > $this->depth) {
+                    $this->depth = $item->get_depth();
+                }
             }
         }
         return $this->tree;
+    }
+
+    /**
+     * Get the current depth of the tree.
+     *
+     * @return int
+     */
+    public function get_current_depth() {
+        return (int) $this->depth;
     }
 
 }
