@@ -24,6 +24,7 @@ use pix_icon;
 use report_lp\local\persistents\item_configuration;
 use ReflectionClass;
 use stdClass;
+use report_lp\local\contracts\item_visitor;
 
 /**
  * The base class that classes must extend.
@@ -101,12 +102,12 @@ abstract class item {
     }
 
     /**
+     * Allow visitor to process this and node and any child nodes.
      *
-     *
-     * @param visitor $visitor
+     * @param item_visitor $visitor
      * @return mixed
      */
-    public function accept(visitor $visitor) {
+    public function accept(item_visitor $visitor) {
         return $visitor->visit($this);
     }
 
