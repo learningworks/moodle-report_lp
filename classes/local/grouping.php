@@ -20,6 +20,7 @@ use coding_exception;
 use ArrayIterator;
 use Countable;
 use IteratorAggregate;
+use report_lp\output\cell;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -41,6 +42,16 @@ class grouping extends item implements Countable, IteratorAggregate {
      * @var array $children Store for child items.
      */
     private $children = [];
+
+    public function get_cell_data(bool $header = true) {
+        $cell = new cell();
+        $text = $this->get_label();
+        $cell->contents = $text;
+        $cell->text = $text;
+        $cell->colspan = $this->count();
+        $cell->header = true;
+        return $cell;
+    }
 
     /**
      * Default label for grouping.
