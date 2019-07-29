@@ -25,19 +25,6 @@ use stdClass;
 
 class idnumber_learner_field extends learner_field {
 
-    public function get_cell_data(bool $header = true) {
-        $cell = new cell();
-        $text = $this->get_label();
-        $cell->text = $text;
-        if ($header) {
-            $cell->contents = $text;
-            $cell->header = true;
-            return $cell;
-        }
-        // @TO Build data
-        return $cell;
-    }
-
     public function get_description(): string {
         return get_string('idnumber:learnerfield:description', 'report_lp');
     }
