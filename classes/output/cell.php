@@ -34,16 +34,20 @@ use templatable;
 
 class cell implements renderable, templatable {
 
-
     /**
      * @var string Value to use for the id attribute of the cell.
      */
     public $id;
 
     /**
-     * @var string The contents of the cell.
+     * @var string The contents of the cell. May include other HTML tags, images, URL's etc.
      */
     public $contents;
+
+    /**
+     * @var string The simple text version of cell contentx.
+     */
+    public $text;
 
     /**
      * @var int Number of columns this cell should span.
@@ -66,18 +70,14 @@ class cell implements renderable, templatable {
     public $header;
 
     /**
-     * @var string Value to use for the style attribute of the table cell
-     */
-    public $style;
-
-    /**
      * @var array Attributes of additional HTML attributes for the <td> element
      */
-    public $attributes = [];
+    //public $attributes = [];
 
-    public function __construct() {
-    }
-
+    /**
+     * @param renderer_base $output
+     * @return array|stdClass
+     */
     public function export_for_template(renderer_base $output) {
         $data = new stdClass();
         return $data;
