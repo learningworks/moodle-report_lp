@@ -55,11 +55,10 @@ class learner extends item implements data_provider {
         return $this->allnames;
     }
 
-    public function get_cell_data(bool $header = false) {
+    public function build_header_cell(int $depth = null) {
         $cell = new cell();
-        if ($header) {
-            return $cell; // Return empty cell.
-        }
+        $cell->header = true;
+        $cell->colspan = 2;
         return $cell;
     }
 

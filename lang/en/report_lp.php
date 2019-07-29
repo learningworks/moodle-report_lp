@@ -81,7 +81,7 @@ $string['learner:label'] = 'Learner fullname, profile picture and actions';
 $string['learner:description'] = 'Standard learner information such as profile picture and fullname.';
 
 $string['learnerinformationgrouping:name'] = 'Learner information grouping';
-$string['learnerinformationgrouping:label'] = 'Learner information grouping';
+$string['learnerinformationgrouping:label'] = 'Learner information';
 $string['learnerinformationgrouping:description'] = 'Grouping of learner information learner item and learner fields.';
 
 $string['grouping'] = 'Grouping';
