@@ -46,7 +46,7 @@ class last_course_access extends measure {
      * @throws coding_exception
      */
     public function format_user_measure_data($data, $format = FORMAT_PLAIN) : string {
-        if (is_null($data)) {
+        if (is_null($data->lastaccess)) {
             $label = get_string('never');
             $title = $label;
         } else {
@@ -61,12 +61,12 @@ class last_course_access extends measure {
     }
 
     /**
-     * @param int $userid
-     * @return mixed|null
+     * @param stdClass $user
+     * @return stdClass
      * @throws \dml_exception
      * @throws coding_exception
      */
-    public function get_data_for_user(stdClass $user) {
+    public function get_data_for_user(stdClass $user) : stdClass {
         global $DB;
 
         /** @var array $lastaccess Used as a static cache. */
@@ -82,10 +82,13 @@ class last_course_access extends measure {
                      WHERE la.courseid = :courseid";
             $lastaccess = $DB->get_records_sql($sql, ['courseid' => $configuration->get('courseid')]);
         }
-        if (isset($lastaccess[$userid])) {
-            return $lastaccess[$userid];
+        $data = new stdClass();
+        $data->userid = $user->id;
+        $data->lastaccess = null;
+        if (isset($lastaccess[$user->id])) {
+            $data->lastaccess = $lastaccess[$user->id];
         }
-        return null;
+        return $data;
     }
 
     /**
