@@ -16,6 +16,8 @@
 
 namespace report_lp\local;
 
+use report_lp\output\cell;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -29,6 +31,16 @@ defined('MOODLE_INTERNAL') || die();
  */
 
 class learner_information_grouping extends grouping {
+
+    public function get_cell_data(bool $header = true) {
+        $cell = new cell();
+        $text = $this->get_label();
+        $cell->contents = $text;
+        $cell->text = $text;
+        $cell->colspan = $this->count();
+        $cell->header = true;
+        return $cell;
+    }
 
     public function get_default_label() : string {
         return get_string('learnerinformationgrouping:label', 'report_lp');
