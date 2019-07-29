@@ -20,13 +20,13 @@ defined('MOODLE_INTERNAL') || die();
 
 use coding_exception;
 use moodleform;
+use report_lp\local\contracts\extra_configuration;
 use report_lp\local\grouping;
 use report_lp\local\measure;
 use report_lp\local\item_type_list;
 use stdClass;
 use report_lp\local\persistents\item_configuration;
 use report_lp\local\factories\item as item_factory;
-use report_lp\local\contracts\has_own_configuration;
 
 class item extends moodleform {
 
@@ -127,7 +127,7 @@ class item extends moodleform {
         $mform->setDefault('disabled', 1);
 
         // Has own configuration settings, apply form custom elements.
-        if ($this->item instanceof has_own_configuration) {
+        if ($this->item instanceof extra_configuration) {
             $mform->addElement('header', 'specific', get_string('specificsettings', 'report_lp'));
             $this->item->moodlequickform_extend($mform);
         }
@@ -163,7 +163,7 @@ class item extends moodleform {
             $defaults['parentitemid'] = $this->rootitem->get_id();
         }
         // Include custom defaults for item with own configuration.
-        if ($this->item instanceof has_own_configuration) {
+        if ($this->item instanceof extra_configuration) {
             $itemdefaults = $this->item->moodlequickform_get_extra_configuration_defaults();
             $defaults = array_merge($itemdefaults, $defaults);
         }
@@ -196,7 +196,7 @@ class item extends moodleform {
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
         $itemerrors = [];
-        if ($this->item instanceof has_own_configuration) {
+        if ($this->item instanceof extra_configuration) {
             $itemerrors = $this->item->moodlequickform_validation($data, $files);
         }
         return array_merge($errors, $itemerrors);
@@ -209,7 +209,7 @@ class item extends moodleform {
      * @return array
      */
     public function get_extra_configuration_data() {
-        if ($this->item instanceof has_own_configuration) {
+        if ($this->item instanceof extra_configuration) {
             $mform = $this->_form;
             if (!$this->is_cancelled() and $this->is_submitted() and $this->is_validated()) {
                 $data = $mform->exportValues();
