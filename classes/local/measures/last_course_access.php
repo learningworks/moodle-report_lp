@@ -66,7 +66,7 @@ class last_course_access extends measure {
      * @throws \dml_exception
      * @throws coding_exception
      */
-    public function get_data_for_user(int $userid) {
+    public function get_data_for_user(stdClass $user) {
         global $DB;
 
         /** @var array $lastaccess Used as a static cache. */

@@ -65,13 +65,13 @@ class grade_category_activity_completion extends measure implements has_own_conf
     }
 
     /**
-     * @param int $userid
-     * @return float|int|mixed|null
+     * @param stdClass $user
+     * @return stdClass
      * @throws \dml_exception
      * @throws \moodle_exception
      * @throws coding_exception
      */
-    public function get_data_for_user(int $userid) {
+    public function get_data_for_user(stdClass $user) : stdClass {
 
         static $activities;
 
@@ -121,7 +121,7 @@ class grade_category_activity_completion extends measure implements has_own_conf
         // Get the number of modules that have been completed.
         $completed = 0;
         foreach ($activities as $activity) {
-            $data = $completion->get_data($activity, true, $userid);
+            $data = $completion->get_data($activity, true, $user->id);
             $completed += $data->completionstate == COMPLETION_INCOMPLETE ? 0 : 1;
         }
 

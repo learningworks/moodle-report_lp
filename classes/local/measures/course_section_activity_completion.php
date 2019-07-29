@@ -68,13 +68,13 @@ class course_section_activity_completion extends measure implements has_own_conf
     }
 
     /**
-     * @param int $userid
-     * @return mixed|object|stdClass|null
+     * @param stdClass $user
+     * @return stdClass
      * @throws \dml_exception
      * @throws \moodle_exception
      * @throws coding_exception
      */
-    public function get_data_for_user(int $userid) {
+    public function get_data_for_user(stdClass $user) : stdClass {
         $this->load_instance_data();
         $sectionactivities = $this->sectionactivities;
         $count = count($sectionactivities);
@@ -84,7 +84,7 @@ class course_section_activity_completion extends measure implements has_own_conf
         // Get the number of modules that have been completed.
         $completed = 0;
         foreach ($sectionactivities as $activity) {
-            $data = $this->coursecompletion->get_data($activity, true, $userid);
+            $data = $this->coursecompletion->get_data($activity, true, $user->id);
             $completed += $data->completionstate == COMPLETION_INCOMPLETE ? 0 : 1;
         }
         $data = new stdClass();

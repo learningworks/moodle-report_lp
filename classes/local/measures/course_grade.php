@@ -73,13 +73,13 @@ class course_grade extends measure {
     }
 
     /**
-     * @param int $userid
-     * @return mixed
+     * @param stdClass $user
+     * @return stdClass
      * @throws coding_exception
      */
-    public function get_data_for_user(int $userid) {
+    public function get_data_for_user(stdClass $user) : stdClass {
         $this->load_course_grade_item();
-        $finalgrade = $this->coursegradeitem->get_final($userid);
+        $finalgrade = $this->coursegradeitem->get_final($user->id);
         return $finalgrade;
     }
 

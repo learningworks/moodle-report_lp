@@ -25,6 +25,7 @@ use report_lp\local\contracts\has_own_configuration;
 use report_lp\local\measure;
 use report_lp\local\persistents\item_configuration;
 use report_lp\local\user_list;
+use report_lp\output\cell;
 use stdClass;
 use core_plugin_manager;
 
@@ -47,7 +48,12 @@ class attendance_sessions_summary extends measure implements has_own_configurati
         return '';
     }
 
-    public function get_data_for_user(int $userid) {
+    public function get_cell_data1(bool $header = false) {
+        $cell = new cell();
+        return $cell;
+    }
+
+    public function get_data_for_user(stdClass $user) : stdClass {
         return null;
     }
 

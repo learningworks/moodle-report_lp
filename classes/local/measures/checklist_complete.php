@@ -123,12 +123,12 @@ class checklist_complete extends measure implements has_own_configuration {
     /**
      * Get percentage completed.
      *
-     * @param int $userid
-     * @return float|int|mixed
+     * @param stdClass $user
+     * @return stdClass
      * @throws \dml_exception
      * @throws coding_exception
      */
-    public function get_data_for_user(int $userid) {
+    public function get_data_for_user(stdClass $user) : stdClass {
         global $DB;
 
         $this->load_checklist();
@@ -144,7 +144,7 @@ class checklist_complete extends measure implements has_own_configuration {
             }
         }
         if ($this->checklistitemstotal) {
-            $inparameters['userid'] = $userid;
+            $inparameters['userid'] = $user->id;
             $tickeditems = $DB->count_records_select('checklist_check', $sql, $inparameters);
             $percentcomplete = ($tickeditems * 100) / $this->checklistitemstotal;
         } else {

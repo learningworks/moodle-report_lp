@@ -77,17 +77,17 @@ class assignment_resubmit_count extends measure implements has_own_configuration
     /**
      * Build data for user. Uses the assign and gradeitem API classes.
      *
-     * @param int $userid
+     * @param stdClass $user
      * @return stdClass
      * @throws \dml_exception
      * @throws coding_exception
      */
-    public function get_data_for_user(int $userid) {
+    public function get_data_for_user(stdClass $user) : stdClass {
         $assignment = $this->get_assignment();
-        $submission = $assignment->get_user_submission($userid, true);
+        $submission = $assignment->get_user_submission($user->id, true);
         // Payload.
         $data = new stdClass();
-        $data->userid = $userid;
+        $data->userid = $user->id;
         $data->assignmentid = $assignment->get_instance()->id;
         $data->submissionid = $submission->id;
         $data->submissionattemptnumber = $submission->attemptnumber;

@@ -16,6 +16,10 @@
 
 namespace report_lp\local;
 
+use report_lp\output\cell;
+use stdClass;
+use report_lp\local\contracts\data_provider;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -25,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-abstract class measure extends item {
+abstract class measure extends item implements data_provider {
 
     /**
      * Formats user data from this measure.
@@ -37,19 +41,40 @@ abstract class measure extends item {
     abstract public function format_user_measure_data($data, $format = FORMAT_PLAIN) : string;
 
     /**
-     * Get measure data for a single user.
+     * Fallback. Measures to extend and provide move data.
      *
-     * @param int $userid
-     * @return mixed
+     * @param bool $header
+     * @return mixed|cell
+     * @throws \coding_exception
+     * @throws \moodle_exception
      */
-    abstract public function get_data_for_user(int $userid);
+    public function get_cell_data(bool $header = true) {
+        $cell = new cell();
 
-    /**
-     * Get measure data for a list of users.
-     *
-     * @param user_list $userlist
-     * @return array|null
-     */
-    abstract public function get_data_for_users(user_list $userlist) : array;
+        if ($header) {
+            $renderer = $this->get_renderer();
+            $text = $this->get_label();
+            $cell->header = true;
+            $cell->text = $text;
+            $contents = new stdClass();
+            $contents->text = $text;
+            $contents->title = $text;
+            if ($this->has_url()) {
+                $link = new stdClass();
+                $link->text = $text;
+                $link->alt = $text;
+                $link->src = $this->get_url()->out();
+                $contents->link = $link;
+            }
+            if ($this->has_icon()) {
+                $contents->icon =  $this->get_icon()->export_for_template($renderer);
+            }
+            $cell->contents = $renderer->render_from_template(
+                'report_lp/cell_contents', $contents);
+            return $cell;
+        }
+        return $cell;
+
+    }
 
 }

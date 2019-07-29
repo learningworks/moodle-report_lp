@@ -26,10 +26,11 @@ require_once($CFG->dirroot . '/mod/assign/locallib.php');
 use assign;
 use pix_icon;
 use moodle_url;
+use report_lp\output\cell;
 use stdClass;
 use MoodleQuickForm;
 use coding_exception;
-use report_lp\local\contracts\has_own_configuration;
+use report_lp\local\contracts\extra_configuration;
 use report_lp\local\measure;
 use report_lp\local\user_list;
 use report_lp\local\persistents\item_configuration;
@@ -45,7 +46,7 @@ use html_writer;
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class assignment_status extends measure implements has_own_configuration {
+class assignment_status extends measure implements extra_configuration {
 
     /** @var string COMPONENT_TYPE Used to identify core subsystem or plugin type. Moodle frankenstyle. */
     public const COMPONENT_TYPE = 'mod';
@@ -94,14 +95,15 @@ class assignment_status extends measure implements has_own_configuration {
     /**
      * Build data for user. Uses the assign and gradeitem API classes.
      *
-     * @param int $userid
-     * @return mixed|stdClass
+     * @param stdClass $user
+     * @return stdClass
      * @throws \dml_exception
      * @throws coding_exception
      */
-    public function get_data_for_user(int $userid) {
+    public function get_data_for_user(stdClass $user) : stdClass {
         $assignment = $this->get_assignment();
 
+        $userid = $user->id;
         $submission = $assignment->get_user_submission($userid, true);
         $submissiongrade = $assignment->get_user_grade($userid, true);
         $gradeitem = $assignment->get_grade_item();
