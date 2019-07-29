@@ -18,7 +18,11 @@ namespace report_lp\local\fields;
 
 defined('MOODLE_INTERNAL') || die();
 
+
 use report_lp\local\learner_field;
+use report_lp\local\user_list;
+use report_lp\output\cell;
+use stdClass;
 
 /**
  * All learner field classes must extend this class.
@@ -29,6 +33,18 @@ use report_lp\local\learner_field;
  */
 
 class course_groups_learner_field extends learner_field {
+
+    public function get_cell_data(bool $header = true) {
+        $cell = new cell();
+        $text = $this->get_label();
+        $cell->text = $text;
+        if ($header) {
+            $cell->contents = $text;
+            $cell->header = true;
+            return $cell;
+        }
+        return $cell;
+    }
 
     public function get_description(): string {
         return get_string('coursegroups:learnerfield:description', 'report_lp');
@@ -41,4 +57,13 @@ class course_groups_learner_field extends learner_field {
     public function get_name(): string {
         return get_string('coursegroups:learnerfield:name', 'report_lp');
     }
+
+    public function get_data_for_user(stdClass $user) : stdClass {
+        return new stdClass();
+    }
+
+    public function get_data_for_users(user_list $userlist) : array {
+        return [];
+    }
+
 }

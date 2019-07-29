@@ -18,6 +18,7 @@ namespace report_lp\local;
 
 defined('MOODLE_INTERNAL') || die();
 
+use plugin_renderer_base;
 use report_lp\local\contracts\data_provider;
 use report_lp\local\user_list;
 use report_lp\output\cell;
@@ -36,12 +37,17 @@ use core_user;
  */
 class learner extends item implements data_provider {
 
+    /** @var array $allnames Required user field name columns. */
     private $allnames;
 
+    /** @var array $enrolmentstatuses Cache for users enrolments. */
     private $enrolmentstatuses;
 
-    private $renderer;
-
+    /**
+     * All name fields required for building user object.
+     *
+     * @return array|string
+     */
     private function get_all_names() {
         if (is_null($this->allnames)) {
             $this->allnames = get_all_user_name_fields();
@@ -49,14 +55,22 @@ class learner extends item implements data_provider {
         return $this->allnames;
     }
 
-    private function get_renderer() {
-        global $PAGE;
-        if (is_null($this->renderer)) {
-            $this->renderer = $PAGE->get_renderer('core');
+    public function get_cell_data(bool $header = false) {
+        $cell = new cell();
+        if ($header) {
+            return $cell; // Return empty cell.
         }
-        return $this->renderer;
+        return $cell;
     }
 
+    /**
+     * Get enrolment record for user. Caches records.
+     *
+     * @param int $userid
+     * @return mixed
+     * @throws \dml_exception
+     * @throws coding_exception
+     */
     private function get_enrolment_status(int $userid) {
         global $DB;
         if (is_null($this->enrolmentstatuses)) {
@@ -114,7 +128,8 @@ class learner extends item implements data_provider {
         $profilelinkurl = new moodle_url('/user/view.php', ['id' => $user->id, 'course' => $this->get_courseid()]);
         $user->profilelinkurl = $profilelinkurl->out();
         if (!isset($user->enrolmentstatus)) {
-            $user->enrolmentstatus = $this->get_enrolment_status($user->id);
+            $ue = $this->get_enrolment_status($user->id);
+            $user->enrolmentstatus = $ue->status;
         }
         return $user;
     }
