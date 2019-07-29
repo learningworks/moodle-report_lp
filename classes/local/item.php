@@ -21,10 +21,12 @@ defined('MOODLE_INTERNAL') || die();
 use coding_exception;
 use moodle_url;
 use pix_icon;
+use plugin_renderer_base;
 use report_lp\local\persistents\item_configuration;
 use ReflectionClass;
 use stdClass;
 use report_lp\local\contracts\item_visitor;
+use report_lp\output\cell;
 
 /**
  * The base class that classes must extend.
@@ -52,6 +54,9 @@ abstract class item {
 
     /** @var item_configuration $configuration The associated persistent class. */
     private $configuration;
+
+    /** @var plugin_renderer_base $renderer Cache renderer class. */
+    private $renderer;
 
     /** @var int $id */
     protected $id;
@@ -192,6 +197,27 @@ abstract class item {
      */
     public function get_icon() : ? pix_icon {
         return null;
+    }
+
+    /**
+     * Primary method a item is to use for building table cell data.
+     *
+     * @param bool $header
+     * @return mixed
+     */
+    abstract function get_cell_data(bool $header = false);
+
+    /**
+     * Return renderer class, cache if required.
+     *
+     * @return \renderer_base
+     */
+    protected function get_renderer() {
+        global $PAGE;
+        if (is_null($this->renderer)) {
+            $this->renderer = $PAGE->get_renderer('core');
+        }
+        return $this->renderer;
     }
 
     /**
