@@ -32,16 +32,6 @@ use report_lp\local\user_list;
 interface data_provider {
 
     /**
-     * More complex data formatter for HTML cells for single user, uses a
-     * output cell class to be passed to template that can contain mixed
-     * information.
-     *
-     * @param stdClass $data
-     * @return cell
-     */
-    public function get_cell(stdClass $data) : cell;
-
-    /**
      * Method to allow item to get required data that will be used for
      * a user that will be used for future calls to get_cell and get_text
      * methods.
@@ -60,13 +50,5 @@ interface data_provider {
      * @return array
      */
     public function get_data_for_users(user_list $userlist) : array;
-
-    /**
-     * Simple text value formatter for data for single user.
-     *
-     * @param stdClass $data
-     * @return string
-     */
-    public function get_text(stdClass $data) : string;
 
 }
