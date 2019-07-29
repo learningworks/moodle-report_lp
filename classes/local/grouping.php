@@ -43,13 +43,10 @@ class grouping extends item implements Countable, IteratorAggregate {
      */
     private $children = [];
 
-    public function get_cell_data(bool $header = true) {
-        $cell = new cell();
-        $text = $this->get_label();
-        $cell->contents = $text;
-        $cell->text = $text;
+
+    public function build_header_cell(int $depth = null) {
+        $cell = parent::build_header_cell($depth);
         $cell->colspan = $this->count();
-        $cell->header = true;
         return $cell;
     }
 
