@@ -19,8 +19,13 @@ namespace report_lp\local;
 defined('MOODLE_INTERNAL') || die();
 
 use coding_exception;
+use report_lp\local\contracts\data_provider;
+use report_lp\local\visitors\depth_item_visitor;
+use report_lp\local\visitors\data_item_visitor;
+use report_lp\output\row1;
 use stdClass;
 use report_lp\local\builders\item_tree;
+use report_lp\output\row;
 
 /**
  *
@@ -96,15 +101,53 @@ class summary {
 
         $filteredcoursegroups = course_group::get_active_filter($this->course->id);
         $this->learnerlist->add_course_groups_filter($filteredcoursegroups);
+
+        $excludedlist = $this->get_excluded_list();
+        $excludedlearnernames = array_map(
+            function($learner) {
+                return fullname($learner);
+            },
+            iterator_to_array($excludedlist));
+
+        $data = new stdClass();
+        $data->courseid = $this->course->id;
+        $data->hasexcludedlearners = ($excludedlist->count()) ? true : false;
+        $data->excludedlearnerlist = implode(', ', $excludedlearnernames);
+
         $tree = new item_tree($this->course, $this->itemtypelist);
         $root = $tree->build_from_item_configurations();
 
-        print_object($tree->get_current_depth());
-        print_object($root->get_label());
-        print_object($root->count());
-        foreach ($root->get_children() as $child) {
-            mtrace($child->get_label());
+        // This array of items very special to us.
+        $dataitems = $root->accept(new data_item_visitor());
+        $thead = [];
+        $row = new row();
+        $row->cells = $this->build_grouping_header($root);
+        $thead[] = $row;
+        $row = new row();
+        $row->cells = $this->build_header($dataitems);
+        $thead[] = $row;
+        $data->thead = $thead;
+
+
+        return $data;
+    }
+
+    protected function build_grouping_header($root) {
+        $row = [];
+        foreach($root->get_children() as $child)  {
+            $cell = $child->build_header_cell(1);
+            $row[] = $cell;
         }
+        return $row;
+    }
+
+    protected function build_header(array $dataitems) {
+        $row = [];
+        foreach($dataitems as $dataitem)  {
+            $cell = $dataitem->build_header_cell(2);
+            $row[] = $cell;
+        }
+        return $row;
 
     }
 

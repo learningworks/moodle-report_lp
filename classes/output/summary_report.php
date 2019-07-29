@@ -58,7 +58,9 @@ class summary_report implements renderable, templatable {
     }
 
     public function export_for_template(renderer_base $output) {
-        $this->rendererbase = $output;
+        return $this->summary->build_data();
+
+
 
         $course = $this->summary->get_course();
         $excludedlist = $this->summary->get_excluded_list();
