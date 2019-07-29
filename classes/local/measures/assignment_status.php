@@ -26,7 +26,6 @@ require_once($CFG->dirroot . '/mod/assign/locallib.php');
 use assign;
 use pix_icon;
 use moodle_url;
-use report_lp\output\cell;
 use stdClass;
 use MoodleQuickForm;
 use coding_exception;

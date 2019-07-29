@@ -25,12 +25,12 @@ use coding_exception;
 use completion_info;
 use html_writer;
 use MoodleQuickForm;
-use report_lp\local\contracts\has_own_configuration;
+use report_lp\local\contracts\extra_configuration;
 use report_lp\local\measure;
 use report_lp\local\user_list;
 use stdClass;
 
-class course_section_activity_completion extends measure implements has_own_configuration {
+class course_section_activity_completion extends measure implements extra_configuration {
 
     /** @var string COMPONENT_TYPE Used to identify core subsystem or plugin type. */
     public const COMPONENT_TYPE = 'core';

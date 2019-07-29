@@ -30,7 +30,7 @@ use html_writer;
 use moodle_url;
 use MoodleQuickForm;
 use pix_icon;
-use report_lp\local\contracts\has_own_configuration;
+use report_lp\local\contracts\extra_configuration;
 use report_lp\local\measure;
 use report_lp\local\persistents\item_configuration;
 use report_lp\local\user_list;
@@ -44,7 +44,7 @@ use core_plugin_manager;
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class assignment_resubmit_count extends measure implements has_own_configuration {
+class assignment_resubmit_count extends measure implements extra_configuration {
 
     /** @var string COMPONENT_TYPE Used to identify core or plugin type. Moodle frankenstyle. */
     public const COMPONENT_TYPE = 'mod';

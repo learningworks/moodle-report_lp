@@ -27,7 +27,7 @@ use completion_info;
 use grade_category;
 use html_writer;
 use MoodleQuickForm;
-use report_lp\local\contracts\has_own_configuration;
+use report_lp\local\contracts\extra_configuration;
 use report_lp\local\measure;
 use report_lp\local\user_list;
 use stdClass;
@@ -39,7 +39,7 @@ use stdClass;
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class grade_category_activity_completion extends measure implements has_own_configuration {
+class grade_category_activity_completion extends measure implements extra_configuration {
 
     /** @var string COMPONENT_TYPE Used to identify core subsystem or plugin type. Moodle frankenstyle. */
     public const COMPONENT_TYPE = 'core';
