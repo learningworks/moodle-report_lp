@@ -18,6 +18,8 @@ namespace report_lp\local;
 
 defined('MOODLE_INTERNAL') || die();
 
+use report_lp\local\contracts\data_provider;
+
 /**
  * All learner field classes must extend this class.
  *
@@ -25,6 +27,5 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-abstract class learner_field extends item {
-
+abstract class learner_field extends item implements data_provider {
 }
