@@ -50,7 +50,7 @@ abstract class item {
     private $course;
 
     /** @var item|null The parent item of this item. If no item will return null. */
-    private $parent;
+    public $parent;
 
     /** @var item_configuration $configuration The associated persistent class. */
     private $configuration;
@@ -200,12 +200,38 @@ abstract class item {
     }
 
     /**
-     * Primary method a item is to use for building table cell data.
+     * Primary method for building a cell object for
      *
-     * @param bool $header
+     * @param int|null $depth
      * @return mixed
      */
-    abstract function get_cell_data(bool $header = false);
+    public function build_header_cell(int $depth = null) {
+        $cell = new cell();
+        $renderer = $this->get_renderer();
+        $text = $this->get_label();
+        $cell->header = true;
+        $cell->text = $text;
+        $contents = new stdClass();
+        $contents->text = $text;
+        $contents->title = $text;
+        if ($this->has_url()) {
+            $link = new stdClass();
+            $link->text = $text;
+            $link->alt = $text;
+            $link->src = $this->get_url()->out();
+            $contents->link = $link;
+        }
+        if ($this->has_icon()) {
+            $contents->icon =  $this->get_icon()->export_for_template($renderer);
+        }
+        $cell->contents = $renderer->render_from_template(
+            'report_lp/cell_contents', $contents);
+        return $cell;
+    }
+
+    function get_header_cell($depth) {
+
+    }
 
     /**
      * Return renderer class, cache if required.
@@ -260,7 +286,7 @@ abstract class item {
      *
      * @return item|null
      */
-    final public function get_parent() {
+    final public function get_parent() : ? item {
         return $this->parent;
     }
 
