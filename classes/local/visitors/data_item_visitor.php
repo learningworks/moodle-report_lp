@@ -22,20 +22,31 @@ use report_lp\local\grouping;
 use report_lp\local\item;
 use report_lp\local\contracts\item_visitor;
 
-class grouping_item_visitor implements item_visitor {
+class bottom_item_visitor implements item_visitor {
+
+    public function __construct(int $depth) {
+        $this->depth = $depth;
+    }
 
     public function visit(item $item) {
-        $items = [$item];
+        $items = [];
+        mtrace($this->depth);
+        if ($item->get_depth() == $this->depth) {
+            $items[] = $item;
+        } else {
+            if (!($item instanceof grouping)) {
+                //$items[] = $item;
+            }
+        }
         if ($item instanceof grouping) {
             foreach ($item->get_children() as $child) {
                 $items = array_merge(
                     $items,
                     $child->accept($this)
                 );
-
             }
-            return $items;
         }
+        return $items;
     }
 
 }
