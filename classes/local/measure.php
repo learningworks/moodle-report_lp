@@ -41,40 +41,18 @@ abstract class measure extends item implements data_provider {
     abstract public function format_user_measure_data($data, $format = FORMAT_PLAIN) : string;
 
     /**
-     * Fallback. Measures to extend and provide move data.
+     * Build header cell.
      *
-     * @param bool $header
+     * @todo maybe depth work.
+     *
+     * @param int|null $depth
      * @return mixed|cell
-     * @throws \coding_exception
-     * @throws \moodle_exception
      */
-    public function get_cell_data(bool $header = true) {
-        $cell = new cell();
-
-        if ($header) {
-            $renderer = $this->get_renderer();
-            $text = $this->get_label();
-            $cell->header = true;
-            $cell->text = $text;
-            $contents = new stdClass();
-            $contents->text = $text;
-            $contents->title = $text;
-            if ($this->has_url()) {
-                $link = new stdClass();
-                $link->text = $text;
-                $link->alt = $text;
-                $link->src = $this->get_url()->out();
-                $contents->link = $link;
-            }
-            if ($this->has_icon()) {
-                $contents->icon =  $this->get_icon()->export_for_template($renderer);
-            }
-            $cell->contents = $renderer->render_from_template(
-                'report_lp/cell_contents', $contents);
-            return $cell;
+    public function build_header_cell(int $depth = null) {
+        if ($depth == 1 && $this->get_depth() == 1) {
+            return new cell();
         }
-        return $cell;
-
+        return parent::build_header_cell($depth);
     }
 
 }
