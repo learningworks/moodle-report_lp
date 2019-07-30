@@ -31,17 +31,17 @@ $PAGE->set_pagelayout('report');
 $css = new moodle_url('/report/lp/scss/styles.css');
 $PAGE->requires->css($css);
 
-$summary = new report_lp\local\summary($course);
+$summaryreport = new report_lp\local\summary_report($course);
 $itemtypelist = new report_lp\local\item_type_list();
-$summary->add_item_type_list($itemtypelist);
+$summaryreport ->add_item_type_list($itemtypelist);
 $learnerlist = new report_lp\local\learner_list($course);
 $filteredcoursegroups = report_lp\local\course_group::get_active_filter($course->id);
 $learnerlist->add_course_groups_filter($filteredcoursegroups);
-$summary->add_learner_list($learnerlist);
+$summaryreport ->add_learner_list($learnerlist);
 
 $renderer = $PAGE->get_renderer('report_lp');
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('summaryreportfor', 'report_lp', $course->fullname));
 echo $renderer->render_group_filter($course);
-echo $renderer->render(new report_lp\output\summary_report($summary));
+echo $renderer->render($summaryreport);
 echo $OUTPUT->footer();
