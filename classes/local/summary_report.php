@@ -93,6 +93,7 @@ class summary_report implements renderable, templatable {
     public function build_data() {
         $data = new stdClass();
         $data->courseid = $this->course->id;
+        $data->reportconfigured = false;
 
         global $PAGE;
         $renderer = $PAGE->get_renderer('report_lp');
@@ -127,31 +128,33 @@ class summary_report implements renderable, templatable {
 
         $tree = new item_tree($this->course, $this->itemtypelist);
         $root = $tree->build_from_item_configurations();
-
-        // This array of items very special to us.
-        $dataitems = $root->accept(new data_item_visitor());
-        $thead = [];
-        $row = new row();
-        $row->cells = $this->build_grouping_header($root);
-        $thead[] = $row;
-        $row = new row();
-        $row->cells = $this->build_header($dataitems);
-        $thead[] = $row;
-        $data->thead = $thead;
-
-        $tbody = [];
-        $this->get_learner_list()->fetch_all();
-        $excludedlearnerids = $excludedlist->get_userids();
-        foreach ($this->get_learner_list() as $learner) {
-            if (in_array($learner->id, $excludedlearnerids)) {
-                continue;
-            }
+        if ($root) {
+            $data->reportconfigured = true;
+            // This array of items very special to us.
+            $dataitems = $root->accept(new data_item_visitor());
+            $thead = [];
             $row = new row();
-            $cells = $this->build_data_row($learner, $dataitems);
-            $row->cells = $cells;
-            $tbody[] = $row;
+            $row->cells = $this->build_grouping_header($root);
+            $thead[] = $row;
+            $row = new row();
+            $row->cells = $this->build_header($dataitems);
+            $thead[] = $row;
+            $data->thead = $thead;
+
+            $tbody = [];
+            $this->get_learner_list()->fetch_all();
+            $excludedlearnerids = $excludedlist->get_userids();
+            foreach ($this->get_learner_list() as $learner) {
+                if (in_array($learner->id, $excludedlearnerids)) {
+                    continue;
+                }
+                $row = new row();
+                $cells = $this->build_data_row($learner, $dataitems);
+                $row->cells = $cells;
+                $tbody[] = $row;
+            }
+            $data->tbody = $tbody;
         }
-        $data->tbody = $tbody;
         return $data;
     }
 

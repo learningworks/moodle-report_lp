@@ -22,6 +22,7 @@
     Example context (json):
     {}
 }}
+{{#reportconfigured}}
 {{#nofilteredcoursegroups}}
     <div class="container-fluid p-0">
         <div class="text-xs-center text-center mt-3" data-region="empty-message">
@@ -76,3 +77,4 @@
         excludeLearnerFilter.init('#report-lp-summary-report-{{uniqid}}');
     });
 {{/js}}
+{{/reportconfigured}}
