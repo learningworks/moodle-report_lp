@@ -34,7 +34,7 @@ class learner_information_grouping extends grouping {
 
     public function build_header_cell(int $depth = null) {
         $cell = parent::build_header_cell($depth);
-        $cell->colspan = $this->count() + 2;
+        $cell->colspan = $this->count();
         return $cell;
     }
 
