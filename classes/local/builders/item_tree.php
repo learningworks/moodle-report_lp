@@ -44,7 +44,7 @@ class item_tree {
     private $course;
 
     /** @var array $items One dimensional array of all items. */
-    private $items;
+    private $items = [];
 
     /** @var item_factory $itemfactory Builds items based on configuration. */
     private $itemfactory;
@@ -77,19 +77,21 @@ class item_tree {
      */
     public function build_from_item_configurations() : ? grouping {
         $itemconfigurations = item_configuration::get_ordered_items($this->course->id);
-        foreach ($itemconfigurations as $itemconfiguration) {
-            $item = $this->itemfactory->get_item_from_persistent($itemconfiguration);
-            $this->items[$item->get_id()] = $item;
-        }
-        foreach ($this->items as $item) {
-            if ($item->is_root()) {
-                $this->tree = $item;
-            } else {
-                $parentitem = $this->items[$item->get_parentitemid()];
-                /** @var grouping $parentitem */
-                $parentitem->add_item($item);
-                if ($item->get_depth() > $this->depth) {
-                    $this->depth = $item->get_depth();
+        if ($itemconfigurations) {
+            foreach ($itemconfigurations as $itemconfiguration) {
+                $item = $this->itemfactory->get_item_from_persistent($itemconfiguration);
+                $this->items[$item->get_id()] = $item;
+            }
+            foreach ($this->items as $item) {
+                if ($item->is_root()) {
+                    $this->tree = $item;
+                } else {
+                    $parentitem = $this->items[$item->get_parentitemid()];
+                    /** @var grouping $parentitem */
+                    $parentitem->add_item($item);
+                    if ($item->get_depth() > $this->depth) {
+                        $this->depth = $item->get_depth();
+                    }
                 }
             }
         }
