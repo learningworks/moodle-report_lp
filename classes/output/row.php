@@ -44,10 +44,7 @@ class row implements renderable, templatable {
      */
     public $cells = [];
 
-
-    public function __construct() {
-
-    }
+    public $class;
 
     public function export_for_template(renderer_base $output) {
         $data = new stdClass();

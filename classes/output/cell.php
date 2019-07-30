@@ -45,7 +45,7 @@ class cell implements renderable, templatable {
     public $contents;
 
     /**
-     * @var string The simple text version of cell contentx.
+     * @var string The simple text version of cell contents.
      */
     public $text;
 
@@ -73,6 +73,11 @@ class cell implements renderable, templatable {
      * @var array Attributes of additional HTML attributes for the <td> element
      */
     //public $attributes = [];
+
+    public $class = 'cell';
+
+    /** @var string $template The template used to render... */
+    public $template;
 
     /**
      * @param renderer_base $output
