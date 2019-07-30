@@ -14,18 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace report_lp\local;
+namespace report_lp\output;
 
 defined('MOODLE_INTERNAL') || die();
 
 use coding_exception;
-use report_lp\local\contracts\data_provider;
-use report_lp\local\visitors\depth_item_visitor;
+use renderable;
+use renderer_base;
 use report_lp\local\visitors\data_item_visitor;
-use report_lp\output\row1;
 use stdClass;
 use report_lp\local\builders\item_tree;
 use report_lp\output\row;
+use templatable;
 
 /**
  *
@@ -33,7 +33,7 @@ use report_lp\output\row;
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class summary {
+class summary_report implements renderable, templatable {
 
     protected $course;
 
@@ -91,6 +91,12 @@ class summary {
     }
 
     public function build_data() {
+        $data = new stdClass();
+        $data->courseid = $this->course->id;
+
+        global $PAGE;
+        $renderer = $PAGE->get_renderer('report_lp');
+
         if (is_null($this->itemtypelist)) {
             $this->add_item_type_list($this->get_default_item_type_list());
         }
@@ -100,7 +106,14 @@ class summary {
         }
 
         $filteredcoursegroups = course_group::get_active_filter($this->course->id);
-        $this->learnerlist->add_course_groups_filter($filteredcoursegroups);
+        $this->get_learner_list()->add_course_groups_filter($filteredcoursegroups);
+
+        if (empty($filteredcoursegroups)) {
+            $nofilteredcoursegroups = new stdClass();
+            $nofilteredcoursegroups->rowsimageurl = $renderer->image_url('rows', 'report_lp')->out();
+            $data->nofilteredcoursegroups = $nofilteredcoursegroups;
+            return $data;
+        }
 
         $excludedlist = $this->get_excluded_list();
         $excludedlearnernames = array_map(
@@ -109,8 +122,6 @@ class summary {
             },
             iterator_to_array($excludedlist));
 
-        $data = new stdClass();
-        $data->courseid = $this->course->id;
         $data->hasexcludedlearners = ($excludedlist->count()) ? true : false;
         $data->excludedlearnerlist = implode(', ', $excludedlearnernames);
 
@@ -128,7 +139,19 @@ class summary {
         $thead[] = $row;
         $data->thead = $thead;
 
-
+        $tbody = [];
+        $this->get_learner_list()->fetch_all();
+        $excludedlearnerids = $excludedlist->get_userids();
+        foreach ($this->get_learner_list() as $learner) {
+            if (in_array($learner->id, $excludedlearnerids)) {
+                continue;
+            }
+            $row = new row();
+            $cells = $this->build_data_row($learner, $dataitems);
+            $row->cells = $cells;
+            $tbody[] = $row;
+        }
+        $data->tbody = $tbody;
         return $data;
     }
 
@@ -136,6 +159,7 @@ class summary {
         $row = [];
         foreach($root->get_children() as $child)  {
             $cell = $child->build_header_cell(1);
+            $cell->classes = "cell cell-primary-header";
             $row[] = $cell;
         }
         return $row;
@@ -145,10 +169,30 @@ class summary {
         $row = [];
         foreach($dataitems as $dataitem)  {
             $cell = $dataitem->build_header_cell(2);
+            $cell->classes = "cell cell-secondary-header";
             $row[] = $cell;
         }
         return $row;
 
+    }
+
+    protected function build_data_row($user, $items) {
+        global $PAGE;
+        $renderer = $PAGE->get_renderer('report_lp');
+        $row = [];
+        foreach ($items as $item) {
+            $data = $item->get_data_for_user($user);
+            $cell = $item->build_data_cell($data);
+            if ($cell->contents instanceof stdClass) {
+                $cell->contents = $renderer->render_from_template('report_lp/' . $cell->template, $cell->contents);
+            }
+            $row[] = $cell;
+        }
+        return $row;
+    }
+
+    public function export_for_template(renderer_base $output) {
+        return $this->build_data();
     }
 
 }
