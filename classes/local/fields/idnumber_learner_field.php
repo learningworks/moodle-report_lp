@@ -25,6 +25,13 @@ use stdClass;
 
 class idnumber_learner_field extends learner_field {
 
+    public function build_data_cell($user) {
+        $cell = new cell();
+        $cell->class = "cell";
+        $cell->contents = $user->idnumber;
+        return $cell;
+    }
+
     public function get_description(): string {
         return get_string('idnumber:learnerfield:description', 'report_lp');
     }
@@ -38,11 +45,19 @@ class idnumber_learner_field extends learner_field {
     }
 
     public function get_data_for_user(stdClass $user) : stdClass {
-        return new stdClass();
+        global $DB;
+        if (!property_exists($user, 'idnumber')) {
+            $user->idnumber = $DB->get_field('user', 'idnumber', ['id' => $user->id]);
+        }
+        return $user;
     }
 
     public function get_data_for_users(user_list $userlist) : array {
-        return [];
+        $data = [];
+        foreach ($userlist as $user) {
+            $data[$user->id] = $this->get_data_for_user($user);
+        }
+        return $data;
     }
 
 }

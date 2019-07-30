@@ -19,6 +19,7 @@ namespace report_lp\local\fields;
 defined('MOODLE_INTERNAL') || die();
 
 
+use report_lp\local\course_group;
 use report_lp\local\learner_field;
 use report_lp\local\user_list;
 use report_lp\output\cell;
@@ -34,6 +35,17 @@ use stdClass;
 
 class course_groups_learner_field extends learner_field {
 
+    public function build_data_cell($user) {
+        $groups = [];
+        foreach ($user->coursegroups as $coursegroup) {
+            $groups[] = $coursegroup->name;
+        }
+        $cell = new cell();
+        $cell->class = "cell";
+        $cell->contents = implode(', ', $groups);
+        return $cell;
+    }
+
     public function get_description(): string {
         return get_string('coursegroups:learnerfield:description', 'report_lp');
     }
@@ -47,7 +59,10 @@ class course_groups_learner_field extends learner_field {
     }
 
     public function get_data_for_user(stdClass $user) : stdClass {
-        return new stdClass();
+        if (!property_exists($user, 'coursegroups')) {
+            $user->coursegroups = course_group::get_groups_for_user($this->get_courseid(), $user->id);
+        }
+        return $user;
     }
 
     public function get_data_for_users(user_list $userlist) : array {
