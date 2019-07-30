@@ -40,8 +40,41 @@ class learner extends item implements data_provider {
     /** @var array $allnames Required user field name columns. */
     private $allnames;
 
-    /** @var array $enrolmentstatuses Cache for users enrolments. */
-    private $enrolmentstatuses;
+    /** @var array $userenrolments Cache for all user enrolments in associated course. */
+    private $userenrolments;
+
+    /**
+     * Build cell based off user data.
+     *
+     * @param $user
+     * @return cell
+     */
+    public function build_data_cell($user) {
+        $cell = new cell();
+        $cell->text = $user->fullname;
+        $cell->class = "cell cell-lg";
+        $contents = new stdClass();
+        $contents->profilelinkurl = $user->profilelinkurl;
+        $contents->profileimageurl = $user->profileimageurl;
+        $contents->profileimagealt = $user->profileimagealt;
+        $contents->fullname = $user->fullname;
+        $contents->enrolmentstatus = $user->enrolmentstatus;
+        $cell->contents = $contents;
+        $cell->template = 'learner_cell_contents';
+        return $cell;
+    }
+
+    /**
+     * Empty cell.
+     *
+     * @param int|null $depth
+     * @return mixed|cell
+     */
+    public function build_header_cell(int $depth = null) {
+        $cell = new cell();
+        $cell->header = true;
+        return $cell;
+    }
 
     /**
      * All name fields required for building user object.
@@ -55,36 +88,6 @@ class learner extends item implements data_provider {
         return $this->allnames;
     }
 
-    public function build_header_cell(int $depth = null) {
-        $cell = new cell();
-        $cell->header = true;
-        $cell->colspan = 2;
-        return $cell;
-    }
-
-    /**
-     * Get enrolment record for user. Caches records.
-     *
-     * @param int $userid
-     * @return mixed
-     * @throws \dml_exception
-     * @throws coding_exception
-     */
-    private function get_enrolment_status(int $userid) {
-        global $DB;
-        if (is_null($this->enrolmentstatuses)) {
-            $sql = "SELECT ua.*
-                      FROM {user_enrolments} ua
-                      JOIN {mdl_enrol} e ON e.id = ua.enrolid
-                     WHERE e.courseid = :courseid";
-            $this->enrolmentstatuses = $DB->get_records_sql($sql, ['courseid' => $this->get_courseid()]);
-        }
-        if (isset($this->enrolmentstatuses[$userid])) {
-            throw new coding_exception('User is not enrolled in this course');
-        }
-        return $this->enrolmentstatuses[$userid];
-    }
-
     public function get_description(): string {
         return get_string('learner:description', 'report_lp');
     }
@@ -93,17 +96,44 @@ class learner extends item implements data_provider {
         return get_string('learner:label', 'report_lp');
     }
 
+    /**
+     * Get enrolment record for user. Build a cache of all user enrolments in a
+     * course.
+     *
+     * @param int $userid
+     * @return mixed
+     * @throws \dml_exception
+     * @throws coding_exception
+     */
+    private function get_enrolment_status(int $userid) {
+        if (is_null($this->userenrolments)) {
+            $this->load_user_enrolments_cache();
+        }
+        if (!isset($this->userenrolments[$userid])) {
+            throw new coding_exception('User is not enrolled in this course');
+        }
+        return $this->userenrolments[$userid]->status;
+    }
+
+    /**
+     * Name of item.
+     *
+     * @return string
+     * @throws coding_exception
+     */
     public function get_name(): string {
         return get_string('learner:name', 'report_lp');
     }
 
-    public function is_locked() {
-        return true;
-    }
-
-    public function get_cell(stdClass $data) : cell {
-    }
-
+    /**
+     * Get add required data and cast on user object.
+     *
+     * @param stdClass $user
+     * @return stdClass
+     * @throws \dml_exception
+     * @throws \moodle_exception
+     * @throws coding_exception
+     */
     public function get_data_for_user(stdClass $user) : stdClass {
         global $PAGE;
         if (!isset($user->id)) {
@@ -127,17 +157,38 @@ class learner extends item implements data_provider {
         $profilelinkurl = new moodle_url('/user/view.php', ['id' => $user->id, 'course' => $this->get_courseid()]);
         $user->profilelinkurl = $profilelinkurl->out();
         if (!isset($user->enrolmentstatus)) {
-            $ue = $this->get_enrolment_status($user->id);
-            $user->enrolmentstatus = $ue->status;
+            $user->enrolmentstatus = $this->get_enrolment_status($user->id);
         }
         return $user;
     }
 
     public function get_data_for_users(user_list $userlist) : array {
-
     }
 
-    public function get_text(stdClass $data) : string {
-
+    /**
+     * Lock this item so cannot be deleted in UI.
+     */
+    public function is_locked() {
+        return true;
     }
+
+    /**
+     * Builds a cache of all user enrolments in a course.
+     *
+     * @throws \dml_exception
+     */
+    private function load_user_enrolments_cache() {
+        global $DB;
+        // Fetch user enrolments for course and key up in user id.
+        $sql = "SELECT ua.*
+                  FROM {user_enrolments} ua
+                  JOIN {enrol} e ON e.id = ua.enrolid
+                 WHERE e.courseid = :courseid";
+        $rs = $DB->get_recordset_sql($sql, ['courseid' => $this->get_courseid()]);
+        foreach ($rs as $record) {
+            $this->userenrolments[$record->userid] = $record;
+        }
+        $rs->close();
+    }
+
 }
