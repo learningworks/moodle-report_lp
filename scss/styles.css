@@ -137,11 +137,13 @@ table.report-lp-summary-report td {
 }
 
 .cell-primary-header {
+  font-weight: bold;
   background-color: #ececf6;
 }
 
 .cell-secondary-header {
   overflow: hidden;
+  font-weight: normal;
   text-overflow: ellipsis;
   max-width: 200px;
 }
