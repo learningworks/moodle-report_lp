@@ -41,39 +41,27 @@
         </div>
         <div class="overflow-visible">
             <table class="report-lp-summary-report d-print-table" data-container="learners" data-course-id="{{courseid}}">
-                <thead class="">
+                <thead>
                 {{#thead}}
                     <tr class="d-print-table-row">
                         {{#cells}}
-                            <th colspan="{{colspan}}" class="cell cell-primary-header d-print-table-cell" scope="col">
+                            <td colspan="{{colspan}}" class="{{classes}} d-print-table-cell " scope="col">
                                 {{{contents}}}
-                            </th>
+                            </td>
                         {{/cells}}
                     </tr>
                 {{/thead}}
                 </thead>
                 <tbody>
-                {{#rows}}
-                    {{#learner}}
-                        <tr class="d-print-table-row" data-row data-learner-id="{{id}}" data-learner-fullname="{{fullname}}">
-                            <td class="cell cell-lg d-print-table-cell" scope="col">
-                                <img src="{{imageurl}}" alt="{{imagealt}}" class="userpicture defaultuserpic"/>
-                                {{fullname}}
-                                {{#status}}
-                                    <span class="badge badge-pill badge-danger" title="Withdrawn">W</span>
-                                {{/status}}
+                {{#tbody}}
+                    <tr class="d-print-table-row" data-row data-learner-id="{{id}}" data-learner-fullname="{{fullname}}">
+                        {{#cells}}
+                            <td colspan="{{colspan}}" class="{{class}} d-print-table-cell " scope="col">
+                                {{{contents}}}
                             </td>
-                            <td class="cell d-print-table-cell" scope="col">
-                                <a href="#" class="button" role="button" data-learner-id="{{id}}" data-filter="exclude-learner"><i class="fa fa-user-times" aria-hidden="true"></i></a>
-                            </td>
-                            <td class="cell d-print-table-cell" scope="col"><span class="">{{idnumber}}</span></td>
-                            <td class="cell d-print-table-cell" scope="col">{{coursegroups}}</td>
-                            {{#measures}}
-                                <td class="cell d-print-table-cell" scope="col"><span class="">{{{value}}}</span></td>
-                            {{/measures}}
-                        </tr>
-                    {{/learner}}
-                {{/rows}}
+                        {{/cells}}
+                    </tr>
+                {{/tbody}}
                 </tbody>
             </table>
         </div>

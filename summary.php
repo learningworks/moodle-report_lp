@@ -31,7 +31,7 @@ $PAGE->set_pagelayout('report');
 $css = new moodle_url('/report/lp/scss/styles.css');
 $PAGE->requires->css($css);
 
-$summary = new report_lp\local\summary($course);
+$summary = new report_lp\local\summary_report($course);
 $itemtypelist = new report_lp\local\item_type_list();
 $summary->add_item_type_list($itemtypelist);
 $learnerlist = new report_lp\local\learner_list($course);

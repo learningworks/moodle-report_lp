@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-namespace report_lp\output;
+namespace report_lp\local;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -24,8 +24,8 @@ use renderer_base;
 use report_lp\local\visitors\data_item_visitor;
 use stdClass;
 use report_lp\local\builders\item_tree;
-use report_lp\output\row;
 use templatable;
+use report_lp\output\row;
 
 /**
  *
