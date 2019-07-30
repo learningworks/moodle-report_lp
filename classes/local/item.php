@@ -229,10 +229,6 @@ abstract class item {
         return $cell;
     }
 
-    function get_header_cell($depth) {
-
-    }
-
     /**
      * Return renderer class, cache if required.
      *
@@ -241,7 +237,7 @@ abstract class item {
     protected function get_renderer() {
         global $PAGE;
         if (is_null($this->renderer)) {
-            $this->renderer = $PAGE->get_renderer('core');
+            $this->renderer = $PAGE->get_renderer('report_lp');
         }
         return $this->renderer;
     }
