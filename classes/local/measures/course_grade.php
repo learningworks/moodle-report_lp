@@ -26,6 +26,7 @@ use grade_category;
 use report_lp\local\measure;
 use report_lp\local\user_list;
 use html_writer;
+use report_lp\output\cell;
 use stdClass;
 
 /**
@@ -45,6 +46,26 @@ class course_grade extends measure {
 
     /** @var grade_item $coursegradeitem */
     protected $coursegradeitem;
+
+    public function build_data_cell($user) {
+        $label = ' - ';
+        $status = 'none';
+        $data = $user->data;
+        if (isset($data->finalgrade) && !is_null($user->data->finalgrade)) {
+            if ($data->passed) {
+                $label = get_string('achieved', 'report_lp');
+                $status = 'achieved';
+            } else {
+                $label = get_string('notachieved', 'report_lp');
+                $status = 'not-achieved';
+            }
+        }
+        $class = "measure measure--status-{$status}";
+        $cell = new cell();
+        $cell->plaintextcontent = $label;
+        $cell->htmlcontent = html_writer::span($label, $class);
+        return $cell;
+    }
 
     /**
      * @param $data
@@ -79,8 +100,11 @@ class course_grade extends measure {
      */
     public function get_data_for_user(stdClass $user) : stdClass {
         $this->load_course_grade_item();
-        $finalgrade = $this->coursegradeitem->get_final($user->id);
-        return $finalgrade;
+        $data = new stdClass();
+        $data->finalgrade = $this->coursegradeitem->get_final($user->id);
+        $data->passed = $this->coursegradeitem->get_grade($user->id)->is_passed($this->coursegradeitem);
+        $user->data = $data;
+        return $user;
     }
 
     /**
