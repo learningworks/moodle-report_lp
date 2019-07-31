@@ -28,6 +28,7 @@ use MoodleQuickForm;
 use report_lp\local\contracts\extra_configuration;
 use report_lp\local\measure;
 use report_lp\local\user_list;
+use report_lp\output\cell;
 use stdClass;
 
 class course_section_activity_completion extends measure implements extra_configuration {
@@ -45,6 +46,21 @@ class course_section_activity_completion extends measure implements extra_config
      * @var array $sectionactivities Modules in a course section with activity completion.
      */
     private $sectionactivities;
+
+    public function build_data_cell($user) {
+        if (empty($user->data)) {
+            $label = ' - ';
+        } else {
+            $percentage = ($user->data->completed / $user->data->count) * 100;
+            $percentage = floor($percentage) . '%';;
+            $outof = "({$user->data->completed}/{$user->data->count})";
+            $label = "$percentage $outof";
+        }
+        $cell = new cell();
+        $cell->plaintextcontent = $label;
+        $cell->htmlcontent = html_writer::span($label, "measure");
+        return $cell;
+    }
 
     /**
      * @param $data
@@ -79,7 +95,8 @@ class course_section_activity_completion extends measure implements extra_config
         $sectionactivities = $this->sectionactivities;
         $count = count($sectionactivities);
         if (!$count) {
-            return null;
+            $user->data = null;
+            return $user;
         }
         // Get the number of modules that have been completed.
         $completed = 0;
@@ -90,7 +107,8 @@ class course_section_activity_completion extends measure implements extra_config
         $data = new stdClass();
         $data->completed = $completed;
         $data->count = $count;
-        return $data;
+        $user->data = $data;
+        return $user;
     }
 
     /**
