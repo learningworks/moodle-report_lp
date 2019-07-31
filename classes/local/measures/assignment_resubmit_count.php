@@ -34,6 +34,7 @@ use report_lp\local\contracts\extra_configuration;
 use report_lp\local\measure;
 use report_lp\local\persistents\item_configuration;
 use report_lp\local\user_list;
+use report_lp\output\cell;
 use stdClass;
 use core_plugin_manager;
 
@@ -54,6 +55,17 @@ class assignment_resubmit_count extends measure implements extra_configuration {
 
     /** @var assign $assignment Associated instance of assign based on configuration. */
     protected $assignment;
+
+    public function build_data_cell($user) {
+        $submissionattemptnumber = ' - ';
+        if (!empty($user->data->submissionattemptnumber)) {
+            $submissionattemptnumber = $user->data->submissionattemptnumber;
+        }
+        $cell = new cell();
+        $cell->plaintextcontent = $submissionattemptnumber ;
+        $cell->htmlcontent = html_writer::span($submissionattemptnumber , 'measure');
+        return $cell;
+    }
 
     /**
      * Format measure data for cell.
@@ -87,11 +99,11 @@ class assignment_resubmit_count extends measure implements extra_configuration {
         $submission = $assignment->get_user_submission($user->id, true);
         // Payload.
         $data = new stdClass();
-        $data->userid = $user->id;
         $data->assignmentid = $assignment->get_instance()->id;
         $data->submissionid = $submission->id;
         $data->submissionattemptnumber = $submission->attemptnumber;
-        return $data;
+        $user->data = $data;
+        return $user;
     }
 
     /**
