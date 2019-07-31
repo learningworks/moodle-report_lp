@@ -29,6 +29,7 @@ use report_lp\local\contracts\extra_configuration;
 use report_lp\local\measure;
 use report_lp\local\persistents\item_configuration;
 use report_lp\local\user_list;
+use report_lp\output\cell;
 use stdClass;
 use checklist_class;
 use mod_checklist\local\checklist_item;
@@ -58,6 +59,17 @@ class checklist_complete extends measure implements extra_configuration {
 
     /** @var int $checklistitemstotal Total of items in checklist instance. */
     protected $checklistitemstotal;
+
+    public function build_data_cell($user) {
+        $percentcomplete = ' - ';
+        if (!empty($user->data->percentcomplete)) {
+            $percentcomplete = floor($user->data->percentcomplete) . '%';
+        }
+        $cell = new cell();
+        $cell->plaintextcontent = $percentcomplete;
+        $cell->htmlcontent = html_writer::span($percentcomplete, 'measure');
+        return $cell;
+    }
 
     /**
      * Format user measure data.
@@ -151,7 +163,13 @@ class checklist_complete extends measure implements extra_configuration {
             $percentcomplete = 0;
             $tickeditems = 0;
         }
-        return $percentcomplete;
+
+        $data = new stdClass();
+        $data->percentcomplete = $percentcomplete;
+        $data->tickeditems = $tickeditems;
+        $user->data = $data;
+
+        return $user;
     }
 
     /**
@@ -179,8 +197,7 @@ class checklist_complete extends measure implements extra_configuration {
      * @throws coding_exception
      */
     public function get_default_label(): string {
-        $configuration = $this->get_configuration();
-        if (is_null($configuration)) {
+        if (is_null( $this->get_id()) || $this->get_id() <= 0) {
             return format_string(
                 get_string('checklistcomplete:measure:defaultlabel', 'report_lp'),
                 FORMAT_PLAIN
@@ -330,7 +347,7 @@ class checklist_complete extends measure implements extra_configuration {
         } else {
             $options = [0 => get_string('choose')] +  $checklists;
             $mform->addElement('select', 'checklist',
-                get_string('checklistname', 'report_lp'), $options);
+                get_string('checklistcomplete:measure:name', 'report_lp'), $options);
         }
     }
 
