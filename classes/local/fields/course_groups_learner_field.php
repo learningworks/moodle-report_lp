@@ -42,7 +42,7 @@ class course_groups_learner_field extends learner_field {
         }
         $cell = new cell();
         $cell->class = "cell";
-        $cell->contents = implode(', ', $groups);
+        $cell->plaintextcontent = implode(', ', $groups);
         return $cell;
     }
 

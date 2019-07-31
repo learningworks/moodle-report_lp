@@ -28,7 +28,7 @@ class idnumber_learner_field extends learner_field {
     public function build_data_cell($user) {
         $cell = new cell();
         $cell->class = "cell";
-        $cell->contents = $user->idnumber;
+        $cell->plaintextcontent = $user->idnumber;
         return $cell;
     }
 
