@@ -26,7 +26,7 @@ use report_lp\output\cell;
 use stdClass;
 
 /**
- * All learner field classes must extend this class.
+ * Gets course groups learner has memberships in.
  *
  * @package     report_lp
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
