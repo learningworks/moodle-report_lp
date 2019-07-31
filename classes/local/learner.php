@@ -50,9 +50,6 @@ class learner extends item implements data_provider {
      * @return cell
      */
     public function build_data_cell($user) {
-        $cell = new cell();
-        $cell->text = $user->fullname;
-        $cell->class = "cell cell-lg";
         $contents = new stdClass();
         $contents->userid = $user->id;
         $contents->profilelinkurl = $user->profilelinkurl;
@@ -60,7 +57,10 @@ class learner extends item implements data_provider {
         $contents->profileimagealt = $user->profileimagealt;
         $contents->fullname = $user->fullname;
         $contents->enrolmentstatus = $user->enrolmentstatus;
-        $cell->contents = $contents;
+        $cell = new cell();
+
+        $cell->class = "cell cell-lg";
+        $cell->templatablecontent = $contents;
         $cell->template = 'learner_cell_contents';
         return $cell;
     }
