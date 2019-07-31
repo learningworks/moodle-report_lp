@@ -54,6 +54,7 @@ class learner extends item implements data_provider {
         $cell->text = $user->fullname;
         $cell->class = "cell cell-lg";
         $contents = new stdClass();
+        $contents->userid = $user->id;
         $contents->profilelinkurl = $user->profilelinkurl;
         $contents->profileimageurl = $user->profileimageurl;
         $contents->profileimagealt = $user->profileimagealt;
