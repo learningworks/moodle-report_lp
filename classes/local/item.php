@@ -308,7 +308,7 @@ abstract class item {
      * @throws \dml_exception
      */
     final public function get_course() : stdClass {
-        if (is_null($this->course)) {
+        if (!isset($this->course)) {
             if ($this->courseid) {
                 $this->course = get_course($this->courseid);
             }
