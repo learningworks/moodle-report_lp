@@ -18,14 +18,13 @@ namespace report_lp\output;
 
 defined('MOODLE_INTERNAL') || die();
 
-use moodle_url;
-use pix_icon;
 use renderable;
 use renderer_base;
 use stdClass;
 use templatable;
 
 /**
+ * The structure of table/sheet cell.
  *
  * @package     report_lp
  * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
@@ -34,45 +33,35 @@ use templatable;
 
 class cell implements renderable, templatable {
 
-    /**
-     * @var string Value to use for the id attribute of the cell.
-     */
+    /** @var string Value to use for the id attribute of the cell. */
     public $id;
 
-    /**
-     * @var string The contents of the cell. May include other HTML tags, images, URL's etc.
-     */
-    public $contents;
+    /** @var string The content of cell cell in text or HTML*/
+    public $content;
 
-    /**
-     * @var string The simple text version of cell contents.
-     */
-    public $text;
+    /** @var stdClass The templatable content. Requires template to render. May include other HTML tags, images, URL's etc. */
+    public $templatablecontent;
 
-    /**
-     * @var int Number of columns this cell should span.
-     */
+    /** @var string The content of cell in HTML.  */
+    public $htmlcontent;
+
+    /** @var string The content of cell in plain text. */
+    public $plaintextcontent;
+
+    /** @var int Number of columns this cell should span. */
     public $colspan;
 
-    /**
-     * @var int Number of rows this cell should span.
-     */
+    /** @var int Number of rows this cell should span. */
     public $rowspan;
 
-    /**
-     * @var string Defines a way to associate header cells and data cells in a table.
-     */
+    /** @var string Defines a way to associate header cells and data cells in a table. */
     public $scope;
 
-    /**
-     * @var bool Whether or not this cell is a header cell.
-     */
+    /** @var bool Whether or not this cell is a header cell. */
     public $header;
 
-    /**
-     * @var array Attributes of additional HTML attributes for the <td> element
-     */
-    //public $attributes = [];
+    /** @var array Attributes of additional HTML attributes for the <td> element */
+    public $attributes = [];
 
     public $class = 'cell';
 
