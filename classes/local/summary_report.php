@@ -190,8 +190,17 @@ class summary_report implements renderable, templatable {
         foreach ($items as $item) {
             $data = $item->get_data_for_user($user);
             $cell = $item->build_data_cell($data);
-            if ($cell->contents instanceof stdClass) {
-                $cell->contents = $renderer->render_from_template('report_lp/' . $cell->template, $cell->contents);
+            if (isset($cell->templatablecontent)) {
+                $cell->content = $renderer->render_from_template(
+                    'report_lp/' . $cell->template,
+                    $cell->templatablecontent
+                );
+            } else if (isset($cell->htmlcontent)) {
+                $cell->content = $cell->htmlcontent;
+            } else if (isset($cell->plaintextcontent)) {
+                $cell->content = $cell->plaintextcontent;
+            } else {
+                $cell->content = '';
             }
             $row[] = $cell;
         }
