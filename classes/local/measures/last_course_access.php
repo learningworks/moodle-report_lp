@@ -22,6 +22,7 @@ use coding_exception;
 use html_writer;
 use report_lp\local\measure;
 use report_lp\local\user_list;
+use report_lp\output\cell;
 use stdClass;
 
 /**
@@ -38,6 +39,21 @@ class last_course_access extends measure {
 
     /** @var string COMPONENT_NAME Used to for name of core subsystem or plugin. Moodle frankenstyle. */
     public const COMPONENT_NAME = 'course';
+
+    public function build_data_cell($user) {
+        if (is_null($user->data->lastaccess)) {
+            $label = get_string('never');
+            $title = $label;
+        } else {
+            $label = userdate($user->data->timeaccess, '%A %e %B, %H:%M');
+            $title = userdate($user->data->timeaccess);
+        }
+        $class = "measure";
+        $cell = new cell();
+        $cell->plaintextcontent = $label;
+        $cell->htmlcontent = html_writer::span($label, $class, ['title' => $title]);
+        return $cell;
+    }
 
     /**
      * @param $data
@@ -83,12 +99,12 @@ class last_course_access extends measure {
             $lastaccess = $DB->get_records_sql($sql, ['courseid' => $configuration->get('courseid')]);
         }
         $data = new stdClass();
-        $data->userid = $user->id;
         $data->lastaccess = null;
         if (isset($lastaccess[$user->id])) {
             $data->lastaccess = $lastaccess[$user->id];
         }
-        return $data;
+        $user->data = $data;
+        return $user;
     }
 
     /**
