@@ -59,6 +59,9 @@ define(
                             userid: userId,
                         }
                     };
+                    if (userId === "") {
+                        throw "Can not find data-attribute " + SELECTORS.USER_ID;
+                    }
                     var promise = Ajax.call([request])[0];
                     promise.done(function(data){
                         response.data = data;
