@@ -132,16 +132,18 @@ class summary_report implements renderable, templatable {
             $data->reportconfigured = true;
             // This array of items very special to us.
             $dataitems = $root->accept(new data_item_visitor());
-            $thead = [];
+            $thead = new stdClass();
+            $thead->rows = [];
             $row = new row();
             $row->cells = $this->build_grouping_header($root);
-            $thead[] = $row;
+            $thead->rows[] = $row;
             $row = new row();
             $row->cells = $this->build_header($dataitems);
-            $thead[] = $row;
+            $thead->rows[] = $row;
             $data->thead = $thead;
 
-            $tbody = [];
+            $tbody = new stdClass();
+            $tbody->rows = [];
             $this->get_learner_list()->fetch_all();
             $excludedlearnerids = $excludedlist->get_userids();
             foreach ($this->get_learner_list() as $learner) {
@@ -149,9 +151,11 @@ class summary_report implements renderable, templatable {
                     continue;
                 }
                 $row = new row();
+                $row->userid = $learner->id;
+                $row->fullname = fullname($learner);
                 $cells = $this->build_data_row($learner, $dataitems);
                 $row->cells = $cells;
-                $tbody[] = $row;
+                $tbody->rows[] = $row;
             }
             $data->tbody = $tbody;
         }

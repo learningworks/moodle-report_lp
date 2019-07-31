@@ -44,6 +44,7 @@
             <table class="report-lp-summary-report d-print-table" data-container="learners" data-course-id="{{courseid}}">
                 <thead>
                 {{#thead}}
+                {{#rows}}
                     <tr class="d-print-table-row">
                         {{#cells}}
                             <td colspan="{{colspan}}" class="{{classes}} d-print-table-cell " scope="col">
@@ -51,17 +52,21 @@
                             </td>
                         {{/cells}}
                     </tr>
+                {{/rows}}
                 {{/thead}}
                 </thead>
                 <tbody>
                 {{#tbody}}
-                    <tr class="d-print-table-row" data-row data-learner-id="{{id}}" data-learner-fullname="{{fullname}}">
-                        {{#cells}}
-                            <td colspan="{{colspan}}" class="{{class}} d-print-table-cell " scope="col">
-                                {{{contents}}}
-                            </td>
-                        {{/cells}}
-                    </tr>
+                    {{#rows}}
+                        <tr class="d-print-table-row" data-row data-learner-id="{{userid}}" data-learner-fullname="{{fullname}}">
+                            {{#cells}}
+                                <td colspan="{{colspan}}" class="{{class}} d-print-table-cell " scope="col">
+                                    {{{contents}}}
+                                </td>
+                            {{/cells}}
+                        </tr>
+                    {{/rows}}
+
                 {{/tbody}}
                 </tbody>
             </table>
