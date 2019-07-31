@@ -224,7 +224,7 @@ abstract class item {
         if ($this->has_icon()) {
             $contents->icon =  $this->get_icon()->export_for_template($renderer);
         }
-        $cell->contents = $renderer->render_from_template(
+        $cell->content = $renderer->render_from_template(
             'report_lp/cell_contents', $contents);
         return $cell;
     }
