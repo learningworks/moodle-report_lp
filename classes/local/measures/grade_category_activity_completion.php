@@ -30,6 +30,7 @@ use MoodleQuickForm;
 use report_lp\local\contracts\extra_configuration;
 use report_lp\local\measure;
 use report_lp\local\user_list;
+use report_lp\output\cell;
 use stdClass;
 
 /**
@@ -46,6 +47,21 @@ class grade_category_activity_completion extends measure implements extra_config
 
     /** @var string COMPONENT_NAME Used to for name of core subsystem or plugin. Moodle frankenstyle. */
     public const COMPONENT_NAME = 'grades';
+
+    public function build_data_cell($user) {
+        if (empty($user->data)) {
+            $label = ' - ';
+        } else {
+            $percentage = ($user->data->completed / $user->data->count) * 100;
+            $percentage = floor($percentage) . '%';;
+            $outof = "({$user->data->completed}/{$user->data->count})";
+            $label = "$percentage $outof";
+        }
+        $cell = new cell();
+        $cell->plaintextcontent = $label;
+        $cell->htmlcontent = html_writer::span($label, "measure");
+        return $cell;
+    }
 
     /**
      * @param $data
@@ -121,11 +137,14 @@ class grade_category_activity_completion extends measure implements extra_config
         // Get the number of modules that have been completed.
         $completed = 0;
         foreach ($activities as $activity) {
-            $data = $completion->get_data($activity, true, $user->id);
-            $completed += $data->completionstate == COMPLETION_INCOMPLETE ? 0 : 1;
+            $completiondata = $completion->get_data($activity, true, $user->id);
+            $completed += $completiondata->completionstate == COMPLETION_INCOMPLETE ? 0 : 1;
         }
-
-        return ($completed / $count) * 100;
+        $data = new stdClass();
+        $data->completed = $completed;
+        $data->count = $count;
+        $user->data = $data;
+        return $data;
     }
 
     /**
@@ -151,11 +170,10 @@ class grade_category_activity_completion extends measure implements extra_config
      * @throws coding_exception
      */
     public function get_default_label(): string {
-        $configuration = $this->get_configuration();
-        if (is_null($configuration)) {
+        if (is_null( $this->get_id()) || $this->get_id() <= 0) {
             return format_text(get_string('categoryname', 'grades'), FORMAT_PLAIN);
         }
-        $extraconfigurationdata = $configuration->get('extraconfigurationdata');
+        $extraconfigurationdata = $this->get_extraconfigurationdata();
         $gradecategory = grade_category::fetch(
             ['id' => $extraconfigurationdata->id]
         );
