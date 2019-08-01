@@ -75,8 +75,13 @@ class assignment_status extends measure implements extra_configuration {
                 $label = get_string('submissionstatus_' . $status, 'assign');
                 break;
             case 'submitted':
-                if (is_null($data->gradepassed)) {
-                    $status = $data->submissionstatus;
+                $requiregrading = (
+                    $data->submissiontime  >= $data->usergradetime ||
+                    empty($data->submissiontime) ||
+                    $data->usergraderaw  === null
+                );
+                if ($requiregrading) {
+                    $status = 'requiresgrading';
                     $label = get_string('submissionstatus_' . $status, 'assign');
                 } else {
                     $label = $data->displaygrade;
@@ -140,24 +145,25 @@ class assignment_status extends measure implements extra_configuration {
 
         $userid = $user->id;
         $submission = $assignment->get_user_submission($userid, true);
-        $submissiongrade = $assignment->get_user_grade($userid, true);
+        $usergrade = $assignment->get_user_grade($userid, true);
         $gradeitem = $assignment->get_grade_item();
         $grade = $gradeitem->get_grade($userid);
-        // Payload.
+        // Build payload.
         $data = new stdClass();
         $data->assignmentid = $assignment->get_instance()->id;
         $data->submissionid = $submission->id;
         $data->submissionstatus = $submission->status;
-        $usergrade = $assignment->get_user_grade($userid, true);
+        $data->submissiontime = $submission->timemodified;
         if (isset($usergrade->grade)) {
-            $data->submissiongraderaw = $usergrade->grade;
+            $data->usergraderaw = $usergrade->grade;
+            $data->usergradetime = $usergrade->timemodified;
         } else {
-            $data->submissiongraderaw = null;
+            $data->usergraderaw = null;
+            $data->usergradetime = 0;
         }
         $data->finalgrade = $grade->finalgrade;
         $data->displaygrade = grade_format_gradevalue($grade->finalgrade, $gradeitem, true);
         $data->gradepassed = $gradeitem->get_grade($userid)->is_passed($gradeitem);
-        $data->submissionrawgrade = $submissiongrade->grade;
         $gradeurl = new moodle_url(
             '/mod/assign/view.php',
             ['id' => $assignment->get_course_module()->id, 'userid' => $user->id, 'action' => 'grade']
