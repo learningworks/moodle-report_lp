@@ -19,8 +19,10 @@ namespace report_lp\local\measures;
 defined('MOODLE_INTERNAL') || die();
 
 use coding_exception;
+use html_writer;
 use MoodleQuickForm;
 use pix_icon;
+use moodle_url;
 use report_lp\local\contracts\extra_configuration;
 use report_lp\local\measure;
 use report_lp\local\persistents\item_configuration;
@@ -44,31 +46,108 @@ class attendance_sessions_summary extends measure implements extra_configuration
     /** @var string COMPONENT_NAME Used to for name of core subsystem or plugin. Moodle frankenstyle. */
     public const COMPONENT_NAME = 'attendance';
 
+    private $cm;
+
+    private $groupsessioncounts;
+
+    private $sessionsattended;
+
     public function format_user_measure_data($data, $format = FORMAT_PLAIN) : string {
         return '';
     }
 
-    public function get_cell_data1(bool $header = false) {
+    public function build_data_cell($user) {
+        $text = get_string('none');
+        $title = $text;
+        if (!empty($user->data->usersessionsattended)) {
+            $text = implode($user->data->usersessionsattended, " ");
+        }
         $cell = new cell();
+        $cell->plaintextcontent = $text;
+        $cell->htmlcontent = html_writer::span(html_writer::link($user->data->reporturl, $text), "measure");
         return $cell;
     }
 
     public function get_data_for_user(stdClass $user) : stdClass {
-        return null;
+        $this->load_instance_data();
+        $data = new stdClass();
+        $groupsessioncounts = $this->groupsessioncounts;
+        if (!isset($this->sessionsattended[$user->id])) {
+            $data->usersessionsattended = null;
+        } else {
+            $usersessionsattended = $this->sessionsattended[$user->id];
+            array_walk($usersessionsattended,
+                function(&$value, &$key) use($groupsessioncounts) {
+                    $value = '(' . $value . '/' . $groupsessioncounts[$key] . ')';
+                }
+            );
+
+            $data->usersessionsattended = $usersessionsattended;
+        }
+        $reporturl = new moodle_url('/mod/attendance/view.php', ['id' => $this->cm->id, 'studentid' => $user->id]);
+        $data->reporturl = $reporturl;
+        $user->data = $data;
+        return $user;
+    }
+
+    public function load_instance_data() {
+        global $DB;
+        if (is_null($this->cm)) {
+            $this->cm = get_coursemodule_from_instance('attendance', $this->get_extraconfigurationdata()->id);
+        }
+        if (is_null($this->groupsessioncounts)) {
+            $sql = "SELECT groupid, COUNT(1) AS count
+                      FROM {attendance_sessions}
+                     WHERE attendanceid = :attendanceid
+                  GROUP BY groupid";
+            $parameters = ['attendanceid' => $this->get_extraconfigurationdata()->id];
+            $rs = $DB->get_recordset_sql($sql, $parameters);
+            foreach ($rs as $record) {
+                $this->groupsessioncounts[$record->groupid] = $record->count;
+            }
+            $rs->close();
+        }
+        if (is_null($this->sessionsattended)) {
+            $acronyms = explode(',', $this->get_extraconfigurationdata()->statuseacronyms);
+            [$insql, $inparameters] = $DB->get_in_or_equal($acronyms, SQL_PARAMS_NAMED);
+            $sql = "SELECT log.studentid, sessions.groupid, COUNT(log.id) AS sessionsattended
+                      FROM {attendance_log} log
+                      JOIN {attendance_sessions} sessions ON sessions.id = log.sessionid
+                      JOIN {attendance_statuses} statuses ON statuses.id = log.statusid
+                     WHERE sessions.attendanceid = :attendanceid AND statuses.acronym $insql
+                  GROUP BY sessions.groupid, log.studentid";
+            $parameters = ['attendanceid' => $this->get_extraconfigurationdata()->id];
+            $parameters = array_merge($parameters, $inparameters);
+            $rs = $DB->get_recordset_sql($sql, $parameters);
+            foreach ($rs as $record) {
+                if (isset($sessionsattended[$record->studentid])) {
+                    $groups = $this->sessionsattended[$record->studentid];
+                    $groups[$record->groupid] = $record->sessionsattended;
+                    $this->sessionsattended[$record->studentid] = $groups;
+                } else {
+                    $groups[$record->groupid] = $record->sessionsattended;
+                    $this->sessionsattended[$record->studentid] = $groups;
+                }
+            }
+            $rs->close();
+        }
     }
 
     /**
-     * @param userlist $userlist
+     * @param user_list $userlist
      * @return array|null
      */
     public function get_data_for_users(user_list $userlist) : array {
-        return [];
+        $data = [];
+        foreach ($userlist as $user) {
+            $data[$user->id] = $this->get_data_for_user($user->id);
+        }
+        return $data;
     }
 
     /**
      * Nothing fancy here just a language string.
      *
-     * @param string $format
      * @return string
      * @throws coding_exception
      */
@@ -108,13 +187,13 @@ class attendance_sessions_summary extends measure implements extra_configuration
         $configurations = item_configuration::get_records_select(
             "id <> :id AND courseid = :courseid AND shortname = :shortname",
             [
-                'id' => $this->get_configuration()->get('id'),
-                'courseid' => $this->get_configuration()->get('courseid'),
+                'id' => $this->get_id(),
+                'courseid' => $this->get_courseid(),
                 'shortname' => static::get_short_name()
             ]
         );
         foreach ($configurations as $configuration) {
-            $extraconfigurationdata = $configuration->get('extraconfigurationdata');
+            $extraconfigurationdata = $configuration->get_extraconfigurationdata();
             if (isset($extraconfigurationdata->id)) {
                 $excludes[$extraconfigurationdata->id] = $extraconfigurationdata->id;
             }
@@ -213,6 +292,10 @@ class attendance_sessions_summary extends measure implements extra_configuration
             $options = [0 => get_string('choose')] +  $attendances;
             $mform->addElement('select', 'attendance',
                 get_string('attendancename', 'report_lp'), $options);
+            $mform->addElement('text', 'statuseacronyms',
+                get_string('statuseacronyms', 'report_lp'));
+            $mform->setType('statuseacronyms', PARAM_TAGLIST);
+            $mform->addHelpButton('statuseacronyms', 'statuseacronyms', 'report_lp');
         }
     }
 
@@ -228,6 +311,9 @@ class attendance_sessions_summary extends measure implements extra_configuration
         $errors = [];
         if ($data['attendance'] == 0) {
             $errors['attendance'] = get_string('pleasechoose', 'report_lp');
+        }
+        if (empty($data['statuseacronyms'])) {
+            $errors['statuseacronyms'] = get_string('nostatuseacronyms', 'report_lp');
         }
         return $errors;
     }
@@ -245,6 +331,7 @@ class attendance_sessions_summary extends measure implements extra_configuration
         }
         $object = new stdClass();
         $object->id = $data['attendance'];
+        $object->statuseacronyms = $data['statuseacronyms'];
         return $object;
     }
 
@@ -252,16 +339,15 @@ class attendance_sessions_summary extends measure implements extra_configuration
      * Get defaults based on extra configuration data.
      *
      * @return array
-     * @throws coding_exception
      */
     public function moodlequickform_get_extra_configuration_defaults() : array {
-        $configuration = $this->get_configuration();
-        $extraconfigurationdata = $configuration->get('extraconfigurationdata');
+        $extraconfigurationdata = $this->get_extraconfigurationdata();
         $defaults = [];
         if (empty($extraconfigurationdata)) {
             $defaults['attendance'] = 0;
         } else {
             $defaults['attendance'] = $extraconfigurationdata->id;
+            $defaults['statuseacronyms'] = $extraconfigurationdata->statuseacronyms;
         }
         return $defaults;
     }
