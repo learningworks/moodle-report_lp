@@ -87,7 +87,6 @@ class assignment_status extends measure implements extra_configuration {
         $class = "measure measure--status-{$status}";
         $cell = new cell();
         $cell->plaintextcontent = $label;
-        //$cell->htmlcontent = html_writer::link($data->gradeurl, html_writer::span($label, $class));
         $cell->htmlcontent = html_writer::span(html_writer::link($data->gradeurl, $label), $class);
         return $cell;
     }
