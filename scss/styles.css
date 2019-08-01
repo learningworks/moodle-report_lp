@@ -18,6 +18,9 @@
 .measure:hover, .measure:focus {
   text-decoration: none;
 }
+.measure a {
+  color: inherit;
+}
 .measure:empty {
   display: none;
 }

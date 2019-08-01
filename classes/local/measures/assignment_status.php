@@ -19,13 +19,13 @@ namespace report_lp\local\measures;
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-
 require_once($CFG->dirroot . '/mod/assign/lib.php');
 require_once($CFG->dirroot . '/mod/assign/locallib.php');
 
 use assign;
 use pix_icon;
 use moodle_url;
+use report_lp\output\cell;
 use stdClass;
 use MoodleQuickForm;
 use coding_exception;
@@ -55,6 +55,42 @@ class assignment_status extends measure implements extra_configuration {
 
     /** @var assign $assignment Associated instance of assign based on configuration. */
     protected $assignment;
+
+    /**
+     * Build data cell, currently using HTML writer.
+     *
+     * @param $user
+     * @return cell
+     * @throws coding_exception
+     */
+    public function build_data_cell($user) {
+        $label = '';
+        $status = 'none';
+        $data = $user->data;
+        switch ($data->submissionstatus) {
+            case 'new':
+            case 'draft':
+            case 'reopened':
+                $status = $data->submissionstatus;
+                $label = get_string('submissionstatus_' . $status, 'assign');
+                break;
+            case 'submitted':
+                if (is_null($data->gradepassed)) {
+                    $status = $data->submissionstatus;
+                    $label = get_string('submissionstatus_' . $status, 'assign');
+                } else {
+                    $label = $data->displaygrade;
+                    $status = preg_replace('/\s+/', '-', core_text::strtolower($label));
+                }
+                break;
+        }
+        $class = "measure measure--status-{$status}";
+        $cell = new cell();
+        $cell->plaintextcontent = $label;
+        //$cell->htmlcontent = html_writer::link($data->gradeurl, html_writer::span($label, $class));
+        $cell->htmlcontent = html_writer::span(html_writer::link($data->gradeurl, $label), $class);
+        return $cell;
+    }
 
     /**
      * Format measure data for cell.
@@ -97,6 +133,7 @@ class assignment_status extends measure implements extra_configuration {
      * @param stdClass $user
      * @return stdClass
      * @throws \dml_exception
+     * @throws \moodle_exception
      * @throws coding_exception
      */
     public function get_data_for_user(stdClass $user) : stdClass {
@@ -109,7 +146,6 @@ class assignment_status extends measure implements extra_configuration {
         $grade = $gradeitem->get_grade($userid);
         // Payload.
         $data = new stdClass();
-        $data->userid = $userid;
         $data->assignmentid = $assignment->get_instance()->id;
         $data->submissionid = $submission->id;
         $data->submissionstatus = $submission->status;
@@ -123,7 +159,13 @@ class assignment_status extends measure implements extra_configuration {
         $data->displaygrade = grade_format_gradevalue($grade->finalgrade, $gradeitem, true);
         $data->gradepassed = $gradeitem->get_grade($userid)->is_passed($gradeitem);
         $data->submissionrawgrade = $submissiongrade->grade;
-        return $data;
+        $gradeurl = new moodle_url(
+            '/mod/assign/view.php',
+            ['id' => $assignment->get_course_module()->id, 'userid' => $user->id, 'action' => 'grade']
+        );
+        $data->gradeurl = $gradeurl;
+        $user->data = $data;
+        return $user;
     }
 
     /**
@@ -217,7 +259,7 @@ class assignment_status extends measure implements extra_configuration {
      * @throws \dml_exception
      * @throws coding_exception
      */
-    public function get_assignment() {
+    public function get_assignment() : assign {
         if (is_null($this->assignment)) {
             $this->load_assignment();
         }

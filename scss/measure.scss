@@ -8,6 +8,10 @@ $measure-padding-y:                   .25em !default;
 $measure-padding-x:                   .4em !default;
 $measure-border-radius:               .25rem !default;
 
+a .measure {
+
+}
+
 .measure {
     display: block;
     padding: $measure-padding-y $measure-padding-x;
@@ -19,6 +23,9 @@ $measure-border-radius:               .25rem !default;
     &:hover,
     &:focus {
         text-decoration: none;
+    }
+    a {
+        color: inherit;
     }
     // Empty badges collapse automatically
     &:empty {
