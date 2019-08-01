@@ -93,7 +93,7 @@ class summary_report implements renderable, templatable {
     public function build_data() {
         $data = new stdClass();
         $data->courseid = $this->course->id;
-        $data->reportconfigured = false;
+        $data->reportconfigured = true;
 
         global $PAGE;
         $renderer = $PAGE->get_renderer('report_lp');
@@ -128,8 +128,9 @@ class summary_report implements renderable, templatable {
 
         $tree = new item_tree($this->course, $this->itemtypelist);
         $root = $tree->build_from_item_configurations();
-        if ($root) {
-            $data->reportconfigured = true;
+        if (!$root) {
+            $data->reportconfigured = false;
+        } else {
             // This array of items very special to us.
             $dataitems = $root->accept(new data_item_visitor());
             $thead = new stdClass();
