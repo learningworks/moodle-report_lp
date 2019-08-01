@@ -81,7 +81,7 @@ class assignment_status extends measure implements extra_configuration {
                     $data->usergraderaw  === null
                 );
                 if ($requiregrading) {
-                    $status = 'requiresgrading';
+                    $status = $data->submissionstatus;
                     $label = get_string('submissionstatus_' . $status, 'assign');
                 } else {
                     $label = $data->displaygrade;
