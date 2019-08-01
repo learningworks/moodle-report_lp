@@ -81,7 +81,7 @@ class attendance_sessions_summary extends measure implements extra_configuration
                     $value = '(' . $value . '/' . $groupsessioncounts[$key] . ')';
                 }
             );
-
+//print_object($usersessionsattended);
             $data->usersessionsattended = $usersessionsattended;
         }
         $reporturl = new moodle_url('/mod/attendance/view.php', ['id' => $this->cm->id, 'studentid' => $user->id]);
@@ -120,17 +120,14 @@ class attendance_sessions_summary extends measure implements extra_configuration
             $parameters = array_merge($parameters, $inparameters);
             $rs = $DB->get_recordset_sql($sql, $parameters);
             foreach ($rs as $record) {
-                if (isset($sessionsattended[$record->studentid])) {
-                    $groups = $this->sessionsattended[$record->studentid];
-                    $groups[$record->groupid] = $record->sessionsattended;
-                    $this->sessionsattended[$record->studentid] = $groups;
-                } else {
-                    $groups[$record->groupid] = $record->sessionsattended;
-                    $this->sessionsattended[$record->studentid] = $groups;
+                if (!isset($this->sessionsattended[$record->studentid])) {
+                    $this->sessionsattended[$record->studentid] = [];
                 }
+                $this->sessionsattended[$record->studentid][$record->groupid] = $record->sessionsattended;
             }
             $rs->close();
         }
+
     }
 
     /**
