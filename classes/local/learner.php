@@ -58,7 +58,11 @@ class learner extends item implements data_provider {
         $contents->fullname = $user->fullname;
         $contents->enrolmentstatus = $user->enrolmentstatus;
         $cell = new cell();
-
+        $plaintext = $user->fullname;
+        if ($user->enrolmentstatus) {
+            $plaintext .= ' [w]';
+        }
+        $cell->plaintextcontent = $plaintext;
         $cell->class = "cell cell-lg";
         $cell->templatablecontent = $contents;
         $cell->template = 'learner_cell_contents';
