@@ -57,8 +57,7 @@ class attendance_sessions_summary extends measure implements extra_configuration
     }
 
     public function build_data_cell($user) {
-        $text = get_string('none');
-        $title = $text;
+        $text = ' - ';
         if (!empty($user->data->usersessionsattended)) {
             $text = implode($user->data->usersessionsattended, " ");
         }
