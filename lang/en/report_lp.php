@@ -172,3 +172,6 @@ $string['idnumber:learnerfield:description'] = 'Displays learners ID number atta
 $string['idnumber:learnerfield:name'] = 'Learner ID number';
 $string['idnumber:learnerfield:label'] = 'ID';
 $string['learnerinformation'] = 'Learner information';
+
+$string['exporttoexcel'] = 'Export to Excel';
+$string['nogroupsselected'] = 'No groups selected';

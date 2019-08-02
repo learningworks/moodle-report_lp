@@ -91,12 +91,12 @@ class summary_report implements renderable, templatable {
     }
 
     public function build_data() {
+        global $PAGE;
+        $renderer = $PAGE->get_renderer('report_lp');
+
         $data = new stdClass();
         $data->courseid = $this->course->id;
         $data->reportconfigured = true;
-
-        global $PAGE;
-        $renderer = $PAGE->get_renderer('report_lp');
 
         if (is_null($this->itemtypelist)) {
             $this->add_item_type_list($this->get_default_item_type_list());
@@ -131,6 +131,7 @@ class summary_report implements renderable, templatable {
         if (!$root) {
             $data->reportconfigured = false;
         } else {
+            $data->exporturl = factories\url::get_export_url($this->course)->out(false);
             // This array of items very special to us.
             $dataitems = $root->accept(new data_item_visitor());
             $thead = new stdClass();
