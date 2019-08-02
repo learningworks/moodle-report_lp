@@ -46,16 +46,32 @@ class attendance_sessions_summary extends measure implements extra_configuration
     /** @var string COMPONENT_NAME Used to for name of core subsystem or plugin. Moodle frankenstyle. */
     public const COMPONENT_NAME = 'attendance';
 
+    /** @var stdClass $cm Course Module instance. */
     private $cm;
 
+    /** @var array $groupsessioncounts Group session counts cache. */
     private $groupsessioncounts;
 
+    /** @var array $sessionsattended Sessions attended cache. */
     private $sessionsattended;
 
+    /**
+     * @todo Remove this functionality.
+     *
+     * @param $data
+     * @param string $format
+     * @return string
+     */
     public function format_user_measure_data($data, $format = FORMAT_PLAIN) : string {
         return '';
     }
 
+    /**
+     * Build cell to be used on HTML table and Excel sheet.
+     *
+     * @param $user
+     * @return cell
+     */
     public function build_data_cell($user) {
         $text = ' - ';
         if (!empty($user->data->usersessionsattended)) {
@@ -67,6 +83,13 @@ class attendance_sessions_summary extends measure implements extra_configuration
         return $cell;
     }
 
+    /**
+     * Get all data for specify user.
+     *
+     * @param stdClass $user
+     * @return stdClass
+     * @throws \moodle_exception
+     */
     public function get_data_for_user(stdClass $user) : stdClass {
         $this->load_instance_data();
         $data = new stdClass();
@@ -80,7 +103,6 @@ class attendance_sessions_summary extends measure implements extra_configuration
                     $value = '(' . $value . '/' . $groupsessioncounts[$key] . ')';
                 }
             );
-//print_object($usersessionsattended);
             $data->usersessionsattended = $usersessionsattended;
         }
         $reporturl = new moodle_url('/mod/attendance/view.php', ['id' => $this->cm->id, 'studentid' => $user->id]);
@@ -89,6 +111,12 @@ class attendance_sessions_summary extends measure implements extra_configuration
         return $user;
     }
 
+    /**
+     * Load all caches if they haven't already been.
+     *
+     * @throws \dml_exception
+     * @throws coding_exception
+     */
     public function load_instance_data() {
         global $DB;
         if (is_null($this->cm)) {
@@ -130,8 +158,11 @@ class attendance_sessions_summary extends measure implements extra_configuration
     }
 
     /**
+     * Does what it does.
+     *
      * @param user_list $userlist
-     * @return array|null
+     * @return array
+     * @throws \moodle_exception
      */
     public function get_data_for_users(user_list $userlist) : array {
         $data = [];
