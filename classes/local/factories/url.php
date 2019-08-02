@@ -54,6 +54,15 @@ class url {
         return $url;
     }
 
+    public static function get_export_url(stdClass $course) : moodle_url {
+        $url =  new moodle_url('/report/lp/export.php',
+            [
+                'courseid' => $course->id
+            ]
+        );
+        return $url;
+    }
+
     public static function get_summary_url(stdClass $course) : moodle_url {
         $url =  new moodle_url('/report/lp/index.php',
             [
