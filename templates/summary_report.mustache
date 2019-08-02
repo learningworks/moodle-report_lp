@@ -81,10 +81,11 @@
 {{#js}}
     require(
     [
-    'report_lp/filter_exclude_learner'
+    'report_lp/filter_exclude_learner', 'report_lp/highlight'
     ],
-    function(excludeLearnerFilter) {
+    function(excludeLearnerFilter, highlight) {
         excludeLearnerFilter.init('#report-lp-summary-report-{{uniqid}}');
+        highlight.init('#report-lp-summary-report-{{uniqid}}');
     });
 {{/js}}
 {{/reportconfigured}}

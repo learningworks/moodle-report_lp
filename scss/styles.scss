@@ -51,6 +51,10 @@ $lw-green: #96C832;
     }
 }
 
+tr.highlighted {
+    background-color: #FEFBDC;
+}
+
 li.list-group-item.depth-2 {
     padding-left: (1.25 * 2) + rem;
 }
@@ -132,8 +136,6 @@ $padding-x: .75rem;
         margin-right: 0;
     }
     tr:hover {
-        background-color: lighten(rgb(150, 200, 50), 20);
-        background-color: lighten(rgb(17, 119, 209), 50);
     }
 
 }
