@@ -14,13 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- *
- * @package     report_lp
- * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 namespace report_lp\local;
 
 defined('MOODLE_INTERNAL') || die();
@@ -43,13 +36,34 @@ class learner_list extends user_list {
      */
     private $coursegroupids = [];
 
+    /** @var pagination $pagination */
+    private $pagination;
+
     /**
      * learner_list constructor.
      *
      * @param stdClass $course
+     * @param pagination|null $pagination
      */
-    public function __construct(stdClass $course) {
+    public function __construct(stdClass $course, pagination $pagination = null) {
         parent::__construct($course);
+        if (!is_null($pagination)) {
+            $this->set_pagination($pagination);
+        }
+    }
+
+    /**
+     * @param pagination $pagination
+     */
+    public function set_pagination(pagination $pagination) {
+        $this->pagination = $pagination;
+    }
+
+    /**
+     * @return pagination|null
+     */
+    public function get_pagination() : ? pagination {
+        return $this->pagination;
     }
 
     /**
@@ -85,12 +99,21 @@ class learner_list extends user_list {
     }
 
     /**
+     * Load the learner list with records.
      *
      * @throws \dml_exception
      * @throws coding_exception
      */
-    public function fetch_all() {
+    public function load() {
         global $DB;
+
+        $limitfrom = 0;
+        $limitnum = 0;
+        if ($this->pagination) {
+            $this->pagination->set_total($this->total());
+            $limitnum = $this->pagination->get_current_limit();
+            $limitfrom = $this->pagination->get_current_page() * $limitnum;
+        }
 
         $defaultuserfields = static::get_default_user_fields();
         $sqluserfields = dml_utilities::alias($defaultuserfields, 'u');
@@ -102,15 +125,14 @@ class learner_list extends user_list {
         }
         $sortorder = $this->get_sort_by();
 
-        $sql = "SELECT {$sqluserfields},
-                       ue.status
+        $sql = "SELECT {$sqluserfields}
                   FROM {user} u
                   {$uesql}
                   {$gmsql}
               ORDER BY {$sortorder}";
 
         $parameters = array_merge($ueparameters, $gmparameters);
-        $rs = $DB->get_recordset_sql($sql, $parameters);
+        $rs = $DB->get_recordset_sql($sql, $parameters, $limitfrom, $limitnum);
         foreach ($rs as $record) {
             $this->add_user($record);
         }

@@ -33,11 +33,19 @@ $PAGE->requires->css($css);
 
 $summaryreport = new report_lp\local\summary_report($course);
 $itemtypelist = new report_lp\local\item_type_list();
-$summaryreport ->add_item_type_list($itemtypelist);
+$summaryreport->add_item_type_list($itemtypelist);
 $learnerlist = new report_lp\local\learner_list($course);
 $filteredcoursegroups = report_lp\local\course_group::get_active_filter($course->id);
-$learnerlist->add_course_groups_filter($filteredcoursegroups);
-$summaryreport ->add_learner_list($learnerlist);
+if (empty($filteredcoursegroups)) {
+    // If no active filters, ensure people without access all groups can only see their group memberships.s
+    if (!has_capability('moodle/site:accessallgroups', $coursecontext)) {
+        $groups = report_lp\local\course_group::get_available_groups($course);
+        $learnerlist->add_course_groups_filter(array_keys($groups));
+    }
+}
+$pagination = new report_lp\local\pagination($course->id, $learnerlist->total(), $url);
+$learnerlist->set_pagination($pagination);
+$summaryreport->add_learner_list($learnerlist);
 
 $renderer = $PAGE->get_renderer('report_lp');
 echo $OUTPUT->header();

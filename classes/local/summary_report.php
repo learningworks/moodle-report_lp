@@ -19,8 +19,10 @@ namespace report_lp\local;
 defined('MOODLE_INTERNAL') || die();
 
 use coding_exception;
+use context_course;
 use renderable;
 use renderer_base;
+use report_lp\local\factories\url;
 use report_lp\local\visitors\data_item_visitor;
 use stdClass;
 use report_lp\local\builders\item_tree;
@@ -35,16 +37,25 @@ use report_lp\output\row;
  */
 class summary_report implements renderable, templatable {
 
+    /** @var stdClass $course */
     protected $course;
+
+    /** @var context_course $context */
+    protected $context;
 
     protected $itemtypelist;
 
     protected $itemtree;
 
+    /** @var learner_list $learnerlist */
     protected $learnerlist;
+
+    /** @var renderer_base $renderer */
+    protected $renderer;
 
     public function __construct(stdClass $course, item_type_list $itemtypelist = null) {
         $this->course = $course;
+        $this->context = context_course::instance($course->id);
         if (is_null($itemtypelist)) {
             $this->itemtypelist = $this->get_default_item_type_list();
         }
@@ -90,80 +101,6 @@ class summary_report implements renderable, templatable {
         return $this;
     }
 
-    public function build_data() {
-        global $PAGE;
-        $renderer = $PAGE->get_renderer('report_lp');
-
-        $data = new stdClass();
-        $data->courseid = $this->course->id;
-        $data->reportconfigured = true;
-
-        if (is_null($this->itemtypelist)) {
-            $this->add_item_type_list($this->get_default_item_type_list());
-        }
-
-        if (is_null($this->learnerlist)) {
-            $this->add_learner_list(new learner_list($this->course));
-        }
-
-        $filteredcoursegroups = course_group::get_active_filter($this->course->id);
-        $this->get_learner_list()->add_course_groups_filter($filteredcoursegroups);
-
-        if (empty($filteredcoursegroups)) {
-            $nofilteredcoursegroups = new stdClass();
-            $nofilteredcoursegroups->rowsimageurl = $renderer->image_url('rows', 'report_lp')->out();
-            $data->nofilteredcoursegroups = $nofilteredcoursegroups;
-            return $data;
-        }
-
-        $excludedlist = $this->get_excluded_list();
-        $excludedlearnernames = array_map(
-            function($learner) {
-                return fullname($learner);
-            },
-            iterator_to_array($excludedlist));
-
-        $data->hasexcludedlearners = ($excludedlist->count()) ? true : false;
-        $data->excludedlearnerlist = implode(', ', $excludedlearnernames);
-
-        $tree = new item_tree($this->course, $this->itemtypelist);
-        $root = $tree->build_from_item_configurations();
-        if (!$root) {
-            $data->reportconfigured = false;
-        } else {
-            $data->exporturl = factories\url::get_export_url($this->course)->out(false);
-            // This array of items very special to us.
-            $dataitems = $root->accept(new data_item_visitor());
-            $thead = new stdClass();
-            $thead->rows = [];
-            $row = new row();
-            $row->cells = $this->build_grouping_header($root);
-            $thead->rows[] = $row;
-            $row = new row();
-            $row->cells = $this->build_header($dataitems);
-            $thead->rows[] = $row;
-            $data->thead = $thead;
-
-            $tbody = new stdClass();
-            $tbody->rows = [];
-            $this->get_learner_list()->fetch_all();
-            $excludedlearnerids = $excludedlist->get_userids();
-            foreach ($this->get_learner_list() as $learner) {
-                if (in_array($learner->id, $excludedlearnerids)) {
-                    continue;
-                }
-                $row = new row();
-                $row->userid = $learner->id;
-                $row->fullname = fullname($learner);
-                $cells = $this->build_data_row($learner, $dataitems);
-                $row->cells = $cells;
-                $tbody->rows[] = $row;
-            }
-            $data->tbody = $tbody;
-        }
-        return $data;
-    }
-
     protected function build_grouping_header($root) {
         $row = [];
         foreach($root->get_children() as $child)  {
@@ -186,14 +123,12 @@ class summary_report implements renderable, templatable {
     }
 
     protected function build_data_row($user, $items) {
-        global $PAGE;
-        $renderer = $PAGE->get_renderer('report_lp');
         $row = [];
         foreach ($items as $item) {
             $data = $item->get_data_for_user($user);
             $cell = $item->build_data_cell($data);
             if (isset($cell->templatablecontent)) {
-                $cell->content = $renderer->render_from_template(
+                $cell->content = $this->renderer->render_from_template(
                     'report_lp/' . $cell->template,
                     $cell->templatablecontent
                 );
@@ -210,7 +145,65 @@ class summary_report implements renderable, templatable {
     }
 
     public function export_for_template(renderer_base $output) {
-        return $this->build_data();
+        $this->renderer = $output;
+
+        $data = new stdClass();
+        $data->courseid = $this->course->id;
+        $data->reportconfigured = true;
+
+        $filteredcoursegroups = course_group::get_active_filter($this->course->id);
+        $this->get_learner_list()->add_course_groups_filter($filteredcoursegroups);
+
+        $excludedlist = $this->get_excluded_list();
+        $excludedlearnernames = array_map(
+            function($learner) {
+                return fullname($learner);
+            },
+            iterator_to_array($excludedlist));
+
+        $data->hasexcludedlearners = ($excludedlist->count()) ? true : false;
+        $data->excludedlearnerlist = implode(', ', $excludedlearnernames);
+
+        $tree = new item_tree($this->course, $this->itemtypelist);
+        $root = $tree->build_from_item_configurations();
+        if (!$root) {
+            $data->reportconfigured = false;
+        } else {
+            $data->canexport = has_capability('report/lp:exportsummary', $this->context);
+            $data->exporturl = factories\url::get_export_url($this->course)->out(false);
+            // This array of items very special to us.
+            $dataitems = $root->accept(new data_item_visitor());
+            $thead = new stdClass();
+            $thead->rows = [];
+            $row = new row();
+            $row->cells = $this->build_grouping_header($root);
+            $thead->rows[] = $row;
+            $row = new row();
+            $row->cells = $this->build_header($dataitems);
+            $thead->rows[] = $row;
+            $data->thead = $thead;
+
+            $tbody = new stdClass();
+            $tbody->rows = [];
+            $this->get_learner_list()->load();
+            $excludedlearnerids = $excludedlist->get_userids();
+            foreach ($this->get_learner_list() as $learner) {
+                if (in_array($learner->id, $excludedlearnerids)) {
+                    continue;
+                }
+                $row = new row();
+                $row->userid = $learner->id;
+                $row->fullname = fullname($learner);
+                $cells = $this->build_data_row($learner, $dataitems);
+                $row->cells = $cells;
+                $tbody->rows[] = $row;
+            }
+            if (!is_null($this->learnerlist->get_pagination())) {
+                $data->pagination = $this->learnerlist->get_pagination()->export_for_template($output);
+            }
+            $data->tbody = $tbody;
+        }
+        return $data;
     }
 
 }
