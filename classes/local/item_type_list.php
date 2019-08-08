@@ -61,12 +61,11 @@ class item_type_list implements Countable, IteratorAggregate {
      * Get item based on class short name.
      *
      * @param string $shortname
-     * @return item
-     * @throws coding_exception
+     * @return item|null
      */
-    public function find_by_short_name(string $shortname) : item {
+    public function find_by_short_name(string $shortname) : ? item {
         if (!$this->item_type_exists($shortname)) {
-            throw new coding_exception("Item with {$shortname} does not exist");
+            return null;
         }
         return $this->registereditemtypes[$shortname];
     }

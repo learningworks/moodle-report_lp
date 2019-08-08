@@ -66,12 +66,13 @@ class item_tree {
         $items = [];
         foreach ($itemconfigurations as $itemconfiguration) {
             $item = $this->itemfactory->get_item_from_persistent($itemconfiguration);
+            if ($item === null) {
+                continue;
+            }
             if ($this->course->id != $item->get_courseid()) {
                 continue;
             }
-            if ($item->is_enabled()) {
-                $items[$item->get_id()] = $item;
-            }
+            $items[$item->get_id()] = $item;
         }
         // Ensure array sorted by depth and then order and maintain keys.
         uasort($items, function($a, $b) {

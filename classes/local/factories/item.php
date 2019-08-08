@@ -65,7 +65,9 @@ class item {
     public function get_item_from_persistent(item_configuration $itemconfiguration) {
         $shortname = $itemconfiguration->get('shortname');
         $item = $this->get_class_instance_from_list($shortname);
-        $item->load_configuration($itemconfiguration);
+        if (!empty($item)) {
+            $item->load_configuration($itemconfiguration);
+        }
         return $item;
     }
 
@@ -73,12 +75,14 @@ class item {
      * Find and return a clone.
      *
      * @param string $shortname
-     * @return \report_lp\local\item
-     * @throws coding_exception
+     * @return \report_lp\local\item|null
      */
     public function get_class_instance_from_list(string $shortname) {
         $class = $this->itemtypelist->find_by_short_name($shortname);
-        return clone($class);
+        if (!empty($class)) {
+            return clone($class);
+        }
+        return $class;
     }
 
     /**
