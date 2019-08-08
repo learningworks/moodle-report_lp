@@ -370,6 +370,13 @@ abstract class item {
             return true;
         }
         $pluginmanager = core_plugin_manager::instance();
+        $present = $pluginmanager->get_present_plugins($type);
+        if (!is_array($present)) {
+            return false;
+        }
+        if (!isset($present[$name])) {
+            return false;
+        }
         $enabled = $pluginmanager->get_enabled_plugins($type);
         if (!is_array($enabled)) {
             return false;
