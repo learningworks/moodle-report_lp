@@ -153,14 +153,14 @@ class learner extends item implements data_provider {
         $user->fullname = fullname($user);
         $profileimage = new user_picture($user);
         $profileimageurl = $profileimage->get_url($PAGE, $this->get_renderer());
-        $user->profileimageurl = $profileimageurl->out();
+        $user->profileimageurl = $profileimageurl->out(false);
         if (empty($user->imagealt)) {
             $user->profileimagealt = get_string('pictureof', '', $user->fullname);
         } else {
             $user->profileimagealt = $user->imagealt;
         }
         $profilelinkurl = new moodle_url('/user/view.php', ['id' => $user->id, 'course' => $this->get_courseid()]);
-        $user->profilelinkurl = $profilelinkurl->out();
+        $user->profilelinkurl = $profilelinkurl->out(false);
         if (!isset($user->enrolmentstatus)) {
             $user->enrolmentstatus = $this->get_enrolment_status($user->id);
         }
