@@ -23,6 +23,7 @@ use context_course;
 use renderable;
 use renderer_base;
 use report_lp\local\factories\url;
+use report_lp\local\persistents\item_configuration;
 use report_lp\local\visitors\data_item_visitor;
 use stdClass;
 use report_lp\local\builders\item_tree;
@@ -165,7 +166,8 @@ class summary_report implements renderable, templatable {
         $data->excludedlearnerlist = implode(', ', $excludedlearnernames);
 
         $tree = new item_tree($this->course, $this->itemtypelist);
-        $root = $tree->build_from_item_configurations();
+        $items = item_configuration::get_records(['courseid' => $this->course->id]);
+        $root = $tree->build_from_item_configurations($items);
         if (!$root) {
             $data->reportconfigured = false;
         } else {
