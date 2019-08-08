@@ -19,6 +19,7 @@ namespace report_lp\local;
 defined('MOODLE_INTERNAL') || die();
 
 use coding_exception;
+use core_plugin_manager;
 use moodle_url;
 use pix_icon;
 use plugin_renderer_base;
@@ -353,17 +354,27 @@ abstract class item {
     }
 
     /**
-     * Items/Measures to override this method..
+     * If item using component check it is available and enabled. If not enable
+     * by default.
      *
-     * Allow each item to determine if they are enabled. For modules the common
-     * practise is to use plugin manager to determine if enabled or not, however
-     * this method allows another level of control possibly disabling via a $CFG
+     * Override this method to allow another level of control possibly disabling via a $CFG
      * variable.
      *
-     * @return bool|null
+     * @return bool
      */
     public function is_enabled() {
-        return false;
+        $type = static::COMPONENT_TYPE;
+        $name = static::COMPONENT_NAME;
+        // Does not make use of a component so enable by default.
+        if (is_null($type) || is_null($name)) {
+            return true;
+        }
+        $pluginmanager = core_plugin_manager::instance();
+        $enabled = $pluginmanager->get_enabled_plugins($type);
+        if (!is_array($enabled)) {
+            return false;
+        }
+        return isset($enabled[$name]);
     }
 
     /**
