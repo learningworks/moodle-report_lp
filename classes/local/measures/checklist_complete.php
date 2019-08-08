@@ -18,10 +18,6 @@ namespace report_lp\local\measures;
 
 defined('MOODLE_INTERNAL') || die();
 
-global $CFG;
-require_once($CFG->dirroot . '/mod/checklist/lib.php');
-require_once($CFG->dirroot . '/mod/checklist/locallib.php');
-
 use coding_exception;
 use MoodleQuickForm;
 use pix_icon;
@@ -307,17 +303,12 @@ class checklist_complete extends measure implements extra_configuration {
     }
 
     /**
-     * Is the checklist module available and enabled.
      *
-     * @return bool|null
      */
-    public function is_enabled() {
-        $pluginmanager = core_plugin_manager::instance();
-        $enabled = $pluginmanager->get_enabled_plugins(static::COMPONENT_TYPE);
-        if (!is_array($enabled)) {
-            return null;
-        }
-        return isset($enabled[static::COMPONENT_NAME]);
+    private function load_required_libraries() {
+        global $CFG;
+        require_once($CFG->dirroot . '/mod/checklist/lib.php');
+        require_once($CFG->dirroot . '/mod/checklist/locallib.php');
     }
 
     /**
