@@ -47,10 +47,9 @@ class report {
         $root = $itemfactory->get_root_grouping(true);
         $learnergrouping = $itemfactory->create_learner_information_grouping($root->get_id());
         $learneritem = $itemfactory->create_learner($learnergrouping->get_id());
+        $learneritem->get_configuration()->set('islocked', true)->save();
         $idnumberfield = $itemfactory->create_learner_field('idnumber_learner_field', $learnergrouping->get_id());
-        $idnumberfield->get_configuration()->set('islocked', true)->save();
         $coursegroupsfield = $itemfactory->create_learner_field('course_groups_learner_field', $learnergrouping->get_id());
-        $coursegroupsfield->get_configuration()->set('islocked', true)->save();
         $reportconfiguration = new report_configuration();
         $reportconfiguration->set('courseid', $course->id);
         $reportconfiguration->set('enabled', true);
@@ -95,7 +94,7 @@ class report {
      */
     public static function handle_course_module_deletion(int $courseid, string $modulename, int $instanceid) {
         $course = get_course($courseid);
-        $treebuilder = new item_tree($course);
+        $treebuilder = new item_tree($course, new item_type_list());
         $root = $treebuilder->build_from_item_configurations();
         $visitor = new component_item_visitor('mod', $modulename);
         /** @var item $item */
