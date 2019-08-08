@@ -53,20 +53,6 @@ class assignment_status extends measure implements extra_configuration {
     protected $assignment;
 
     /**
-     * assignment_status constructor.
-     *
-     * Load any required libaries.
-     *
-     * @param stdClass|null $course
-     */
-    public function __construct(stdClass $course = null) {
-        global $CFG;
-        require_once($CFG->dirroot . '/mod/assign/lib.php');
-        require_once($CFG->dirroot . '/mod/assign/locallib.php');
-        parent::__construct($course);
-    }
-
-    /**
      * Build data cell, currently using HTML writer.
      *
      * @param $user
@@ -361,7 +347,9 @@ class assignment_status extends measure implements extra_configuration {
      * @throws coding_exception
      */
     protected function load_assignment() {
-        global $DB;
+        global $CFG, $DB;
+        require_once($CFG->dirroot . '/mod/assign/lib.php');
+        require_once($CFG->dirroot . '/mod/assign/locallib.php');
         $configuration = $this->get_configuration();
         if (is_null($configuration)) {
             throw new coding_exception('Configuration must loaded');

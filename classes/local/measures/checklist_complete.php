@@ -56,20 +56,6 @@ class checklist_complete extends measure implements extra_configuration {
     /** @var int $checklistitemstotal Total of items in checklist instance. */
     protected $checklistitemstotal;
 
-    /**
-     * checklist_complete constructor.
-     *
-     * Load any required libaries.
-     *
-     * @param stdClass|null $course
-     */
-    public function __construct(stdClass $course = null) {
-        global $CFG;
-        require_once($CFG->dirroot . '/mod/checklist/lib.php');
-        require_once($CFG->dirroot . '/mod/checklist/locallib.php');
-        parent::__construct($course);
-    }
-
     public function build_data_cell($user) {
         $percentcomplete = ' - ';
         if (!empty($user->data->percentcomplete)) {
@@ -107,8 +93,9 @@ class checklist_complete extends measure implements extra_configuration {
      * @throws coding_exception
      */
     protected function load_checklist() {
-        global $DB;
-
+        global $CFG, $DB;
+        require_once($CFG->dirroot . '/mod/checklist/lib.php');
+        require_once($CFG->dirroot . '/mod/checklist/locallib.php');
         if (is_null($this->checklist)) {
             $configuration = $this->get_configuration();
             if (is_null($configuration)) {

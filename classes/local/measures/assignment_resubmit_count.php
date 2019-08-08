@@ -52,20 +52,6 @@ class assignment_resubmit_count extends measure implements extra_configuration {
     /** @var assign $assignment Associated instance of assign based on configuration. */
     protected $assignment;
 
-    /**
-     * assignment_resubmit_count constructor.
-     *
-     * Load any required libaries.
-     *
-     * @param stdClass|null $course
-     */
-    public function __construct(stdClass $course = null) {
-        global $CFG;
-        require_once($CFG->dirroot . '/mod/assign/lib.php');
-        require_once($CFG->dirroot . '/mod/assign/locallib.php');
-        parent::__construct($course);
-    }
-
     public function build_data_cell($user) {
         $submissionattemptnumber = ' - ';
         if (!empty($user->data->submissionattemptnumber)) {
@@ -265,7 +251,9 @@ class assignment_resubmit_count extends measure implements extra_configuration {
      * @throws coding_exception
      */
     protected function load_assignment() {
-        global $DB;
+        global $CFG, $DB;
+        require_once($CFG->dirroot . '/mod/assign/lib.php');
+        require_once($CFG->dirroot . '/mod/assign/locallib.php');
         $configuration = $this->get_configuration();
         if (is_null($configuration)) {
             throw new coding_exception('Configuration must loaded');
