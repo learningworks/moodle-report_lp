@@ -18,10 +18,6 @@ namespace report_lp\local\measures;
 
 defined('MOODLE_INTERNAL') || die();
 
-global $CFG;
-require_once($CFG->dirroot . '/mod/assign/lib.php');
-require_once($CFG->dirroot . '/mod/assign/locallib.php');
-
 use assign;
 use coding_exception;
 use context_module;
@@ -55,6 +51,20 @@ class assignment_resubmit_count extends measure implements extra_configuration {
 
     /** @var assign $assignment Associated instance of assign based on configuration. */
     protected $assignment;
+
+    /**
+     * assignment_resubmit_count constructor.
+     *
+     * Load any required libaries.
+     *
+     * @param stdClass|null $course
+     */
+    public function __construct(stdClass $course = null) {
+        global $CFG;
+        require_once($CFG->dirroot . '/mod/assign/lib.php');
+        require_once($CFG->dirroot . '/mod/assign/locallib.php');
+        parent::__construct($course);
+    }
 
     public function build_data_cell($user) {
         $submissionattemptnumber = ' - ';
@@ -311,20 +321,6 @@ class assignment_resubmit_count extends measure implements extra_configuration {
      */
     public function has_url() : bool {
         return true;
-    }
-
-    /**
-     * Is the assignment module available and enabled.
-     *
-     * @return bool|null
-     */
-    public function is_enabled() {
-        $pluginmanager = core_plugin_manager::instance();
-        $enabled = $pluginmanager->get_enabled_plugins(static::COMPONENT_TYPE);
-        if (!is_array($enabled)) {
-            return null;
-        }
-        return isset($enabled[static::COMPONENT_NAME]);
     }
 
     /**

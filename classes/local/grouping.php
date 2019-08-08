@@ -125,7 +125,7 @@ class grouping extends item implements Countable, IteratorAggregate {
      *
      * @return bool|null
      */
-    public function is_enabled() {
+    public static function is_enabled() {
         return true;
     }
 

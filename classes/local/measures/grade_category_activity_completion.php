@@ -247,7 +247,7 @@ class grade_category_activity_completion extends measure implements extra_config
      *
      * @return bool|null
      */
-    public function is_enabled() {
+    public static function is_enabled() {
         return true;
     }
 

@@ -156,7 +156,7 @@ class last_course_access extends measure {
      *
      * @return bool|null
      */
-    public function is_enabled() {
+    public static function is_enabled() {
         return true;
     }
 

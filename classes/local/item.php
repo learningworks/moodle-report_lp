@@ -362,7 +362,7 @@ abstract class item {
      *
      * @return bool
      */
-    public function is_enabled() {
+    public static function is_enabled() {
         $type = static::COMPONENT_TYPE;
         $name = static::COMPONENT_NAME;
         // Does not make use of a component so enable by default.
