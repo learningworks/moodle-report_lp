@@ -51,7 +51,7 @@ function(
             }, 501);
         }).on(SortableList.EVENTS.DROP, function(_, info) {
             // When a list element was moved send AJAX request to the server.
-            var localthis = this;
+            var response = this;
             var newIndex = info.targetList.children().index(info.element);
             var s = info.element.find('[data-action=' + moveaction + ']');
             var ul;
@@ -70,14 +70,13 @@ function(
                         total: s.length
                     }
                 };
-                // Templates.render(TEMPLATES.LOADING_ICON, {});
                 var promise = Ajax.call([request])[0];
-                promise.done(
-                     function(data){
-                         localthis.data = data;
-                     }
-                     ).fail(Notification.exception);
-              li.addClass('depth-' + localthis.data.depth);
+                promise.done(function(data){
+                    response.data = data;
+                    li.addClass('depth-' + response.data.depth);
+
+                });
+                promise.fail(Notification.exception);
             }
         });
     };

@@ -74,51 +74,54 @@ class configure_report implements renderable, templatable {
         $data = new stdClass();
         $data->courseid = $this->course->id;
         $data->coursestartdate = $this->course->startdate;
-
         $data->listitems = [];
-
         $tree = new item_tree($this->course, $this->itemtypelist);
         $itemconfigurations = item_configuration::get_records(['courseid' => $this->course->id]);
         $root = $tree->build_from_item_configurations($itemconfigurations);
+        if ($root === null) {
+            $data->initialisebutton = button::create_initialise_button($this->course->id);
+            return $data;
+        }
         $visitor = new pre_order_visitor();
         $items = $root->accept($visitor);
-        if (!$items) {
-            $data->initialisebutton = button::create_initialise_button($this->course->id);
-        } else {
-            $data->initialised = true;
-            foreach ($items as $item) {
-                /** @var item $item */
-                $lineitem               = new stdClass();
-                $lineitem->id           = $item->get_id();
-                $lineitem->isroot       = $item->is_root();
-                $lineitem->shortname    = $item::get_short_name();
-                $lineitem->label        = $item->get_label();
-                $lineitem->depth        = $item->get_depth();
-                $lineitem->sortorder    = $item->get_sortorder();
-                $actions = [];
+        $data->initialised = true;
+        foreach ($items as $item) {
+            /** @var item $item */
+            if ($item->is_root()) {
+                $lineitem           = new stdClass();
+                $lineitem->label    = $item->get_label();
+                $data->root         = $lineitem;
+                continue;
+            }
+            $lineitem               = new stdClass();
+            $lineitem->id           = $item->get_id();
+            $lineitem->shortname    = $item::get_short_name();
+            $lineitem->label        = $item->get_label();
+            $lineitem->depth        = $item->get_depth();
+            $lineitem->sortorder    = $item->get_sortorder();
+            $actions = [];
+            $button = new stdClass();
+            $button->name = 'configure';
+            $button->title = get_string('configureitem', 'report_lp');
+            $button->icon = '<i class="fa fa-cog fa-fw"></i>';
+            $url = url::get_item_url(null, $item->get_id());
+            $button->url = $url->out(false);
+            $actions[] = $button;
+            if (!$item->is_locked()) {
                 $button = new stdClass();
-                $button->name = 'configure';
-                $button->title = get_string('configureitem', 'report_lp');
-                $button->icon = '<i class="fa fa-cog fa-fw"></i>';
-                $url = url::get_item_url(null, $item->get_id());
+                $button->name = 'delete';
+                $button->title = get_string('deleteitem', 'report_lp');
+                $button->icon = '<i class="fa fa-trash-o fa-fw"></i>';
+                $url = url::get_item_action_url(
+                    $item->get_courseid(),
+                    $item->get_id(),
+                    'delete'
+                );
                 $button->url = $url->out(false);
                 $actions[] = $button;
-                if (!$item->is_locked()) {
-                    $button = new stdClass();
-                    $button->name = 'delete';
-                    $button->title = get_string('deleteitem', 'report_lp');
-                    $button->icon = '<i class="fa fa-trash-o fa-fw"></i>';
-                    $url = url::get_item_action_url(
-                        $item->get_courseid(),
-                        $item->get_id(),
-                        'delete'
-                    );
-                    $button->url = $url->out(false);
-                    $actions[] = $button;
-                }
-                $lineitem->actions = $actions;
-                $data->lineitems[] = $lineitem;
             }
+            $lineitem->actions = $actions;
+            $data->lineitems[] = $lineitem;
         }
         $menu = [];
         foreach ($this->itemtypelist as $itemtype) {

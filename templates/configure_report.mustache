@@ -29,13 +29,6 @@
                     <li class="list-group-item header">
                         {{# str }} additemstoreport, report_lp {{/ str }}
                     </li>
-                    <li class="list-group-item">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">{{groupingname}}</h5>
-                            <a href="{{creategroupingurl}}" title="{{groupingtitle}}" role="button"><i class="fa fa-plus-circle" aria-hidden="true"></i></a>
-                        </div>
-                        <small class="text-muted">{{groupingdescription}}</small>
-                    </li>
                     {{#menu}}
                         <li class="list-group-item">
                             <div class="d-flex w-100 justify-content-between">
@@ -50,28 +43,25 @@
         </div>
         <div class="col-9">
             <div>
+                {{#root}}
+                    <div class="list-group-item header">
+                        {{label}}
+                        <div class="float-right">
+                            <span class="badge badge-primary badge-pill">{{#userdate}} {{coursestartdate}}, %B %Y {{/userdate}} </span>
+                        </div>
+                    </div>
+                {{/root}}
                 <ul id="list-configured-items" class="list-group" data-course-id="{{courseid}}">
                     {{#lineitems}}
-                        {{#isroot}}
-                            <li class="list-group-item header">
-                                {{label}}
-                                <div class="float-right">
-                                    <span class="badge badge-primary badge-pill">{{#userdate}} {{coursestartdate}}, %B %Y {{/userdate}} </span>
-                                </div>
-                            </li>
-                        {{/isroot}}
-                        {{^isroot}}
-                            <li class="list-group-item depth-{{depth}} draggable" data-name="{{label}}" data-depth="{{depth}}" data-item-id="{{id}}" >
+                        <li class="list-group-item depth-{{depth}} draggable" data-name="{{label}}" data-depth="{{depth}}" data-item-id="{{id}}" >
                             <span data-action="move">
                                 <span tabindex="0" role="button" aria-haspopup="true" data-drag-type="move" title="Move item">
                                     <i class="icon fa fa-arrows fa-fw " aria-hidden="true"></i>
                                 </span>
                             </span>
-                                {{label}}
-                                {{>report_lp/item_tree_configuration_actions}}
-                            </li>
-                        {{/isroot}}
-
+                            {{label}}
+                            {{>report_lp/item_tree_configuration_actions}}
+                        </li>
                     {{/lineitems}}
                 </ul>
             </div>
