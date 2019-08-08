@@ -109,8 +109,6 @@ class checklist_complete extends measure implements extra_configuration {
     protected function load_checklist() {
         global $DB;
 
-        $this->load_required_libraries();
-
         if (is_null($this->checklist)) {
             $configuration = $this->get_configuration();
             if (is_null($configuration)) {

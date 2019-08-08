@@ -282,20 +282,6 @@ class attendance_sessions_summary extends measure implements extra_configuration
     }
 
     /**
-     * Is the attendance module available and enabled.
-     *
-     * @return bool|null
-     */
-    public function is_enabled() {
-        $pluginmanager = core_plugin_manager::instance();
-        $enabled = $pluginmanager->get_enabled_plugins(static::COMPONENT_TYPE);
-        if (!is_array($enabled)) {
-            return null;
-        }
-        return isset($enabled[static::COMPONENT_NAME]);
-    }
-
-    /**
      * Extend main item mform to allow choice of attendance to measure as
      * implements own configuration.
      *
