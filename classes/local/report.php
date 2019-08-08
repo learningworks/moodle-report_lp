@@ -45,11 +45,12 @@ class report {
     public static function create_course_instance(stdClass $course) {
         $itemfactory = new factories\item($course, new item_type_list());
         $root = $itemfactory->get_root_grouping(true);
-        $learnergrouping = $itemfactory->create_learner_information_grouping($root->get_id());
-        $learneritem = $itemfactory->create_learner($learnergrouping->get_id());
-        $learneritem->get_configuration()->set('islocked', true)->save();
-        $idnumberfield = $itemfactory->create_learner_field('idnumber_learner_field', $learnergrouping->get_id());
-        $coursegroupsfield = $itemfactory->create_learner_field('course_groups_learner_field', $learnergrouping->get_id());
+        $learnergrouping = $itemfactory->create_grouping(
+            get_string('learnerinformation', 'report_lp'), $root->get_id()
+        );
+        $itemfactory->create_learner($learnergrouping->get_id());
+        $itemfactory->create_learner_field('idnumber_learner_field', $learnergrouping->get_id());
+        $itemfactory->create_learner_field('course_groups_learner_field', $learnergrouping->get_id());
         $reportconfiguration = new report_configuration();
         $reportconfiguration->set('courseid', $course->id);
         $reportconfiguration->set('enabled', true);

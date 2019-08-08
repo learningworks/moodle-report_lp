@@ -78,14 +78,10 @@ $string['lastcourseaccess:measure:label'] = 'Last course access';
 $string['lastcourseaccess:measure:name'] = 'Last course access';
 $string['lastcourseaccess:measure:description'] = 'The date and time the learner last accessed this course.';
 $string['grouping:name'] = 'Grouping';
-$string['grouping:description'] = 'Grouping allows a set of measures to be grouped together for display purposes.';
+$string['grouping:description'] = 'Grouping allows a set of items to be grouped together for display purposes.';
 $string['learner:name'] = 'Learner';
 $string['learner:label'] = 'Learner fullname, profile picture and actions';
 $string['learner:description'] = 'Standard learner information such as profile picture and fullname.';
-
-$string['learnerinformationgrouping:name'] = 'Learner information grouping';
-$string['learnerinformationgrouping:label'] = 'Learner information';
-$string['learnerinformationgrouping:description'] = 'Grouping of learner information learner item and learner fields.';
 
 $string['grouping'] = 'Grouping';
 $string['measures'] = 'Measures';
@@ -101,10 +97,7 @@ $string['visibletolearner'] = 'Display to learner';
 $string['configure'] = 'Configure {$a}';
 
 $string['defaultlabelgrouping'] = 'Grouping {$a}';
-
-
 $string['defaultlabelattendancesessionssummary'] = 'Sessions attended summary';
-
 $string['defaultlabelgradecategoryconfigured'] = 'Grade category completion: {$a}';
 
 $string['parentgrouping'] = 'Parent grouping';
@@ -157,7 +150,6 @@ $string['cachedef_summarydata'] = 'The summary measure data for learners in a co
 $string['achieved'] = 'Achieved';
 $string['notachieved'] = 'Not achieved';
 $string['additemstoreport'] = 'Add items to report';
-
 
 $string['noreportconfiguration'] = '
 Learner progress report configuration does not exist for this course.

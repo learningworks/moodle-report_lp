@@ -94,7 +94,6 @@ class item_type_list implements Countable, IteratorAggregate {
         return [
             new grouping(),
             new learner(),
-            new learner_information_grouping(),
             new fields\course_groups_learner_field(),
             new fields\idnumber_learner_field(),
             new measures\assignment_resubmit_count(),
