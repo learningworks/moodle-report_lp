@@ -156,7 +156,7 @@ $string['cachedef_summarydata'] = 'The summary measure data for learners in a co
 
 $string['achieved'] = 'Achieved';
 $string['notachieved'] = 'Not achieved';
-$string['addmeasurestoreport'] = 'Add measures to report';
+$string['additemstoreport'] = 'Add items to report';
 
 
 $string['noreportconfiguration'] = '

@@ -17,21 +17,6 @@
 
 {{#actions}}
     <div class="actions float-right">
-        {{#moveup}}
-        {{^isfirst}}
-            <a href="{{url}}" title="{{title}}" class="button {{name}}">{{{icon}}}</a>
-        {{/isfirst}}
-        {{/moveup}}
-        {{#movedown}}
-        {{^islast}}
-            <a href="{{url}}" title="{{title}}" class="button {{name}}">{{{icon}}}</a>
-        {{/islast}}
-        {{/movedown}}
-        {{#configure}}
-            <a href="{{url}}" title="{{title}}" class="button {{name}}">{{{icon}}}</a>
-        {{/configure}}
-        {{#delete}}
-            <a href="{{url}}" title="{{title}}" class="button {{name}}">{{{icon}}}</a>
-        {{/delete}}
+        <a href="{{url}}" title="{{title}}" class="button {{name}}">{{{icon}}}</a>
     </div>
 {{/actions}}

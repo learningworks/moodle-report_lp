@@ -31,6 +31,9 @@ require_capability('report/lp:configure', $coursecontext);
 $url = report_lp\local\factories\url::get_config_url($course);
 $PAGE->set_url($url);
 
+$itemtypelist = new \report_lp\local\item_type_list();
+$configure = new report_lp\output\configure_report($course, $itemtypelist);
+
 $css = new moodle_url('/report/lp/scss/styles.css');
 $PAGE->requires->css($css);
 $PAGE->requires->js_call_amd('report_lp/move', 'init', ['list-configured-items', 'move']);
@@ -89,5 +92,5 @@ switch ($action) {
 }
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('configurereportfor', 'report_lp', $course->fullname));
-echo $renderer->render(new report_lp\output\configure_report($course));
+echo $renderer->render($configure);
 echo $OUTPUT->footer();
