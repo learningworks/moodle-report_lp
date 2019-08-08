@@ -185,7 +185,9 @@ class item_type_list implements Countable, IteratorAggregate {
     public function register_type(item $itemtype) {
         $shortname = $itemtype::get_short_name();
         if (!isset($this->registereditemtypes[$shortname])) {
-            $this->registereditemtypes[$shortname] = $itemtype;
+            if ($itemtype->is_enabled()) {
+                $this->registereditemtypes[$shortname] = $itemtype;
+            }
         }
         return $this;
     }
