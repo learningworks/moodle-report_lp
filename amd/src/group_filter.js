@@ -54,6 +54,7 @@ define(
                     return;
                 }
                 option.toggleClass('active');
+                option.find('div.checked').toggleClass('d-none');
                 var dropdownItems = listContainer.find('.active');
                 if (dropdownItems.length) {
                     dropdownItems.each(function(index, element){
@@ -84,11 +85,11 @@ define(
                 promise.done(
                     function(data){
                         local.response = data;
+                        // TODO: Just for now. Until can build a view than can reload via PubSub.
+                        window.location.replace(listContainer.attr('data-redirect-url'));
                     }
                 ).fail(Notification.exception);
                 data.originalEvent.preventDefault();
-                // Just for now. Until can build a view than can reload via PubSub.
-                window.location.replace(listContainer.attr('data-redirect-url'));
             });
         };
 
