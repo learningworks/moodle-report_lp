@@ -43,6 +43,8 @@ if (empty($filteredcoursegroups)) {
         $learnerlist->add_course_groups_filter(array_keys($groups));
     }
 }
+$excludedlearnerlist = new report_lp\local\excluded_learner_list($course);
+$learnerlist->add_excluded_learners_list($excludedlearnerlist);
 $pagination = new report_lp\local\pagination($course->id, $learnerlist->total(), $url);
 $learnerlist->set_pagination($pagination);
 $summaryreport->add_learner_list($learnerlist);

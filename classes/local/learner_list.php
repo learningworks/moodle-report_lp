@@ -31,10 +31,11 @@ use coding_exception;
  */
 class learner_list extends user_list {
 
-    /**
-     * @var array $coursegroupids
-     */
+    /** @var array $coursegroupids */
     private $coursegroupids = [];
+
+    /** @var excluded_learner_list $excludedlearnerlist */
+    private $excludedlearnerlist;
 
     /** @var pagination $pagination */
     private $pagination;
@@ -43,13 +44,9 @@ class learner_list extends user_list {
      * learner_list constructor.
      *
      * @param stdClass $course
-     * @param pagination|null $pagination
      */
-    public function __construct(stdClass $course, pagination $pagination = null) {
+    public function __construct(stdClass $course) {
         parent::__construct($course);
-        if (!is_null($pagination)) {
-            $this->set_pagination($pagination);
-        }
     }
 
     /**
@@ -76,6 +73,13 @@ class learner_list extends user_list {
         $coursegroupids = array_merge($this->coursegroupids, $coursegroupids);
         $this->coursegroupids = array_values(array_unique($coursegroupids));
         return $this;
+    }
+
+    /**
+     * @param excluded_learner_list $excludedlearnerlist
+     */
+    public function add_excluded_learners_list(excluded_learner_list $excludedlearnerlist) {
+        $this->excludedlearnerlist = $excludedlearnerlist;
     }
 
     /**
@@ -114,7 +118,6 @@ class learner_list extends user_list {
             $limitnum = $this->pagination->get_current_limit();
             $limitfrom = $this->pagination->get_current_page() * $limitnum;
         }
-
         $defaultuserfields = static::get_default_user_fields();
         $sqluserfields = dml_utilities::alias($defaultuserfields, 'u');
         [$uesql, $ueparameters] = $this->get_user_enrolment_join('ue');
@@ -123,15 +126,27 @@ class learner_list extends user_list {
         if (!empty($this->coursegroupids)) {
             [$gmsql, $gmparameters] = $this->get_course_group_membership_join($this->coursegroupids);
         }
-        $sortorder = $this->get_sort_by();
+        $where = '';
+        $excludeparameters = [];
+        if (!is_null($this->excludedlearnerlist) && ($this->excludedlearnerlist->count())) {
+            [$excludesql, $excludeparameters] = $DB->get_in_or_equal(
+                $this->excludedlearnerlist->get_userids(),
+                SQL_PARAMS_NAMED,
+                "exclude",
+                false
 
+            );
+            $where .= " WHERE u.id {$excludesql}";
+        }
+        $sortorder = $this->get_sort_by();
         $sql = "SELECT {$sqluserfields}
                   FROM {user} u
                   {$uesql}
                   {$gmsql}
+                  {$where}
               ORDER BY {$sortorder}";
 
-        $parameters = array_merge($ueparameters, $gmparameters);
+        $parameters = array_merge($ueparameters, $gmparameters, $excludeparameters);
         $rs = $DB->get_recordset_sql($sql, $parameters, $limitfrom, $limitnum);
         foreach ($rs as $record) {
             $this->add_user($record);
@@ -181,7 +196,6 @@ class learner_list extends user_list {
 
         return [$sql, $parameters];
     }
-
 
     /**
      * Make SQL that will indicate if a user has a group membership in one or more passed in groups.
@@ -234,11 +248,24 @@ class learner_list extends user_list {
         if (!empty($this->coursegroupids)) {
             [$gmsql, $gmparameters] = $this->get_course_group_membership_join($this->coursegroupids);
         }
+        // @todo move to method.
+        $where = '';
+        $excludeparameters = [];
+        if (!is_null($this->excludedlearnerlist) && ($this->excludedlearnerlist->count())) {
+            [$excludesql, $excludeparameters] = $DB->get_in_or_equal(
+                $this->excludedlearnerlist->get_userids(),
+                SQL_PARAMS_NAMED,
+                "exclude",
+                false
+            );
+            $where .= " WHERE u.id {$excludesql}";
+        }
         $sql = "SELECT COUNT(1)
                   FROM {user} u
                   {$uesql}
-                  {$gmsql}";
-        $parameters = array_merge($ueparameters, $gmparameters);
+                  {$gmsql}
+                  {$where}";
+        $parameters = array_merge($ueparameters, $gmparameters, $excludeparameters);
         return $DB->count_records_sql($sql, $parameters);
     }
 
