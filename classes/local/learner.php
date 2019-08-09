@@ -171,15 +171,6 @@ class learner extends item implements data_provider {
     }
 
     /**
-     * Lock this item so cannot be deleted in UI.
-     *
-     * @return bool
-     */
-    public function is_locked() {
-        return true;
-    }
-
-    /**
      * Builds a cache of all user enrolments in a course.
      *
      * @throws \dml_exception

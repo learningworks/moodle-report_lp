@@ -192,31 +192,6 @@ class item {
     }
 
     /**
-     * Create the main learner grouping item.
-     *
-     * @param int $parentitemid
-     * @return learner_information_grouping
-     * @throws \ReflectionException
-     * @throws \core\invalid_persistent_exception
-     * @throws coding_exception
-     */
-    public function create_learner_information_grouping(int $parentitemid) : learner_information_grouping {
-        if ($parentitemid < 1) {
-            throw new coding_exception("Invalid parent item id");
-        }
-        $grouping = $this->get_class_instance_from_list('learner_information_grouping');
-        $configuration = new item_configuration();
-        $configuration->set('courseid', $this->course->id);
-        $configuration->set('classname', $grouping::get_class_name());
-        $configuration->set('shortname', $grouping::get_short_name());
-        $configuration->set('parentitemid', $parentitemid);
-        $configuration->set('islocked', true);
-        $configuration->create();
-        $grouping->load_configuration($configuration);
-        return $grouping;
-    }
-
-    /**
      * Get a new item based on shortname.
      *
      * @param string $shortname
