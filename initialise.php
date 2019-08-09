@@ -21,6 +21,7 @@ $courseid = required_param('courseid', PARAM_INT);
 $course = get_course($courseid);
 $context = context_course::instance($courseid);
 
+// Access checks.
 require_login($course);
 require_capability('report/lp:configure', $context);
 
@@ -30,7 +31,10 @@ $redirecturl = report_lp\local\factories\url::get_config_url($course);
 $PAGE->set_url($pageurl);
 $PAGE->set_context($context);
 
+// If report/configuration for report does not exist yet for this course, create it.
 if (!report_lp\local\report::course_instance_exists($course)) {
     report_lp\local\report::create_course_instance($course);
 }
+
+// Redirect to configure course.
 redirect($redirecturl);
