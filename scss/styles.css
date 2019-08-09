@@ -124,16 +124,27 @@
   color: #FF0000;
 }
 
-tr.highlighted {
-  background-color: #FEFBDC;
-}
-
 li.list-group-item.depth-2 {
   padding-left: 2.5rem;
 }
 
 table.report-lp-summary-report td {
   white-space: nowrap;
+}
+
+table.report-lp-summary-report tbody tr.highlighted {
+  background-color: #fefbdc;
+}
+
+table.report-lp-summary-report tbody tr.highlighted td:first-child {
+  background-color: #fefbdc;
+}
+
+table.report-lp-summary-report tbody tr td:first-child {
+  background: #fff;
+  position: sticky;
+  left: 0;
+  box-shadow: inset -12px 0 2px -11px rgba(0, 0, 0, 0.5);
 }
 
 .cell {
