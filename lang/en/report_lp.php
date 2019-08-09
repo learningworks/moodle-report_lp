@@ -58,7 +58,7 @@ $string['attendancesessionssummary:measure:name'] = 'Attendance';
 $string['attendancesessionssummary:measure:description'] = 'Show how many sessions a learner has attended out of total number of sessions. For example 3/4 sessions attended.';
 $string['statuseacronyms'] = 'Attendance status acronym list';
 $string['statuseacronyms_help'] = 'A comma separated list attendance acronyms be counted as attended. For example: P,E = Present and Excused.';
-$string['nostatuseacronyms'] = 'No statuse acronyms set';
+$string['nostatuseacronyms'] = 'No status acronyms set';
 $string['coursegrade:measure:label'] = 'Course grade (or final grade)';
 $string['coursegrade:measure:name'] = 'Course grade';
 $string['coursegrade:measure:description'] = 'The course grade calculated or based on aggregated grade items from the gradebook. ';
@@ -167,3 +167,6 @@ $string['learnerinformation'] = 'Learner information';
 
 $string['exporttoexcel'] = 'Export to Excel';
 $string['nogroupsselected'] = 'No groups selected';
+
+// Errors.
+$string['itemnotloaded'] = 'Could not load item';

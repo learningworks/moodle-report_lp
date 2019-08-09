@@ -21,15 +21,17 @@ require_once($CFG->libdir . '/formslib.php');
 $id         = optional_param('id', 0, PARAM_INT);
 $courseid   = optional_param('courseid', 0, PARAM_INT);
 $shortname  = optional_param('shortname', null, PARAM_ALPHAEXT);
+
+// If id given, get existing item object
 if ($id) {
     $itemconfiguration = new report_lp\local\persistents\item_configuration($id);
     $courseid = $itemconfiguration->get('courseid');
-} else {
+} else { // If id not given, courseid and shortname required for new item.
     if ($courseid <= 0) {
-        throw new moodle_exception('Parameter courseid is required');
+        throw new moodle_exception('missingparam', null, null, 'courseid');
     }
     if (empty($shortname)) {
-        throw new moodle_exception('Parameter shortname is required');
+        throw new moodle_exception('missingparam', null, null, 'shortname');
     }
 }
 $course = get_course($courseid);
@@ -41,7 +43,7 @@ if (isset($itemconfiguration)) {
 } else if (!is_null($shortname)){
     $item = $itemfactory->get_item_from_shortname($shortname);
 } else {
-    throw new moodle_exception("Could not load item");
+    throw new moodle_exception('itemnotloaded', 'report_lp');
 }
 $configurl = report_lp\local\factories\url::get_config_url($course);
 $pageurl = report_lp\local\factories\url::get_item_url($course, $id, $shortname);
