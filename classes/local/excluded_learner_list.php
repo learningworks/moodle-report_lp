@@ -18,7 +18,6 @@ namespace report_lp\local;
 
 defined('MOODLE_INTERNAL') || die();
 
-
 use report_lp\local\dml\utilities as dml_utilities;
 use stdClass;
 use coding_exception;
@@ -37,17 +36,22 @@ class excluded_learner_list extends user_list {
      *
      * @param stdClass $course
      * @param bool $loadfromsession
+     * @throws \dml_exception
+     * @throws coding_exception
      */
-    public function __construct(stdClass $course, bool $loadfromsession = false) {
+    public function __construct(stdClass $course, bool $loadfromsession = true) {
         parent::__construct($course);
         if ($loadfromsession) {
             $this->load_from_session();
         }
     }
 
+    /**
+     * @throws \dml_exception
+     * @throws coding_exception
+     */
     protected function load_from_session() {
         global $DB, $SESSION;
-
         if (!empty($SESSION->report_lp_filters[$this->course->id]['excludelearners'])) {
             $excludedlearners = $SESSION->report_lp_filters[$this->course->id]['excludelearners'];
             $defaultuserfields = static::get_default_user_fields();
@@ -62,7 +66,6 @@ class excluded_learner_list extends user_list {
                       FROM {user} u
                      WHERE u.id {$excludesql}
                   ORDER BY u.firstname, u.lastname";
-
             $rs = $DB->get_recordset_sql($sql, $excludeparameters);
             foreach ($rs as $record) {
                 $this->add_user($record);

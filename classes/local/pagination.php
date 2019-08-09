@@ -201,9 +201,6 @@ class pagination implements renderable, templatable {
     }
 
     public function set_page(int $page) {
-        if (empty($this->total)) {
-            throw new coding_exception('Total must must be set first');
-        }
         if ($page < 0) {
             throw new coding_exception("Value less than minimum available page");
         }
@@ -217,9 +214,6 @@ class pagination implements renderable, templatable {
     }
 
     public function set_limit(int $limit) {
-        if (empty($this->total)) {
-            throw new coding_exception('Total must must be set first');
-        }
         if ($limit > self::MAXIMUM_RETURNED_RECORDS_LIMIT) {
             $limit = self::MAXIMUM_RETURNED_RECORDS_LIMIT;
         }
