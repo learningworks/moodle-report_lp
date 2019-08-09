@@ -120,14 +120,13 @@ class item {
      * Quick method of creating a grouping.
      *
      * @param string $customlabel
-     * @param bool $islocked
      * @param int $parentitemid
      * @return grouping
      * @throws \ReflectionException
      * @throws \core\invalid_persistent_exception
      * @throws coding_exception
      */
-    public function create_grouping(string $customlabel = '', bool $islocked = false, int $parentitemid = 0) : grouping {
+    public function create_grouping(string $customlabel = '', int $parentitemid = 0) : grouping {
         if ($parentitemid < 1) {
             throw new coding_exception("Invalid parent item id");
         }
@@ -141,7 +140,6 @@ class item {
             $configuration->set('customlabel', format_text($customlabel, FORMAT_PLAIN));
         }
         $configuration->set('parentitemid', $parentitemid);
-        $configuration->set('islocked', $islocked);
         $configuration->create();
         $grouping->load_configuration($configuration);
         return $grouping;
@@ -163,7 +161,6 @@ class item {
         $configuration->set('classname', $learner::get_class_name());
         $configuration->set('shortname', $learner::get_short_name());
         $configuration->set('parentitemid', $parentitemid);
-        $configuration->set('islocked', true);
         $configuration->create();
         $learner->load_configuration($configuration);
         return $learner;

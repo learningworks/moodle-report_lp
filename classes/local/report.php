@@ -46,7 +46,8 @@ class report {
         $itemfactory = new factories\item($course, new item_type_list());
         $root = $itemfactory->get_root_grouping(true);
         $learnergrouping = $itemfactory->create_grouping(
-            get_string('learnerinformation', 'report_lp'), $root->get_id()
+            get_string('learnerinformation', 'report_lp'),
+            $root->get_id()
         );
         $itemfactory->create_learner($learnergrouping->get_id());
         $itemfactory->create_learner_field('idnumber_learner_field', $learnergrouping->get_id());
