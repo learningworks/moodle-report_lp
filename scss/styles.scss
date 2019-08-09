@@ -72,7 +72,7 @@ table.report-lp-summary-report {
             td:first-child {
                 background: $lw-white;
                 position: sticky;
-                left: 0;
+                left: -1.25rem; // Match #region-main's padding.
                 box-shadow: inset -12px 0 2px -11px rgba(0, 0, 0, 0.5);
             }
         }
