@@ -93,7 +93,7 @@ try {
             exit(0);
         }
     }
-    report_lp\local\report::delete_course_instance($course);
+    report_lp\local\report::delete_course_instance($course->id);
     $trace->output("Report deleted");
 } catch (Exception $ex) {
     $trace->output($ex->getMessage());

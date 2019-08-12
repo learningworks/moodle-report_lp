@@ -75,13 +75,13 @@ class report {
     /**
      * Delete instance of report for a course.
      *
-     * @param stdClass $course
+     * @param int $courseid
      * @throws \dml_exception
      */
-    public static function delete_course_instance(stdClass $course) {
+    public static function delete_course_instance(int $courseid) {
         global $DB;
-        $DB->delete_records('report_lp', ['courseid' => $course->id]);
-        $DB->delete_records('report_lp_items', ['courseid' => $course->id]);
+        $DB->delete_records('report_lp', ['courseid' => $courseid]);
+        $DB->delete_records('report_lp_items', ['courseid' => $courseid]);
     }
 
     /**
