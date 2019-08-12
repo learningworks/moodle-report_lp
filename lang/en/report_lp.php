@@ -161,7 +161,9 @@ $string['initialise'] = 'Initialise...';
 $string['coursegroups:learnerfield:description'] = 'Displays any groups memberships the learner has within the course.';
 $string['coursegroups:learnerfield:name'] = 'Course groups';
 $string['coursegroups:learnerfield:label'] = 'Groups';
-
+$string['email:learnerfield:description'] = 'Displays learners email address attached to user record.';
+$string['email:learnerfield:name'] = 'Email address';
+$string['email:learnerfield:label'] = 'Email';
 $string['idnumber:learnerfield:description'] = 'Displays learners ID number attached to user record.';
 $string['idnumber:learnerfield:name'] = 'Learner ID number';
 $string['idnumber:learnerfield:label'] = 'ID';
