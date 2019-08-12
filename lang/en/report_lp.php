@@ -17,9 +17,9 @@
 /**
  * Definition of language strings.
  *
- * @package   {{PLUGIN_NAME}} {@link https://docs.moodle.org/dev/Frankenstyle}
- * @copyright 2015 LearningWorks Ltd {@link http://www.learningworks.co.nz}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     report_lp {@link https://docs.moodle.org/dev/Frankenstyle}
+ * @copyright   2019 Troy Williams <troy.williams@learningworks.co.nz>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 $string['pluginname'] = 'Learner progress report';
@@ -86,6 +86,8 @@ $string['learner:description'] = 'Standard learner information such as profile p
 $string['grouping'] = 'Grouping';
 $string['measures'] = 'Measures';
 $string['configurereportfor'] = 'Configure learner progress report for {$a}';
+$string['removereport'] = 'Remove report';
+$string['removereportfor'] = 'Remove learner progress report for {$a}';
 $string['summaryreportfor'] = 'Learner progress summary report for {$a}';
 
 $string['usecustomlabel'] = 'Use custom label';

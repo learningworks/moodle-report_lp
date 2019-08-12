@@ -40,4 +40,12 @@ class button {
         );
     }
 
+    public static function create_remove_button(int $courseid) {
+        return html_writer::link(
+            url::get_remove_url($courseid),
+            get_string('removereport', 'report_lp'),
+            ['class' => 'btn btn-outline-danger', 'role' => 'button']
+        );
+    }
+
 }

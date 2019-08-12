@@ -82,6 +82,7 @@ class configure_report implements renderable, templatable {
             $data->initialisebutton = button::create_initialise_button($this->course->id);
             return $data;
         }
+        $data->removebutton = button::create_remove_button($this->course->id);
         $visitor = new pre_order_visitor();
         $items = $root->accept($visitor);
         $data->initialised = true;
