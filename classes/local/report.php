@@ -22,6 +22,7 @@ use report_lp\local\builders\item_tree;
 use report_lp\local\visitors\component_item_visitor;
 use stdClass;
 use report_lp\local\persistents\report_configuration;
+use report_lp\local\persistents\item_configuration;
 
 /**
  * General API methods.
