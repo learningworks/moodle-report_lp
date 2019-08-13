@@ -97,7 +97,8 @@ class report {
     public static function handle_course_module_deletion(int $courseid, string $modulename, int $instanceid) {
         $course = get_course($courseid);
         $treebuilder = new item_tree($course, new item_type_list());
-        $root = $treebuilder->build_from_item_configurations();
+        $itemconfigurations = item_configuration::get_records(['courseid' => $course->id]);
+        $root = $treebuilder->build_from_item_configurations($itemconfigurations);
         $visitor = new component_item_visitor('mod', $modulename);
         /** @var item $item */
         $items = $root->accept($visitor);
