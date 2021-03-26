@@ -97,13 +97,14 @@ class item_type_list implements Countable, IteratorAggregate {
             new fields\course_groups_learner_field(),
             new fields\idnumber_learner_field(),
             new fields\email_learner_field(),
-            new measures\assignment_resubmit_count(),
+            new fields\learner_profile_field(),
+            //new measures\assignment_resubmit_count(),
             new measures\assignment_status(),
             new measures\attendance_sessions_summary(),
-            new measures\checklist_complete(),
+            //new measures\checklist_complete(),
             new measures\course_grade(),
             new measures\course_section_activity_completion(),
-            new measures\grade_category_activity_completion(),
+            //new measures\grade_category_activity_completion(),
             new measures\last_course_access()
         ];
     }

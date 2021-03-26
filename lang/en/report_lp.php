@@ -174,3 +174,9 @@ $string['nogroupsselected'] = 'No groups selected';
 
 // Errors.
 $string['itemnotloaded'] = 'Could not load item';
+
+$string['profilefield:learnerfield:name'] = 'Learner profile field';
+$string['profilefield:learnerfield:description'] = 'Provides use of custom user profile fields that were create in Administration > Site administration > Users > Accounts > User profile fields.';
+$string['profilefield:learnerfield:label'] = 'Uses the name of the user profile field';
+$string['fieldname'] = 'Field name';
+$string['nolearnerprofilefields'] = 'No learner profile fields found. You need to create some...';
