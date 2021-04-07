@@ -121,7 +121,11 @@ class learner_profile_field extends learner_field implements extra_configuration
      */
     public function get_data_for_users(user_list $userlist): array
     {
-        // TODO: Implement get_data_for_users() method.
+        $data = [];
+        foreach ($userlist as $user) {
+            $data[$user->id] = $this->get_data_for_user($user);
+        }
+        return $data;
     }
 
     /**
